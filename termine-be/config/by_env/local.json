@@ -1,0 +1,6 @@
+{
+  "instanceName": "local",
+  "longInstanceName": "Local @home",
+  "contactInfoCoupons": "<span class=\"hintLabel\">Um mehr Termine vergeben zu können wenden Sie sich an <a href=\"mailto:local@local.host\">local@local.host</a></span>",
+  "contactInfoAppointment": "<span class=\"hintLabel\">Kontaktieren Sie <a href=\"mailto:local@local.host\">local@local.host</a></span>"
+}
