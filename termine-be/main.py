@@ -49,7 +49,7 @@ def instance_config():
 
 
 @hug.get("/admin/config.js", requires=admin_authentication, output=format_as_js)
-def instance_config():
+def instance_admin_config():
     return 'window.config = ' + FrontendSettings.json_by_env() + ';'
 
 
