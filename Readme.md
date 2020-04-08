@@ -52,5 +52,5 @@ yarn start
 
 Stay safe!
 
-![LMU Division of Infectious Diseases and Tropical Medicine](http://www.klinikum.uni-muenchen.de/Abteilung-fuer-Infektions-und-Tropenmedizin/bilder/layout/kopfbilder/startseite.png)
+![LMU Division of Infectious Diseases and Tropical Medicine](https://github.com/Public-Health-Informatics-Munich/covid19-teststation-termine/raw/master/Logo-LMU-Abteilung-Infektions-und-Tropenmedizin.png)
 ![Mayflower GmbH](https://mayflower.de/wp-content/uploads/2014/04/Mayflower-Logo-440.png)
