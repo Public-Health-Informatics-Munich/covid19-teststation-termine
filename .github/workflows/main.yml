@@ -1,0 +1,46 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the master branch
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  check:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    - uses: actions/checkout@v2
+    - name: Use Node.js
+      uses: actions/setup-node@v1
+      with:
+        node-version: '12.x'
+
+    - name: Cache node modules
+      uses: actions/cache@v1
+      with:
+        path: ~/.cache/yarn 
+        key: yarn-${{ hashFiles('**/yarn.lock') }}
+        restore-keys: |
+          yarn-${{ hashFiles('**/yarn.lock') }}
+          yarn-
+
+    - name: check-lint
+      run: |
+        yarn --cwd termine-bo add --prefer-offline --frozen-lockfile --dev prettier dom eslint &&\
+        yarn --cwd termine-fe add --prefer-offline --frozen-lockfile --dev prettier dom eslint ||\
+        (echo Failed to install dependencies && exit 1)
+        # now run all checks and fail afterwards if so
+        yarn --cwd termine-bo run lint || fail-bo=1
+        yarn --cwd termine-fe run lint || fail-fe=1
+        exit $((fail-bo + fail-fe))
