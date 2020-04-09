@@ -35,12 +35,24 @@ jobs:
           yarn-${{ hashFiles('**/yarn.lock') }}
           yarn-
 
-    - name: check-lint
+    - name: install-check-dependencies
       run: |
-        yarn --cwd termine-bo add --prefer-offline --frozen-lockfile --dev prettier dom eslint &&\
-        yarn --cwd termine-fe add --prefer-offline --frozen-lockfile --dev prettier dom eslint ||\
-        (echo Failed to install dependencies && exit 1)
-        # now run all checks and fail afterwards if so
-        yarn --cwd termine-bo run lint || fail-bo=1
-        yarn --cwd termine-fe run lint || fail-fe=1
-        exit $((fail-bo + fail-fe))
+        # frozen lockfile will error when changes in dependencies are requested but the actual yarn.lock is not pushed
+        yarn --cwd termine-bo add --prefer-offline --frozen-lockfile --dev prettier eslint-config-prettier eslint-plugin-prettier
+        yarn --cwd termine-fe add --prefer-offline --frozen-lockfile --dev prettier eslint-config-prettier eslint-plugin-prettier
+
+    - name: check-format-bo
+      if: success() || failure()
+      run: yarn --cwd termine-bo run format-check
+
+    - name: check-lint-bo
+      if: success() || failure()
+      run: yarn --cwd termine-bo run lint
+
+    - name: check-format-fe
+      if: success() || failure()
+      run: yarn --cwd termine-fe run format-check
+
+    - name: check-lint-fe
+      if: success() || failure()
+      run: yarn --cwd termine-fe run lint
