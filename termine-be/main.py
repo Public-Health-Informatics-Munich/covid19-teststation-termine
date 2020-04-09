@@ -9,6 +9,7 @@ from access_control.access_control import authentication, admin_authentication
 from admin_api import admin_api
 from api import api
 from config.config import FrontendSettings
+from db.directives import PeeweeContext
 
 FORMAT = '%(asctime)s - %(levelname)s\t%(name)s: %(message)s'
 logging.basicConfig(format=FORMAT, stream=sys.stdout, level=logging.INFO)
@@ -58,14 +59,12 @@ def health_check():
     return "healthy"
 
 
-@hug.get("/logout", requires=hug.authentication.basic(lambda e,f: False))
+@hug.get("/logout", requires=hug.authentication.basic(lambda e, f: False))
 def logout():
-    #raise hug.HTTPForbidden(headers={"WWW-Authenticate": ""})
-    return 'OK' # ä this will never authenticate
+    return 'OK'  # ä this will never authenticate
 
 
-# @hug.get("/logout_success", response_headers={"WWW-Authenticate": ""})
-@hug.get("/logout_success", requires=hug.authentication.basic(lambda e,f: True))
+@hug.get("/logout_success", requires=hug.authentication.basic(lambda e, f: True))
 def logout_success():
     return 'Ok'  # todo could a redirect to / also work?
 
@@ -73,6 +72,11 @@ def logout_success():
 @hug.extend_api(sub_command="db")
 def with_cli():
     return cli,
+
+
+@hug.context_factory()
+def create_context(*args, **kwargs):
+    return PeeweeContext()
 
 
 # to debug this code from intellij, create a run config for this function with interpreter arg "-f main.py"

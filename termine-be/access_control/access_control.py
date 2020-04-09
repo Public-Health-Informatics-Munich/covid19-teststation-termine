@@ -1,9 +1,9 @@
 import logging
 
 import hug
-from peewee import DoesNotExist
+from peewee import DoesNotExist, DatabaseError
 
-from db.db import _setup_db, db_instance
+from db.directives import PeeweeContext
 from db.model import User
 from secret_token.secret_token import hash_pw
 
@@ -23,10 +23,9 @@ def normalize_user(user_name):
     return user_name.lower()
 
 
-def _verify_user(user_name, user_password):
-    _setup_db()
+def verify_user(user_name, user_password, context: PeeweeContext):
     name = normalize_user(user_name)
-    with db_instance().transaction():
+    with context.db.atomic():
         try:
             user = User.get(User.user_name == name)
             salt = user.salt
@@ -38,28 +37,21 @@ def _verify_user(user_name, user_password):
         except DoesNotExist:
             log.warning("user not found: %s", user_name)
             return False
-        except:
+        except DatabaseError:
             log.warning("unknown error logging in: %s", user_name)
             return False
 
 
-def _verify_admin(user_name, user_password):
-    user = _verify_user(user_name, user_password)
+@hug.authentication.basic
+def authentication(user_name, user_password, context: PeeweeContext):
+    return verify_user(user_name, user_password, context)
+
+
+@hug.authentication.basic
+def admin_authentication(user_name, user_password, context: PeeweeContext):
+    user = verify_user(user_name, user_password, context)
     if user.role == UserRoles.ADMIN:
         return user
     log.warning("missing admin role for: %s", user_name)
     return False
 
-
-def verify():
-    """Returns a simple verification callback that simply verifies that the users and password match with the db"""
-    return _verify_user
-
-
-def verify_admin():
-    """Returns a callback that verifies that the users and password match with the db and the role is UserRoles.ADMIN"""
-    return _verify_admin
-
-
-authentication = hug.authentication.basic(verify())
-admin_authentication = hug.authentication.basic(verify_admin())

@@ -1,35 +1,37 @@
 import sys
 from datetime import datetime
 
+import hug
 from peewee import DateTimeField, IntegerField
 from playhouse.migrate import PostgresqlMigrator, ProgrammingError, migrate
 
 from config import config
-from db.db import _setup_db, db_instance
+from db.directives import PeeweeSession
 from db.model import Migration
 
 
-def migrate_db():
-    _setup_db()
-    database = db_instance()
-    migrator = PostgresqlMigrator(database)
-    try:
-        migration = Migration.get()
-        if migration.version < 1:
-            # do everything for level 1
-            level_1(database, migration, migrator)
-        if migration.version < 2:
-            # do everything for level 1
-            level_2(database, migration, migrator)
+@hug.local
+def migrate_db(db: PeeweeSession):
+    with db.transaction() as txs:
+        migrator = PostgresqlMigrator(db)
+        try:
+            migration = Migration.get()
+            if migration.version < 1:
+                # do everything for level 1
+                level_1(db, migration, migrator)
+            if migration.version < 2:
+                # do everything for level 1
+                level_2(db, migration, migrator)
 
-    except ProgrammingError as e:
-        print(e)
-        print('Error - Migrations table not found, please run init_db first!')
-        sys.exit(1)
+        except ProgrammingError as e:
+            print(e)
+            print('Error - Migrations table not found, please run init_db first!')
+            txs.rollback()
+            sys.exit(1)
 
 
-def level_1(database, migration, migrator):
-    with database.transaction():
+def level_1(db, migration, migrator):
+    with db.transaction():
         booked_at_field = DateTimeField(null=True,
                                         default=lambda: datetime.now(tz=config.Settings.tz).replace(tzinfo=None))
         migrate(
@@ -39,8 +41,8 @@ def level_1(database, migration, migrator):
         migration.save()
 
 
-def level_2(database, migration, migrator):
-    with database.transaction():
+def level_2(db, migration, migrator):
+    with db.transaction():
         coupons_field = IntegerField(default=10)
         migrate(
             migrator.add_column('user', 'coupons', coupons_field),

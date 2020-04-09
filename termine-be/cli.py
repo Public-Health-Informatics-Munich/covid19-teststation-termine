@@ -7,7 +7,7 @@ import hug
 from peewee import fn
 
 from access_control.access_control import UserRoles
-from db.db import _setup_db, db_instance, init_database
+from db.directives import PeeweeContext, PeeweeSession, init_database
 from db.migration import migrate_db
 from db.model import TimeSlot, Appointment, User, Booking
 from secret_token.secret_token import get_random_string, hash_pw
@@ -17,6 +17,7 @@ log = logging.getLogger('cli')
 
 @hug.cli()
 def create_appointments(
+        db: PeeweeSession,
         day: hug.types.number,
         month: hug.types.number,
         year: hug.types.number = 2020,
@@ -26,8 +27,7 @@ def create_appointments(
         num_appointment_per_slot: hug.types.number = 8,
         slot_duration_min: hug.types.number = 30
 ):
-    _setup_db()
-    with db_instance().transaction():
+    with db.atomic():
         for i in range(num_slots):
             ts = TimeSlot.create(
                 start_date_time=datetime(year, month, day, start_hour, start_min, tzinfo=None) + timedelta(
@@ -48,8 +48,7 @@ def delete_timeslots(
         num_slots: hug.types.number,
         for_real: hug.types.boolean = False
 ):
-    _setup_db()
-    with db_instance().transaction():
+    with db.atomic():
         dto = datetime(year, month, day, start_hour, start_min, tzinfo=None)
         tomorrow = datetime(year, month, day, tzinfo=None) + timedelta(days=1)
         ts = TimeSlot.select().where(
@@ -63,7 +62,7 @@ def delete_timeslots(
         for t in ts:
             tsids_to_delete.append(t.id)
             log.info(f"ID: {t.id} - {t.start_date_time}")
-        if (not tsids_to_delete):
+        if not tsids_to_delete:
             log.error("No matching timeslots found! Exiting.")
             sys.exit(1)
         apts = Appointment.select().where(Appointment.time_slot.in_(tsids_to_delete))
@@ -110,10 +109,9 @@ def init_db(for_real: hug.types.smart_boolean = False):
 
 
 @hug.cli()
-def add_user(username: hug.types.text, role: hug.types.one_of(UserRoles.user_roles()) = UserRoles.USER,
+def add_user(db: PeeweeSession, username: hug.types.text, role: hug.types.one_of(UserRoles.user_roles()) = UserRoles.USER,
              coupons: hug.types.number = 10):
-    _setup_db()
-    with db_instance().transaction():
+    with db.atomic():
         name = username.lower()
         salt = get_random_string(2)
         secret_password = get_random_string(12)
@@ -144,7 +142,6 @@ def get_coupon_state():
     GROUP BY u.user_name, u.coupons
     """
     print(f'Username\tTotal Bookings\tNumber of coupons')
-    _setup_db()
     for user in User.select():
         bookings = Booking.select().where(
             user.user_name == Booking.booked_by)
@@ -152,18 +149,21 @@ def get_coupon_state():
 
 
 @hug.cli()
-def set_coupon_count(user_name: hug.types.text, value: hug.types.number):
-    _setup_db()
-    with db_instance().transaction():
+def set_coupon_count(db: PeeweeSession, user_name: hug.types.text, value: hug.types.number):
+    with db.atomic():
         user = User.get(User.user_name == user_name)
         user.coupons = value
         user.save()
 
 
 @hug.cli()
-def inc_coupon_count(user_name: hug.types.text, increment: hug.types.number):
-    _setup_db()
-    with db_instance().transaction():
+def inc_coupon_count(db: PeeweeSession, user_name: hug.types.text, increment: hug.types.number):
+    with db.atomic():
         user = User.get(User.user_name == user_name)
         user.coupons += increment
         user.save()
+
+
+@hug.context_factory()
+def create_context(*args, **kwargs):
+    return PeeweeContext()
