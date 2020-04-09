@@ -1,0 +1,13 @@
+{
+    "compilerOptions": {
+        "include": ["src/**/*"],
+        "target": "esnext",
+        "allowSyntheticDefaultImports": true,
+        "noEmit": true,
+        "checkJs": false,
+        "allowJs": true,
+        "jsx": "react",
+        "lib": [ "dom", "esnext" ],
+        "moduleResolution": "node"
+    },
+}

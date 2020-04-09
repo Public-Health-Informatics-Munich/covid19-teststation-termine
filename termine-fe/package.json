@@ -21,11 +21,19 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "REACT_APP_STAGE=prod react-scripts build",
+    "lint": "prettier --check '**.css' && eslint --max-warnings 0 src",
+    "lint-fix": "prettier --write '**.css' && eslint --fix src",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
-    "extends": "react-app"
+    "extends": [
+      "react-app",
+      "plugin:prettier/recommended"
+    ],
+    "globals": {
+       "window.config": "readonly"
+    }
   },
   "browserslist": {
     "production": [
@@ -39,5 +47,10 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "http://localhost:8000"
+  "proxy": "http://localhost:8000",
+  "devDependencies": {
+    "eslint-config-prettier": "^6.10.1",
+    "eslint-plugin-prettier": "^3.1.2",
+    "prettier": "^2.0.4"
+  }
 }
