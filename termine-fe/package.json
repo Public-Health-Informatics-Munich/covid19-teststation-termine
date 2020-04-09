@@ -21,8 +21,10 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "REACT_APP_STAGE=prod react-scripts build",
-    "lint": "prettier --check '**.css' && eslint --max-warnings 0 src",
-    "lint-fix": "prettier --write '**.css' && eslint --fix src",
+    "lint": "yarn run eslint --max-warnings 0 src",
+    "lint-fix": "yarn run eslint --fix src",
+    "format-check": "yarn run prettier --check src",
+    "format": "yarn run prettier --write src",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
