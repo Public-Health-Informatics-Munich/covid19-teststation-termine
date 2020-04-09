@@ -37,6 +37,7 @@ jobs:
 
     - name: check-lint
       run: |
+        set +e
         yarn --cwd termine-bo add --prefer-offline --frozen-lockfile --dev prettier dom eslint &&\
         yarn --cwd termine-fe add --prefer-offline --frozen-lockfile --dev prettier dom eslint ||\
         (echo Failed to install dependencies && exit 1)
