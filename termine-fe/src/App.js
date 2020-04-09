@@ -1,11 +1,7 @@
 import React, { useEffect, useCallback, useRef, useState } from "react";
 import { trackPromise, usePromiseTracker } from "react-promise-tracker";
 
-import {
-  DateFormatter,
-  INFOBOX_STATES,
-  ISOStringWithoutTimeZone,
-} from "./utils";
+import { INFOBOX_STATES, ISOStringWithoutTimeZone } from "./utils";
 import * as Api from "./Api";
 import BookView from "./Views/BookView";
 import BookingHistoryView from "./Views/BookingHistoryView";
@@ -231,14 +227,14 @@ function App() {
             {window.config.longInstanceName}
           </h3>
           <a
-            href="#"
+            href={"#" + TAB.BOOK}
             className="button"
             onClick={() => setCurrentTab(TAB.BOOK)}
           >
             Termine buchen
           </a>
           <a
-            href="#"
+            href={"#" + TAB.BOOKED}
             className="button"
             onClick={() => setCurrentTab(TAB.BOOKED)}
           >

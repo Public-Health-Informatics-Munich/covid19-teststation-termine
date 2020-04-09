@@ -1,7 +1,6 @@
 import {
   formatDate,
   formatStartTime,
-  DateFormatter,
   ISOStringWithoutTimeZone,
 } from "../utils";
 import React from "react";
@@ -42,6 +41,7 @@ export default function BookingHistoryView(
           )}&end_date=${ISOStringWithoutTimeZone(endDate)}`}
           className="button"
           target="_blank"
+          rel="noopener noreferrer"
         >
           Excel
         </a>
