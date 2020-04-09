@@ -30,14 +30,17 @@ jobs:
       uses: actions/cache@v1
       with:
         path: ~/.cache/yarn 
-        key: yarn-${{ hashFiles('**/yarn.json') }}
+        key: yarn-${{ hashFiles('**/yarn.lock') }}
         restore-keys: |
-          yarn-${{ hashFiles('**/yarn.json') }}
+          yarn-${{ hashFiles('**/yarn.lock') }}
           yarn-
 
     - name: check-lint
       run: |
         yarn --cwd termine-bo add --prefer-offline --frozen-lockfile --dev prettier dom eslint &&\
-        yarn --cwd termine-bo run lint ||\
-        yarn --cwd termine-fe add --prefer-offline --frozen-lockfile --dev prettier dom eslint &&\
-        yarn --cwd termine-fe run lint
+        yarn --cwd termine-fe add --prefer-offline --frozen-lockfile --dev prettier dom eslint ||\
+        (echo Failed to install dependencies && exit 1)
+        # now run all checks and fail afterwards if so
+        yarn --cwd termine-bo run lint || fail-bo=1
+        yarn --cwd termine-fe run lint || fail-fe=1
+        exit $((fail-bo + fail-fe))
