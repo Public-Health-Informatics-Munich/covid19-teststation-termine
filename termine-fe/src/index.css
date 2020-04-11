@@ -86,7 +86,7 @@ span.icon-refresh.animated {
 }
 
 @media print {
-  .hideMeOnPrint{
+  .hideMeOnPrint {
     visibility: hidden;
   }
   .printme#printme,
