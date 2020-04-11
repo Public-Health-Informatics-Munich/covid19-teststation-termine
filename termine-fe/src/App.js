@@ -1,13 +1,6 @@
 import React, { useEffect, useCallback, useRef, useState } from "react";
 import { trackPromise, usePromiseTracker } from "react-promise-tracker";
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-  Link,
-  Redirect,
-  useLocation,
-} from "react-router-dom";
+import { Switch, Route, Link, Redirect, useLocation } from "react-router-dom";
 
 import { INFOBOX_STATES, ISOStringWithoutTimeZone } from "./utils";
 import * as Api from "./Api";
