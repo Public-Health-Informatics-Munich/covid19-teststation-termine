@@ -5,7 +5,7 @@ import { CouponBox } from "../Components/CouponBox";
 import Booking from "../Components/Booking";
 import React from "react";
 
-export default function BookView(
+export default function BookView({
   focusOnList,
   freeSlotList,
   coupons,
@@ -22,8 +22,8 @@ export default function BookView(
   startDateTime,
   formState,
   setFormState,
-  inputRef
-) {
+  inputRef,
+}) {
   return (
     <div className="row">
       <div className="col-lg-7">

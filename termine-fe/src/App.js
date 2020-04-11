@@ -1,5 +1,6 @@
 import React, { useEffect, useCallback, useRef, useState } from "react";
 import { trackPromise, usePromiseTracker } from "react-promise-tracker";
+import { Switch, Route, Link, Redirect, useLocation } from "react-router-dom";
 
 import { INFOBOX_STATES, ISOStringWithoutTimeZone } from "./utils";
 import * as Api from "./Api";
@@ -16,9 +17,11 @@ function App() {
   };
 
   const TAB = {
-    BOOK: "book",
-    BOOKED: "booked",
+    BOOK: "/book",
+    BOOKED: "/booked",
   };
+
+  let location = useLocation();
 
   const { promiseInProgress } = usePromiseTracker();
 
@@ -48,7 +51,6 @@ function App() {
     phone: "",
     office: "",
   });
-  const [currentTab, setCurrentTab] = useState(TAB.BOOK);
   const [bookedList, setBookedList] = useState([]);
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
@@ -91,10 +93,10 @@ function App() {
 
   // use focusOnList as switch between slots table and form
   useEffect(() => {
-    if (currentTab === TAB.BOOKED) {
+    if (location.pathname === TAB.BOOKED) {
       getBookedListData();
     }
-  }, [currentTab, getBookedListData, TAB.BOOKED]);
+  }, [location, getBookedListData, TAB.BOOKED]);
 
   // refresh once on triggerRefresh, then every 60 sec
   useEffect(() => {
@@ -226,53 +228,52 @@ function App() {
           <h3 style={{ paddingLeft: "var(--universal-padding)" }}>
             {window.config.longInstanceName}
           </h3>
-          <a
-            href={"#" + TAB.BOOK}
-            className="button"
-            onClick={() => setCurrentTab(TAB.BOOK)}
-          >
+          <Link className="button" to={TAB.BOOK}>
             Termine buchen
-          </a>
-          <a
-            href={"#" + TAB.BOOKED}
-            className="button"
-            onClick={() => setCurrentTab(TAB.BOOKED)}
-          >
+          </Link>
+          <Link className="button" to={TAB.BOOKED}>
             Meine Buchungen
-          </a>
+          </Link>
           <div className="flexAlignRight">
             <input type="button" value="Logout" onClick={logout} />
           </div>
         </div>
       </header>
-      {currentTab === TAB.BOOK &&
-        BookView(
-          focusOnList,
-          freeSlotList,
-          coupons,
-          claimAppointment,
-          setSelectedAppointment,
-          selectedAppointment,
-          showSpinner,
-          refreshList,
-          infoboxState,
-          bookedAppointment,
-          onBook,
-          onCancelBooking,
-          claimToken,
-          startDateTime,
-          formState,
-          setFormState,
-          inputRef
-        )}
-      {currentTab === TAB.BOOKED &&
-        BookingHistoryView(
-          bookedList,
-          startDate,
-          setStartDate,
-          endDate,
-          setEndDate
-        )}
+      <Switch>
+        <Route exact path="/">
+          <Redirect to={TAB.BOOK} />
+        </Route>
+        <Route path={TAB.BOOK}>
+          <BookView
+            focusOnList={focusOnList}
+            freeSlotList={freeSlotList}
+            coupons={coupons}
+            claimAppointment={claimAppointment}
+            setSelectedAppointment={setSelectedAppointment}
+            selectedAppointment={selectedAppointment}
+            showSpinner={showSpinner}
+            refreshList={refreshList}
+            infoboxState={infoboxState}
+            bookedAppointment={bookedAppointment}
+            onBook={onBook}
+            onCancelBooking={onCancelBooking}
+            claimToken={claimToken}
+            startDateTime={startDateTime}
+            formState={formState}
+            setFormState={setFormState}
+            inputRef={inputRef}
+          />
+        </Route>
+        <Route path={TAB.BOOKED}>
+          <BookingHistoryView
+            bookedList={bookedList}
+            startDate={startDate}
+            setStartDate={setStartDate}
+            endDate={endDate}
+            setEndDate={setEndDate}
+          />
+        </Route>
+      </Switch>
     </div>
   );
 }

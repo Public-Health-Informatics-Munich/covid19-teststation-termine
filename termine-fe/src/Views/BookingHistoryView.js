@@ -8,13 +8,13 @@ import { Calendar } from "react-calendar";
 import config from "../config";
 import "react-calendar/dist/Calendar.css";
 
-export default function BookingHistoryView(
+export default function BookingHistoryView({
   bookedList,
   startDate,
   setStartDate,
   endDate,
-  setEndDate
-) {
+  setEndDate,
+}) {
   return (
     <div className="col">
       <div className="row">
