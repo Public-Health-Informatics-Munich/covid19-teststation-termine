@@ -34,7 +34,7 @@
       "plugin:prettier/recommended"
     ],
     "globals": {
-       "window.config": "readonly"
+      "window.config": "readonly"
     }
   },
   "browserslist": {
