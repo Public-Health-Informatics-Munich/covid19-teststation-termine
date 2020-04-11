@@ -6,6 +6,7 @@ import Booking from "../Components/Booking";
 import React from "react";
 
 export default function BookView({
+  i18n,
   focusOnList,
   freeSlotList,
   coupons,
@@ -29,6 +30,7 @@ export default function BookView({
       <div className="col-lg-7">
         <FocusLock group="booking-workflow" disabled={!focusOnList}>
           <Slots
+            i18n={i18n}
             freeSlotList={freeSlotList}
             coupons={coupons}
             claimAppointment={claimAppointment}
@@ -56,6 +58,7 @@ export default function BookView({
             />
             <CouponBox coupons={coupons} />
             <Booking
+              i18n={i18n}
               onBook={onBook}
               onCancel={onCancelBooking}
               claimToken={claimToken}

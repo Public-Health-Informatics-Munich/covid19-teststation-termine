@@ -1,7 +1,9 @@
 import React from "react";
 import { FreeSlot } from "./FreeSlot";
+import { Trans } from "@lingui/macro";
 
 export default function Slots({
+  i18n,
   freeSlotList,
   coupons,
   claimAppointment,
@@ -15,6 +17,7 @@ export default function Slots({
     const slotLengthMin = slot.timeSlotLength;
     return (
       <FreeSlot
+        i18n={i18n}
         key={sdt}
         startDateTime={sdt}
         slotLengthMin={slotLengthMin}
@@ -31,11 +34,13 @@ export default function Slots({
     return (
       <div className="card warning fluid">
         <div>
-          Aktuell sind{" "}
-          <b>
-            <u>keine Termine</u>
-          </b>{" "}
-          mehr frei.
+          <Trans>
+            Currently{" "}
+            <b>
+              <u>no Appointments</u>
+            </b>{" "}
+            are free.
+          </Trans>
         </div>
         <div
           dangerouslySetInnerHTML={{
@@ -51,13 +56,21 @@ export default function Slots({
       <table style={{ maxHeight: "91vh", marginTop: "1vh" }}>
         <thead>
           <tr>
-            <th>Datum</th>
-            <th>Terminslot</th>
-            <th>Freie Termine</th>
+            <th>
+              <Trans>Date</Trans>
+            </th>
+            <th>
+              <Trans>Timeslot</Trans>
+            </th>
+            <th>
+              <Trans>Free appointments</Trans>
+            </th>
             <th>
               <div className="container">
                 <div className="row">
-                  <div className="col-lg-6">Aktion</div>
+                  <div className="col-lg-6">
+                    <Trans>Action</Trans>
+                  </div>
                   <div
                     className="col-lg-6"
                     style={{

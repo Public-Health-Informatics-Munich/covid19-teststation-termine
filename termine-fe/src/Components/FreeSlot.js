@@ -1,7 +1,9 @@
 import { formatDate, formatTime } from "../utils";
 import React from "react";
+import { t } from "@lingui/macro";
 
 export const FreeSlot = ({
+  i18n,
   startDateTime,
   slotLengthMin,
   freeAppointments,
@@ -27,7 +29,7 @@ export const FreeSlot = ({
         <input
           type="button"
           className="primary"
-          value="Termin Buchen"
+          value={i18n._(t`Book Appointment`)}
           onClick={claimAppointment}
           {...dataAutoFocus}
           onFocus={onFocus}

@@ -6,12 +6,22 @@ import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 import envConfig from "./config";
 import { BrowserRouter as Router } from "react-router-dom";
+import { I18nProvider } from "@lingui/react";
+import { setupI18n } from "@lingui/core";
+import catalogEn from "./locales/en/messages";
+import catalogDe from "./locales/de/messages";
+
+const i18n = setupI18n();
+i18n.load({ en: catalogEn, de: catalogDe });
+i18n.activate("en");
 
 ReactDOM.render(
   <React.StrictMode>
-    <Router>
-      <App />
-    </Router>
+    <I18nProvider i18n={i18n}>
+      <Router>
+        <App i18n={i18n} />
+      </Router>
+    </I18nProvider>
   </React.StrictMode>,
   document.getElementById("root")
 );

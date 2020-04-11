@@ -1,26 +1,32 @@
 import React from "react";
+import { Trans, Plural } from "@lingui/macro";
 
 export const CouponBox = ({ coupons }) => {
   return (
     <div id="coupons">
       <h3 style={{ paddingLeft: "calc(2 * var(--universal-padding))" }}>
-        {coupons > 0 ? (
-          <div>
-            Sie können noch{" "}
+        <div>
+          <Trans>
+            <Plural
+              value={coupons}
+              zero="You can book"
+              other="You can still book"
+            />
             <b>
-              <u>{coupons} Termine</u>
-            </b>{" "}
-            vergeben.
-          </div>
-        ) : coupons === 0 ? (
+              <u>
+                <Plural
+                  value={coupons}
+                  zero="no appointment"
+                  one="{coupons} appointment"
+                  other="{coupons} appointments"
+                />
+              </u>
+            </b>
+            <Plural value={coupons} zero="anymore" other="" />
+          </Trans>
+        </div>
+        {coupons === 0 ? (
           <>
-            <div>
-              Sie können{" "}
-              <b>
-                <u>keine Termine</u>
-              </b>{" "}
-              mehr vergeben.
-            </div>
             <div
               dangerouslySetInnerHTML={{
                 __html: window.config.contactInfoCoupons,

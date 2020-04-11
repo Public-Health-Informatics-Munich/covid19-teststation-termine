@@ -1,0 +1,32 @@
+{
+  "From": {
+    "origin": [["src/Views/BookingHistoryView.js", 24]]
+  },
+  "To": {
+    "origin": [["src/Views/BookingHistoryView.js", 33]]
+  },
+  "Excel": {
+    "origin": [["src/Views/BookingHistoryView.js", 52]]
+  },
+  "Print": {
+    "origin": [["src/Views/BookingHistoryView.js", 56]]
+  },
+  "Date of Appointment": {
+    "origin": [["src/Views/BookingHistoryView.js", 67]]
+  },
+  "Booked at": {
+    "origin": [["src/Views/BookingHistoryView.js", 70]]
+  },
+  "Surname": {
+    "origin": [["src/Views/BookingHistoryView.js", 73]]
+  },
+  "Name": {
+    "origin": [["src/Views/BookingHistoryView.js", 76]]
+  },
+  "Mobile No.": {
+    "origin": [["src/Views/BookingHistoryView.js", 79]]
+  },
+  "Access-code": {
+    "origin": [["src/Views/BookingHistoryView.js", 82]]
+  }
+}

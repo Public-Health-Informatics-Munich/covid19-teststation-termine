@@ -1,13 +1,14 @@
 import React, { useEffect, useCallback, useRef, useState } from "react";
 import { trackPromise, usePromiseTracker } from "react-promise-tracker";
 import { Switch, Route, Link, Redirect, useLocation } from "react-router-dom";
+import { Trans, t } from "@lingui/macro";
 
 import { INFOBOX_STATES, ISOStringWithoutTimeZone } from "./utils";
 import * as Api from "./Api";
 import BookView from "./Views/BookView";
 import BookingHistoryView from "./Views/BookingHistoryView";
 
-function App() {
+function App({ i18n }) {
   const useFocus = () => {
     const htmlElRef = useRef(null);
     const setFocus = useCallback(() => {
@@ -156,8 +157,10 @@ function App() {
           state: INFOBOX_STATES.ERROR,
           msg:
             error.response.status === 410
-              ? "Leider ist der Termin inzwischen nicht mehr buchbar, bitte einen anderen Termin wählen."
-              : "Ein unbekannter Fehler ist aufgetreten, bitte Seite neu laden.",
+              ? i18n._(
+                  t`The appointment is no longer available, please select another free appointment.`
+                )
+              : i18n._(t`Un unknown error occurred, please reload the page.`),
         });
         setStartDateTime("");
         setClaimToken("");
@@ -185,8 +188,10 @@ function App() {
           state: INFOBOX_STATES.ERROR,
           msg:
             error.response.status === 410
-              ? "Leider ist der Termin inzwischen nicht mehr buchbar, bitte einen anderen Termin wählen."
-              : "Ein unbekannter Fehler ist aufgetreten, bitte Seite neu laden.",
+              ? i18n._(
+                  t`The appointment is no longer available, please select another free appointment.`
+                )
+              : i18n._(t`Un unknown error occurred, please reload the page.`),
         });
         setStartDateTime("");
         setClaimToken("");
@@ -229,13 +234,13 @@ function App() {
             {window.config.longInstanceName}
           </h3>
           <Link className="button" to={TAB.BOOK}>
-            Termine buchen
+            <Trans>Book appointments</Trans>
           </Link>
           <Link className="button" to={TAB.BOOKED}>
-            Meine Buchungen
+            <Trans>My Appointments</Trans>
           </Link>
           <div className="flexAlignRight">
-            <input type="button" value="Logout" onClick={logout} />
+            <input type="button" value={i18n._(t`Logout`)} onClick={logout} />
           </div>
         </div>
       </header>
@@ -245,6 +250,7 @@ function App() {
         </Route>
         <Route path={TAB.BOOK}>
           <BookView
+            i18n={i18n}
             focusOnList={focusOnList}
             freeSlotList={freeSlotList}
             coupons={coupons}
@@ -266,6 +272,7 @@ function App() {
         </Route>
         <Route path={TAB.BOOKED}>
           <BookingHistoryView
+            i18n={i18n}
             bookedList={bookedList}
             startDate={startDate}
             setStartDate={setStartDate}

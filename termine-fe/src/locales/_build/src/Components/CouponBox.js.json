@@ -1,0 +1,5 @@
+{
+  "{coupons, plural, zero {You can book} other {You can still book}}<0><1>{coupons, plural, zero {no appointment} one {{coupons} appointment} other {{coupons} appointments}}</1></0>{coupons, plural, zero {anymore} other {}}": {
+    "origin": [["src/Components/CouponBox.js", 9]]
+  }
+}

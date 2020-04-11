@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@lingui/react": "^2.9.1",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
@@ -25,6 +26,9 @@
     "lint-fix": "yarn run eslint --fix src",
     "format-check": "yarn run prettier --check src",
     "format": "yarn run prettier --write src",
+    "add-locale": "lingui add-locale",
+    "extract-i18n": "lingui extract",
+    "compile-i18n": "lingui compile",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
@@ -51,6 +55,10 @@
   },
   "proxy": "http://localhost:8000",
   "devDependencies": {
+    "@babel/core": "^7.9.0",
+    "@lingui/cli": "^2.9.1",
+    "@lingui/macro": "^2.9.1",
+    "babel-core": "^7.0.0-bridge.0",
     "eslint-config-prettier": "^6.10.1",
     "eslint-plugin-prettier": "^3.1.2",
     "prettier": "^2.0.4"
