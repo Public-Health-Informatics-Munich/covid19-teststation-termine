@@ -9,20 +9,21 @@ export const CouponBox = ({ coupons }) => {
           <Trans>
             <Plural
               value={coupons}
-              zero="You can book"
+              _0="You can book"
+              _1="You can still book"
               other="You can still book"
             />
             <b>
               <u>
                 <Plural
                   value={coupons}
-                  zero="no appointment"
-                  one="{coupons} appointment"
+                  _0="no appointment"
+                  _1="{coupons} appointment"
                   other="{coupons} appointments"
                 />
               </u>
             </b>
-            <Plural value={coupons} zero="anymore" other="" />
+            <Plural value={coupons} _0="anymore" _1="" other="" />
           </Trans>
         </div>
         {coupons === 0 ? (

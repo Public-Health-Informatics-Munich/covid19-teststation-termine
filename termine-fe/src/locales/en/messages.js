@@ -28,6 +28,8 @@
     "Book Appointment": "Book Appointment",
     "Book appointments": "Book appointments",
     "Booked at": "Booked at",
+    Booking: "Booking",
+    Cancel: "Cancel",
     "Choose an appointment": "Choose an appointment",
     "Currently <0><1>no Appointments</1></0> are free.":
       "Currently <0><1>no Appointments</1></0> are free.",
@@ -45,32 +47,35 @@
     Name: "Name",
     "Notify the patient of the Access-code:":
       "Notify the patient of the Access-code:",
+    Office: "Office",
     Print: "Print",
     Surname: "Surname",
     "The appointment is no longer available, please select another free appointment.":
       "The appointment is no longer available, please select another free appointment.",
     "The navigation in the table is possible with Tab and Enter keys.":
       "The navigation in the table is possible with Tab and Enter keys.",
+    "This input is required.": "This input is required.",
     Timeslot: "Timeslot",
     To: "To",
     "Un unknown error occurred, please reload the page.":
       "Un unknown error occurred, please reload the page.",
-    "{coupons, plural, zero {You can book} other {You can still book}}<0><1>{coupons, plural, zero {no appointment} one {{coupons} appointment} other {{coupons} appointments}}</1></0>{coupons, plural, zero {anymore} other {}}": function (
+    "{coupons, plural, =0 {You can book} =1 {You can still book} other {You can still book}}<0><1>{coupons, plural, =0 {no appointment} =1 {{coupons} appointment} other {{coupons} appointments}}</1></0>{coupons, plural, =0 {anymore} =1 {} other {}}": function (
       a
     ) {
       return [
         a("coupons", "plural", {
-          zero: "You can book",
+          0: "You can book",
+          1: "You can still book",
           other: "You can still book",
         }),
         " <0><1>",
         a("coupons", "plural", {
-          zero: "no appointment",
-          one: [a("coupons"), " appointment"],
+          0: "no appointment",
+          1: [a("coupons"), " appointment"],
           other: [a("coupons"), " appointments"],
         }),
         "</1></0> ",
-        a("coupons", "plural", { zero: "anymore", other: "" }),
+        a("coupons", "plural", { 0: "anymore", 1: "", other: "" }),
       ];
     },
   },

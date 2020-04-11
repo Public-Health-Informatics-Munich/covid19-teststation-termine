@@ -1,26 +1,26 @@
 {
   "This input is required.": {
-    "origin": [["src/Components/Booking.js", 7]]
+    "origin": [["src/Components/Booking.js", 8]]
   },
   "Booking": {
-    "origin": [["src/Components/Booking.js", 50]]
+    "origin": [["src/Components/Booking.js", 53]]
   },
   "Name": {
-    "origin": [["src/Components/Booking.js", 52]]
+    "origin": [["src/Components/Booking.js", 56]]
   },
   "Surname": {
-    "origin": [["src/Components/Booking.js", 64]]
+    "origin": [["src/Components/Booking.js", 68]]
   },
   "Mobile No.": {
-    "origin": [["src/Components/Booking.js", 76]]
+    "origin": [["src/Components/Booking.js", 80]]
   },
   "Office": {
-    "origin": [["src/Components/Booking.js", 88]]
+    "origin": [["src/Components/Booking.js", 92]]
   },
   "Book Appointment": {
-    "origin": [["src/Components/Booking.js", 103]]
+    "origin": [["src/Components/Booking.js", 107]]
   },
   "Cancel": {
-    "origin": [["src/Components/Booking.js", 111]]
+    "origin": [["src/Components/Booking.js", 115]]
   }
 }
