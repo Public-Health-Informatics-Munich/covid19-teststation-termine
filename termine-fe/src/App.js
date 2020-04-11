@@ -220,7 +220,7 @@ function App() {
   };
 
   return (
-    <div className="container">
+    <div className="container hideMeOnPrint">
       <header style={{ minHeight: "54px", maxHeight: "6vh" }}>
         <div className="displayFlex">
           <h3 style={{ paddingLeft: "var(--universal-padding)" }}>
