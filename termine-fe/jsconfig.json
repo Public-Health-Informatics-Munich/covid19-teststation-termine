@@ -9,5 +9,5 @@
         "jsx": "react",
         "lib": [ "dom", "esnext" ],
         "moduleResolution": "node"
-    },
+    }
 }
