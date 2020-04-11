@@ -245,34 +245,36 @@ function App() {
           </div>
         </div>
       </header>
-      {currentTab === TAB.BOOK &&
-        BookView(
-          focusOnList,
-          freeSlotList,
-          coupons,
-          claimAppointment,
-          setSelectedAppointment,
-          selectedAppointment,
-          showSpinner,
-          refreshList,
-          infoboxState,
-          bookedAppointment,
-          onBook,
-          onCancelBooking,
-          claimToken,
-          startDateTime,
-          formState,
-          setFormState,
-          inputRef
-        )}
-      {currentTab === TAB.BOOKED &&
-        BookingHistoryView(
-          bookedList,
-          startDate,
-          setStartDate,
-          endDate,
-          setEndDate
-        )}
+      {currentTab === TAB.BOOK && (
+        <BookView
+          focusOnList={focusOnList}
+          freeSlotList={freeSlotList}
+          coupons={coupons}
+          claimAppointment={claimAppointment}
+          setSelectedAppointment={setSelectedAppointment}
+          selectedAppointment={selectedAppointment}
+          showSpinner={showSpinner}
+          refreshList={refreshList}
+          infoboxState={infoboxState}
+          bookedAppointment={bookedAppointment}
+          onBook={onBook}
+          onCancelBooking={onCancelBooking}
+          claimToken={claimToken}
+          startDateTime={startDateTime}
+          formState={formState}
+          setFormState={setFormState}
+          inputRef={inputRef}
+        />
+      )}
+      {currentTab === TAB.BOOKED && (
+        <BookingHistoryView
+          bookedList={bookedList}
+          startDate={startDate}
+          setStartDate={setStartDate}
+          endDate={endDate}
+          setEndDate={setEndDate}
+        />
+      )}
     </div>
   );
 }
