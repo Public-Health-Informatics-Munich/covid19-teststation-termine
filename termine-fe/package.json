@@ -9,6 +9,7 @@
     "@testing-library/user-event": "^7.1.2",
     "axios": "^0.19.2",
     "date-fns": "^2.11.0",
+    "detect-browser-language": "^0.0.2",
     "mini.css": "^3.0.1",
     "react": "^16.13.1",
     "react-calendar": "^3.0.1",

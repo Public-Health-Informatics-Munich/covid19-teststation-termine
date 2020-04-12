@@ -6,14 +6,18 @@ import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 import envConfig from "./config";
 import { BrowserRouter as Router } from "react-router-dom";
+import detectBrowserLanguage from "detect-browser-language";
 import { I18nProvider } from "@lingui/react";
 import { setupI18n } from "@lingui/core";
 import catalogEn from "./locales/en/messages";
 import catalogDe from "./locales/de/messages";
 
 const i18n = setupI18n();
-i18n.load({ en: catalogEn, de: catalogDe });
-i18n.activate("en");
+const supportedLanguages = { en: catalogEn, de: catalogDe };
+i18n.load(supportedLanguages);
+const browserLanguage = detectBrowserLanguage().substring(0, 2);
+const language = browserLanguage in supportedLanguages ? browserLanguage : "en";
+i18n.activate(language);
 
 ReactDOM.render(
   <React.StrictMode>
@@ -31,5 +35,4 @@ ReactDOM.render(
 // Learn more about service workers: https://bit.ly/CRA-PWA
 serviceWorker.unregister();
 
-// On localhost use credentials from localstorage
 envConfig.setup();
