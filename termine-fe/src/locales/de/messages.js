@@ -49,7 +49,7 @@
     To: "Bis",
     "Un unknown error occurred, please reload the page.":
       "Ein unbekannter Fehler ist aufgetreten, bitte Seite neu laden.",
-    "{coupons, plural, =0 {You can book} =1 {You can still book} other {You can still book}}<0><1>{coupons, plural, =0 {no appointment} =1 {{coupons} appointment} other {{coupons} appointments}}</1></0>{coupons, plural, =0 {anymore} =1 {} other {}}": function (
+    "{coupons, plural, =0 {You can book} =1 {You can still book} other {You can still book}}<0><1>{coupons, plural, =0 {no appointment} =1 {one appointment} other {# appointments}}</1></0>{coupons, plural, =0 {anymore} =1 {} other {}}": function (
       a
     ) {
       return [
@@ -62,7 +62,7 @@
         a("coupons", "plural", {
           0: "keinen Termin",
           1: "einen Termin",
-          other: [a("coupons"), " Termine"],
+          other: ["#", " Termine"],
         }),
         "</1></0> ",
         a("coupons", "plural", {

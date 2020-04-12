@@ -18,8 +18,8 @@ export const CouponBox = ({ coupons }) => {
                 <Plural
                   value={coupons}
                   _0="no appointment"
-                  _1="{coupons} appointment"
-                  other="{coupons} appointments"
+                  _1="one appointment"
+                  other="# appointments"
                 />
               </u>
             </b>
