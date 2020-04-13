@@ -1,7 +1,7 @@
 import csv
 import io
 from datetime import datetime
-from typing import List, Dict
+from typing import List, Dict, Tuple
 
 import hug
 
@@ -13,12 +13,17 @@ def parse_csv(csv_string: str) -> List[Dict]:
     return list(csv.DictReader(io.StringIO(csv_string), delimiter='\t'))
 
 
+
+
 def test_get_coupon_state(testing_db):
-    response_1 = hug.test.cli('get_coupon_state', module='main', collect_output=True)
-    out_1 = parse_csv(response_1)
-    assert len(out_1) == 2
-    admin_1 = next(a for a in out_1 if a['name'] == ADMIN)
-    user_1 = next(a for a in out_1 if a['name'] == USER)
+    def get_admin_and_user_data() -> Tuple[Dict, Dict]:
+        response = hug.test.cli('get_coupon_state', module='main', collect_output=True)
+        out = parse_csv(response)
+        a: Dict = next(a for a in out if a['name'] == ADMIN)
+        u: Dict = next(a for a in out if a['name'] == USER)
+        assert len(out) == 2
+        return a, u
+    admin_1, user_1 = get_admin_and_user_data()
     assert int(admin_1['num_bookings']) == 0
     assert int(user_1['num_bookings']) == 0
     assert int(admin_1['coupons']) == 10
@@ -28,11 +33,7 @@ def test_get_coupon_state(testing_db):
     u.coupons += 11
     u.save()
 
-    response_2 = hug.test.cli('get_coupon_state', module='main', collect_output=True)
-    out_2 = parse_csv(response_2)
-    assert len(out_2) == 2
-    admin_2 = next(a for a in out_2 if a['name'] == ADMIN)
-    user_2 = next(a for a in out_2 if a['name'] == USER)
+    admin_2, user_2 = get_admin_and_user_data()
     assert int(admin_2['num_bookings']) == 0
     assert int(user_2['num_bookings']) == 0
     assert int(admin_2['coupons']) == 10
@@ -58,11 +59,7 @@ def test_get_coupon_state(testing_db):
         ),
     )
 
-    response_3 = hug.test.cli('get_coupon_state', module='main', collect_output=True)
-    out_3 = parse_csv(response_3)
-    assert len(out_3) == 2
-    admin_3 = next(a for a in out_3 if a['name'] == ADMIN)
-    user_3 = next(a for a in out_3 if a['name'] == USER)
+    admin_3, user_3 = get_admin_and_user_data()
     assert int(admin_3['num_bookings']) == 0
     assert int(user_3['num_bookings']) == 1
     assert int(admin_3['coupons']) == 10
