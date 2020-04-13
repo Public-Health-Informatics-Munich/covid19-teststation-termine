@@ -1,5 +1,6 @@
 import { formatDate, formatTime, INFOBOX_STATES } from "../utils";
 import React from "react";
+import { Trans } from "@lingui/macro";
 
 export const InfoBox = ({
   infoboxState,
@@ -13,7 +14,9 @@ export const InfoBox = ({
       {infoboxState === INFOBOX_STATES.ERROR && (
         <div className="card error fluid">
           <div className="section">
-            <h3 className="doc">Es ist ein Fehler aufgetreten</h3>
+            <h3 className="doc">
+              <Trans>An error occurred</Trans>
+            </h3>
             <p className="doc">{errorMessage}</p>
           </div>
         </div>
@@ -22,15 +25,18 @@ export const InfoBox = ({
         <div className="card success fluid">
           <div className="section">
             <h3 className="doc">
-              Termin für den {formatDate(bookedAppointment.startDateTime)},{" "}
-              {formatTime(
-                bookedAppointment.startDateTime,
-                bookedAppointment.lengthMin
-              )}{" "}
-              wurde gebucht
+              <Trans>
+                Appointment for the{" "}
+                {formatDate(bookedAppointment.startDateTime)},{" "}
+                {formatTime(
+                  bookedAppointment.startDateTime,
+                  bookedAppointment.lengthMin
+                )}{" "}
+                has been booked
+              </Trans>
             </h3>
             <p className="doc">
-              Teilen Sie dem Patienten jetzt den Berechtigungscode mit:
+              <Trans>Notify the patient of their access code:</Trans>
             </p>
             <h3>
               <code>{secret}</code>
@@ -42,24 +48,31 @@ export const InfoBox = ({
         <div className="card fluid">
           <div className="section">
             <h3 className="doc">
-              Tragen Sie die Daten für den{" "}
-              {formatDate(selectedAppointment.startDateTime)},{" "}
-              {formatTime(
-                selectedAppointment.startDateTime,
-                selectedAppointment.lengthMin
-              )}{" "}
-              ein
+              <Trans>
+                Enter the information for the{" "}
+                {formatDate(selectedAppointment.startDateTime)},{" "}
+                {formatTime(
+                  selectedAppointment.startDateTime,
+                  selectedAppointment.lengthMin
+                )}
+              </Trans>
             </h3>
-            <p className="doc">Alle Felder sind Pflichtfelder.</p>
+            <p className="doc">
+              <Trans>All fields are required.</Trans>
+            </p>
           </div>
         </div>
       )}
       {infoboxState === INFOBOX_STATES.INITIAL && (
         <div className="card fluid">
           <div className="section">
-            <h3 className="doc">Wählen Sie einen Termin aus</h3>
+            <h3 className="doc">
+              <Trans>Choose an appointment</Trans>
+            </h3>
             <p className="doc">
-              In der Tabelle kann mit Tab und Enter navigiert werden.
+              <Trans>
+                The navigation in the table is possible with Tab and Enter keys.
+              </Trans>
             </p>
           </div>
         </div>

@@ -1,0 +1,23 @@
+{
+  "An error occurred": {
+    "origin": [["src/Components/InfoBox.js", 18]]
+  },
+  "Appointment for the {0}, {1} has been booked": {
+    "origin": [["src/Components/InfoBox.js", 28]]
+  },
+  "Notify the patient of their access code:": {
+    "origin": [["src/Components/InfoBox.js", 39]]
+  },
+  "Enter the information for the {0}, {1}": {
+    "origin": [["src/Components/InfoBox.js", 51]]
+  },
+  "All fields are required.": {
+    "origin": [["src/Components/InfoBox.js", 61]]
+  },
+  "Choose an appointment": {
+    "origin": [["src/Components/InfoBox.js", 70]]
+  },
+  "The navigation in the table is possible with Tab and Enter keys.": {
+    "origin": [["src/Components/InfoBox.js", 73]]
+  }
+}

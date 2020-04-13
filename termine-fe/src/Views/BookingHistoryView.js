@@ -5,10 +5,12 @@ import {
 } from "../utils";
 import React from "react";
 import { Calendar } from "react-calendar";
+import { Trans, t } from "@lingui/macro";
 import config from "../config";
 import "react-calendar/dist/Calendar.css";
 
 export default function BookingHistoryView({
+  i18n,
   bookedList,
   startDate,
   setStartDate,
@@ -18,14 +20,18 @@ export default function BookingHistoryView({
   return (
     <div className="col">
       <div className="row">
-        <label htmlFor="start">Von</label>
+        <label htmlFor="start">
+          <Trans>From</Trans>
+        </label>
         <Calendar
           id="start"
           onChange={(date) => setStartDate(date)}
           value={startDate}
         />
 
-        <label htmlFor="end">Bis</label>
+        <label htmlFor="end">
+          <Trans>To</Trans>
+        </label>
         <Calendar
           id="end"
           onChange={(date) => setEndDate(date)}
@@ -43,11 +49,11 @@ export default function BookingHistoryView({
           target="_blank"
           rel="noopener noreferrer"
         >
-          Excel
+          <Trans>Excel</Trans>
         </a>
         <input
           type="button"
-          value="Drucken"
+          value={i18n._(t`Print`)}
           onClick={() => {
             window.print();
             return false;
@@ -57,12 +63,24 @@ export default function BookingHistoryView({
       <table className="dataTable printme" id="printme">
         <thead>
           <tr>
-            <th>Datum des Termins</th>
-            <th>Gebucht am</th>
-            <th>Name</th>
-            <th>Vorname</th>
-            <th>Handynummer</th>
-            <th>Berechtigungscode</th>
+            <th>
+              <Trans>Date of Appointment</Trans>
+            </th>
+            <th>
+              <Trans>Booked at</Trans>
+            </th>
+            <th>
+              <Trans>Surname</Trans>
+            </th>
+            <th>
+              <Trans>Given Name</Trans>
+            </th>
+            <th>
+              <Trans>Mobile No.</Trans>
+            </th>
+            <th>
+              <Trans>Access Code</Trans>
+            </th>
           </tr>
         </thead>
         <tbody>

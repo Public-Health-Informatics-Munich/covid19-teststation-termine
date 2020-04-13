@@ -1,12 +1,16 @@
 import React from "react";
 import { useForm } from "react-hook-form";
+import { Trans, t } from "@lingui/macro";
 import { INFOBOX_STATES } from "../utils";
 
 const renderInputRequired = () => (
-  <span className="hintLabel">Dies ist ein Pflichtfeld</span>
+  <span className="hintLabel">
+    <Trans>This input is required.</Trans>
+  </span>
 );
 
 export default function Booking({
+  i18n,
   onBook,
   onCancel,
   startDateTime,
@@ -45,9 +49,11 @@ export default function Booking({
       onFocus={() => onFocusHandler()}
     >
       <fieldset className="input-group vertical">
-        <legend>Terminbuchung</legend>
+        <legend>
+          <Trans>Booking</Trans>
+        </legend>
         <label htmlFor="firstName" className="displayFlex">
-          Vorname {errors.firstName && renderInputRequired()}
+          <Trans>Given Name</Trans> {errors.firstName && renderInputRequired()}
         </label>
         <input
           id="firstName"
@@ -59,7 +65,7 @@ export default function Booking({
           ref={register({ required: true })}
         />
         <label htmlFor="name" className="displayFlex">
-          Name {errors.name && renderInputRequired()}
+          <Trans>Surname</Trans> {errors.name && renderInputRequired()}
         </label>
         <input
           id="name"
@@ -71,7 +77,7 @@ export default function Booking({
           ref={register({ required: true })}
         />
         <label htmlFor="phone" className="displayFlex">
-          Handy-Nummer {errors.phone && renderInputRequired()}
+          <Trans>Mobile No.</Trans> {errors.phone && renderInputRequired()}
         </label>
         <input
           id="phone"
@@ -83,7 +89,7 @@ export default function Booking({
           ref={register({ required: true })}
         />
         <label htmlFor="office" className="displayFlex">
-          Behörde {errors.office && renderInputRequired()}
+          <Trans>Office</Trans> {errors.office && renderInputRequired()}
         </label>
         <input
           id="office"
@@ -98,7 +104,7 @@ export default function Booking({
           type="submit"
           className="primary"
           id="submit"
-          value="Termin buchen"
+          value={i18n._(t`Book Appointment`)}
           disabled={disable}
           style={{ fontSize: "1.2em" }}
         />
@@ -106,7 +112,7 @@ export default function Booking({
           type="button"
           className="secondary"
           id="cancel"
-          value="Abbrechen"
+          value={i18n._(t`Cancel`)}
           disabled={disable}
           style={{ fontSize: "1.2em" }}
           onClick={() => {

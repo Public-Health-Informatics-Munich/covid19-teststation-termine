@@ -37,6 +37,29 @@ Instead, it will copy all the configuration files and the transitive dependencie
 
 You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
 
+### `yarn lint`
+    "lint": "yarn run eslint --max-warnings 0 src",
+
+### `yarn lint-fix`
+    "lint-fix": "yarn run eslint --fix src",
+    
+### `yarn format-check`
+    "format-check": "yarn run prettier --check src",
+    
+### `yarn format`
+    "format": "yarn run prettier --write src",
+
+### Localisation scripts
+Refer to [Lingui documentation](https://lingui.js.org/index.html) for further information
+#### `yarn add-locale`
+    "add-locale": "lingui add-locale",
+    
+#### `yarn extract-i18n`
+    "extract-i18n": "lingui extract",
+    
+#### `yarn compile-i18n`
+    "compile-i18n": "lingui compile",
+
 ## Learn More
 
 You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
