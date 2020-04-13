@@ -8,10 +8,12 @@
     },
   },
   messages: {
-    "Access-code": "Berechtigungscode",
+    "Access Code": "Berechtigungscode",
     Action: "Aktion",
     "All fields are required.": "Alle Felder sind Pflichtfelder.",
     "An error occurred": "Es ist ein Fehler aufgetreten",
+    "An unknown error occurred, please reload the page.":
+      "Ein unbekannter Fehler ist aufgetreten, bitte Seite neu laden.",
     "Appointment for the {0}, {1} has been booked": function (a) {
       return ["Termin f\xFCr den ", a("0"), ", ", a("1"), " wurde gebucht"];
     },
@@ -31,11 +33,11 @@
     Excel: "Excel",
     "Free appointments": "Freie Termine",
     From: "Von",
+    "Given Name": "Vorname",
     Logout: "Logout",
     "Mobile No.": "Handynummer",
-    "My Appointments": "Meine Buchungen",
-    Name: "Vorname",
-    "Notify the patient of the Access-code:":
+    "My appointments": "Meine Buchungen",
+    "Notify the patient of their access code:":
       "Teilen Sie dem Patienten jetzt den Berechtigungscode mit:",
     Office: "Beh\xF6rde",
     Print: "Drucken",
@@ -47,8 +49,6 @@
     "This input is required.": "Dies ist ein Pflichtfeld.",
     Timeslot: "Terminslot",
     To: "Bis",
-    "Un unknown error occurred, please reload the page.":
-      "Ein unbekannter Fehler ist aufgetreten, bitte Seite neu laden.",
     "{coupons, plural, =0 {You can book} =1 {You can still book} other {You can still book}}<0><1>{coupons, plural, =0 {no appointment} =1 {one appointment} other {# appointments}}</1></0>{coupons, plural, =0 {anymore} =1 {} other {}}": function (
       a
     ) {

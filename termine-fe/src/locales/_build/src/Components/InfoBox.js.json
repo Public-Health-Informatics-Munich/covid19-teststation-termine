@@ -5,7 +5,7 @@
   "Appointment for the {0}, {1} has been booked": {
     "origin": [["src/Components/InfoBox.js", 28]]
   },
-  "Notify the patient of the Access-code:": {
+  "Notify the patient of their access code:": {
     "origin": [["src/Components/InfoBox.js", 39]]
   },
   "Enter the information for the {0}, {1}": {

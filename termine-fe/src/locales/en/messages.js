@@ -18,10 +18,12 @@
     },
   },
   messages: {
-    "Access-code": "Access-code",
+    "Access Code": "Access Code",
     Action: "Action",
     "All fields are required.": "All fields are required.",
     "An error occurred": "An error occurred",
+    "An unknown error occurred, please reload the page.":
+      "An unknown error occurred, please reload the page.",
     "Appointment for the {0}, {1} has been booked": function (a) {
       return ["Appointment for the ", a("0"), ", ", a("1"), " has been booked"];
     },
@@ -41,12 +43,12 @@
     Excel: "Excel",
     "Free appointments": "Free appointments",
     From: "From",
+    "Given Name": "Given Name",
     Logout: "Logout",
     "Mobile No.": "Mobile No.",
-    "My Appointments": "My Appointments",
-    Name: "Name",
-    "Notify the patient of the Access-code:":
-      "Notify the patient of the Access-code:",
+    "My appointments": "My appointments",
+    "Notify the patient of their access code:":
+      "Notify the patient of their access code:",
     Office: "Office",
     Print: "Print",
     Surname: "Surname",
@@ -57,8 +59,6 @@
     "This input is required.": "This input is required.",
     Timeslot: "Timeslot",
     To: "To",
-    "Un unknown error occurred, please reload the page.":
-      "Un unknown error occurred, please reload the page.",
     "{coupons, plural, =0 {You can book} =1 {You can still book} other {You can still book}}<0><1>{coupons, plural, =0 {no appointment} =1 {one appointment} other {# appointments}}</1></0>{coupons, plural, =0 {anymore} =1 {} other {}}": function (
       a
     ) {

@@ -5,7 +5,7 @@
       ["src/App.js", 192]
     ]
   },
-  "Un unknown error occurred, please reload the page.": {
+  "An unknown error occurred, please reload the page.": {
     "origin": [
       ["src/App.js", 163],
       ["src/App.js", 194]
@@ -14,7 +14,7 @@
   "Book appointments": {
     "origin": [["src/App.js", 237]]
   },
-  "My Appointments": {
+  "My appointments": {
     "origin": [["src/App.js", 240]]
   },
   "Logout": {

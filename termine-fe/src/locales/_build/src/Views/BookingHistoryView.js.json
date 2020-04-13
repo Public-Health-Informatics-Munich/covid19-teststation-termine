@@ -20,13 +20,13 @@
   "Surname": {
     "origin": [["src/Views/BookingHistoryView.js", 73]]
   },
-  "Name": {
+  "Given Name": {
     "origin": [["src/Views/BookingHistoryView.js", 76]]
   },
   "Mobile No.": {
     "origin": [["src/Views/BookingHistoryView.js", 79]]
   },
-  "Access-code": {
+  "Access Code": {
     "origin": [["src/Views/BookingHistoryView.js", 82]]
   }
 }

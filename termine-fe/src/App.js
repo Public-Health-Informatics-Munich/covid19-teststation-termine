@@ -237,7 +237,7 @@ function App({ i18n }) {
             <Trans>Book appointments</Trans>
           </Link>
           <Link className="button" to={TAB.BOOKED}>
-            <Trans>My Appointments</Trans>
+            <Trans>My appointments</Trans>
           </Link>
           <div className="flexAlignRight">
             <input type="button" value={i18n._(t`Logout`)} onClick={logout} />
