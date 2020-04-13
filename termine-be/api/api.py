@@ -13,6 +13,11 @@ from db.model import TimeSlot, Appointment, Booking, SlotCode
 from secret_token.secret_token import get_random_string, get_secret_token
 
 
+@hug.format.content_type('text/comma-separated-values')
+def format_as_csv(data, request=None, response=None):
+    return data
+
+
 @hug.get("/next_free_slots", requires=authentication)
 def next_free_slots(db: PeeweeSession, user: hug.directives.user):
     """
@@ -25,7 +30,7 @@ WHERE a.booked IS false
 GROUP BY t.start_date_time
 ORDER BY t.start_date_time
     """
-    with db.transaction():
+    with db.atomic():
         # @formatter:off
         now = datetime.now(tz=config.Settings.tz).replace(tzinfo=None)
         slots = TimeSlot \
@@ -123,7 +128,7 @@ def book_appointment(db: PeeweeSession, body: hug.types.json, user: hug.directiv
                 appointment.claimed_at = None
                 appointment.save()
                 success = False
-                with db.transaction():
+                with db.atomic():
                     while not success:
                         secret = get_secret_token(6)
                         try:
@@ -168,11 +173,6 @@ def delete_claim_token(db: PeeweeSession, claim_token: hug.types.text):
             pass
         except ValueError as e:
             pass
-
-
-@hug.format.content_type('text/comma-separated-values')
-def format_as_csv(data, request=None, response=None):
-    return data
 
 
 @hug.get("/list_for_day.csv", output=format_as_csv, requires=authentication)

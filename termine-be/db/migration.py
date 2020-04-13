@@ -25,7 +25,7 @@ def init_database(db: PeeweeSession):
 
 @hug.local()
 def migrate_db(db: PeeweeSession):
-    with db.transaction() as txs:
+    with db.atomic() as txs:
         migrator = PostgresqlMigrator(db)
         try:
             migration = Migration.get()
@@ -43,7 +43,7 @@ def migrate_db(db: PeeweeSession):
 
 
 def level_1(db, migration, migrator):
-    with db.transaction():
+    with db.atomic():
         booked_at_field = DateTimeField(null=True,
                                         default=lambda: datetime.now(tz=config.Settings.tz).replace(tzinfo=None))
         migrate(
@@ -54,7 +54,7 @@ def level_1(db, migration, migrator):
 
 
 def level_2(db, migration, migrator):
-    with db.transaction():
+    with db.atomic():
         coupons_field = IntegerField(default=10)
         migrate(
             migrator.add_column('user', 'coupons', coupons_field),
