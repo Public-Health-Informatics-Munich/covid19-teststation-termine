@@ -17,7 +17,6 @@ def test_test():
     assert True
 
 
-
 def test_db_connection():
     # make sure the tests connect to the testing db
     hug.test.cli("init_db", for_real=True, module='main')

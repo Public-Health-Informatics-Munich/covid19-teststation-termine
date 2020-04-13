@@ -27,18 +27,19 @@ class PeeweeContext:
 
     @classmethod
     def _static_db(cls, testing):
-        cls._cls_db = cls._cls_db or cls.get_connection(testing)
-        return cls._cls_db
+        if testing:
+            cls._cls_db = cls._cls_db or cls.get_connection(testing)
+            return cls._cls_db
+        else:
+            return cls.get_connection(False)
 
     def __init__(self):
-        log.debug("init PeeweePontext, %s", self)
-        self.testing = PeeweeContext._testing
-        self._db = self._static_db(self.testing)
-        db_proxy.initialize(self._db)
+        log.debug("init PeeweeContext, %s", self)
+        db_proxy.initialize(self._static_db(PeeweeContext._testing))
 
     @property
     def db(self) -> Database:
-        return self._static_db(self.testing)
+        return self._static_db(PeeweeContext._testing)
 
     def cleanup(self, exception=None):
         log.debug("cleaning up PeeweeContext")
