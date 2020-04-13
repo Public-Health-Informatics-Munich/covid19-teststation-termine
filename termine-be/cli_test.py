@@ -29,9 +29,7 @@ def test_get_coupon_state(testing_db):
     assert int(admin_1['coupons']) == 10
     assert int(user_1['coupons']) == 10
 
-    u = User.get(User.user_name == 'user')
-    u.coupons += 11
-    u.save()
+    User.update({User.coupons: User.coupons + 11}).where(User.user_name == USER).execute()
 
     admin_2, user_2 = get_admin_and_user_data()
     assert int(admin_2['num_bookings']) == 0
@@ -39,7 +37,7 @@ def test_get_coupon_state(testing_db):
     assert int(admin_2['coupons']) == 10
     assert int(user_2['coupons']) == 21
 
-    b = Booking.create(
+    Booking.create(
         surname="Mustermann",
         first_name="Marianne",
         phone="0123456789",
@@ -58,9 +56,10 @@ def test_get_coupon_state(testing_db):
             )
         ),
     )
+    User.update({User.coupons: User.coupons - 1}).where(User.user_name == USER).execute()
 
     admin_3, user_3 = get_admin_and_user_data()
     assert int(admin_3['num_bookings']) == 0
     assert int(user_3['num_bookings']) == 1
     assert int(admin_3['coupons']) == 10
-    assert int(user_3['coupons']) == 21
+    assert int(user_3['coupons']) == 20
