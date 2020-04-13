@@ -1,5 +1,5 @@
 import hug
-from peewee import fn, DoesNotExist
+from peewee import DoesNotExist
 
 from access_control.access_control import admin_authentication, UserRoles
 from db.directives import PeeweeSession

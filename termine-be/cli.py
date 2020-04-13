@@ -7,8 +7,8 @@ import hug
 from peewee import fn
 
 from access_control.access_control import UserRoles
-from db.directives import PeeweeContext, PeeweeSession, init_database
-from db.migration import migrate_db
+from db import directives
+from db.migration import migrate_db, init_database
 from db.model import TimeSlot, Appointment, User, Booking
 from secret_token.secret_token import get_random_string, hash_pw
 
@@ -17,7 +17,7 @@ log = logging.getLogger('cli')
 
 @hug.cli()
 def create_appointments(
-        db: PeeweeSession,
+        db: directives.PeeweeSession,
         day: hug.types.number,
         month: hug.types.number,
         year: hug.types.number = 2020,
@@ -40,6 +40,7 @@ def create_appointments(
 
 @hug.cli()
 def delete_timeslots(
+        db: directives.PeeweeSession,
         year: hug.types.number,
         month: hug.types.number,
         day: hug.types.number,
@@ -109,12 +110,13 @@ def init_db(for_real: hug.types.smart_boolean = False):
 
 
 @hug.cli()
-def add_user(db: PeeweeSession, username: hug.types.text, role: hug.types.one_of(UserRoles.user_roles()) = UserRoles.USER,
+def add_user(db: directives.PeeweeSession, username: hug.types.text, password: hug.types.text = None,
+             role: hug.types.one_of(UserRoles.user_roles()) = UserRoles.USER,
              coupons: hug.types.number = 10):
     with db.atomic():
         name = username.lower()
         salt = get_random_string(2)
-        secret_password = get_random_string(12)
+        secret_password = password or get_random_string(12)
         hashed_password = hash_pw(name, salt, secret_password)
         user = User.create(user_name=name, role=role, salt=salt, password=hashed_password, coupons=coupons)
         user.save()
@@ -149,7 +151,7 @@ def get_coupon_state():
 
 
 @hug.cli()
-def set_coupon_count(db: PeeweeSession, user_name: hug.types.text, value: hug.types.number):
+def set_coupon_count(db: directives.PeeweeSession, user_name: hug.types.text, value: hug.types.number):
     with db.atomic():
         user = User.get(User.user_name == user_name)
         user.coupons = value
@@ -157,13 +159,8 @@ def set_coupon_count(db: PeeweeSession, user_name: hug.types.text, value: hug.ty
 
 
 @hug.cli()
-def inc_coupon_count(db: PeeweeSession, user_name: hug.types.text, increment: hug.types.number):
+def inc_coupon_count(db: directives.PeeweeSession, user_name: hug.types.text, increment: hug.types.number):
     with db.atomic():
         user = User.get(User.user_name == user_name)
         user.coupons += increment
         user.save()
-
-
-@hug.context_factory()
-def create_context(*args, **kwargs):
-    return PeeweeContext()

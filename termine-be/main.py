@@ -4,28 +4,26 @@ import sys
 
 import hug
 
-import cli
 from access_control.access_control import authentication, admin_authentication
-from admin_api import admin_api
-from api import api
 from config.config import FrontendSettings
 from db.directives import PeeweeContext
 
 FORMAT = '%(asctime)s - %(levelname)s\t%(name)s: %(message)s'
-logging.basicConfig(format=FORMAT, stream=sys.stdout, level=logging.INFO)
-log = logging.getLogger('termine')
-
-hug_api = hug.API(__name__)
+logging.basicConfig(format=FORMAT, stream=sys.stdout, level=logging.DEBUG)
+log = logging.getLogger('appointments')
+hug_api = hug.API('appointments')
 hug_api.http.add_middleware(hug.middleware.LogMiddleware())
 
 
 @hug.extend_api("/api", requires=authentication)
 def with_api():
+    from api import api
     return [api]
 
 
 @hug.extend_api("/admin_api", requires=admin_authentication)
 def with_admin_api():
+    from admin_api import admin_api
     return [admin_api]
 
 
@@ -66,17 +64,18 @@ def logout():
 
 @hug.get("/logout_success", requires=hug.authentication.basic(lambda e, f: True))
 def logout_success():
-    return 'Ok'  # todo could a redirect to / also work?
+    return 'OK'  # todo could a redirect to / also work?
 
 
-@hug.extend_api(sub_command="db")
-def with_cli():
-    return cli,
-
-
-@hug.context_factory()
+@hug.context_factory(apply_globally=True)
 def create_context(*args, **kwargs):
     return PeeweeContext()
+
+
+@hug.extend_api()
+def with_cli():
+    import cli
+    return cli,
 
 
 # to debug this code from intellij, create a run config for this function with interpreter arg "-f main.py"

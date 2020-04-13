@@ -7,10 +7,23 @@ from playhouse.migrate import PostgresqlMigrator, ProgrammingError, migrate
 
 from config import config
 from db.directives import PeeweeSession
-from db.model import Migration
+from db.model import Migration, db_proxy, tables
+
+import logging
+log = logging.getLogger('migration')
 
 
-@hug.local
+@hug.local()
+def init_database(db: PeeweeSession):
+    log.info("Initializing the Database")
+    with db.atomic():
+        db_proxy.create_tables(tables)
+        log.info("Tables created. Setting migration level.")
+        Migration.create(version=2)
+        log.info("Migration level set.")
+
+
+@hug.local()
 def migrate_db(db: PeeweeSession):
     with db.transaction() as txs:
         migrator = PostgresqlMigrator(db)
@@ -23,9 +36,8 @@ def migrate_db(db: PeeweeSession):
                 # do everything for level 1
                 level_2(db, migration, migrator)
 
-        except ProgrammingError as e:
-            print(e)
-            print('Error - Migrations table not found, please run init_db first!')
+        except ProgrammingError:
+            log.exception('Error - Migrations table not found, please run init_db first!')
             txs.rollback()
             sys.exit(1)
 

@@ -38,7 +38,7 @@ def verify_user(user_name, user_password, context: PeeweeContext):
             log.warning("user not found: %s", user_name)
             return False
         except DatabaseError:
-            log.warning("unknown error logging in: %s", user_name)
+            log.exception("unknown error logging in: %s", user_name)
             return False
 
 
