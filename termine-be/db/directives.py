@@ -49,6 +49,6 @@ class PeeweeContext:
 
 @hug.directive(apply_globally=True)
 class PeeweeSession:
-    def __new__(cls, *args, context: PeeweeContext, **kwargs):
+    def __new__(cls, context: PeeweeContext, *args, **kwargs):
         log.debug('Entering PeeweeSession')
         return context.db

@@ -9,7 +9,7 @@ from config.config import FrontendSettings
 from db.directives import PeeweeContext
 
 FORMAT = '%(asctime)s - %(levelname)s\t%(name)s: %(message)s'
-logging.basicConfig(format=FORMAT, stream=sys.stdout, level=logging.DEBUG)
+logging.basicConfig(format=FORMAT, stream=sys.stdout, level=logging.INFO)
 log = logging.getLogger('appointments')
 hug_api = hug.API('appointments')
 hug_api.http.add_middleware(hug.middleware.LogMiddleware())

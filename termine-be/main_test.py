@@ -1,15 +1,7 @@
-from base64 import b64encode
-
 import hug
 
 import main
-from db.directives import PeeweeContext
-
-PeeweeContext.set_testing()
-
-
-def get_basic_auth(user, pw):
-    return "Basic " + b64encode(f"{user}:{pw}".encode("utf-8")).decode('utf-8')
+from conftest import get_user_login, get_invalid_login
 
 
 def test_test():
@@ -17,12 +9,11 @@ def test_test():
     assert True
 
 
-def test_db_connection():
-    # make sure the tests connect to the testing db
-    hug.test.cli("init_db", for_real=True, module='main')
-    response = hug.test.get(main, "/config.js")
+def test_auth_no_verify(testing_db):
+    response = hug.test.get(main, "/config.js", headers=get_invalid_login())
     assert response.status == hug.HTTP_401
-    hug.test.cli("add_user", "test", password='test', module='main')
-    response = hug.test.get(main, "/config.js",
-                            headers={"Authorization": get_basic_auth("test", "test")})
+
+
+def test_auth_user_verify(testing_db):
+    response = hug.test.get(main, "/config.js", headers=get_user_login())
     assert response.status == hug.HTTP_200

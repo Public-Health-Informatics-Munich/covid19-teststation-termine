@@ -1,3 +1,5 @@
+import csv
+import io
 import logging
 import sys
 from datetime import datetime, timedelta
@@ -13,6 +15,14 @@ from db.model import TimeSlot, Appointment, User, Booking
 from secret_token.secret_token import get_random_string, hash_pw
 
 log = logging.getLogger('cli')
+
+@hug.default_output_format(apply_globally=False,cli=True,http=False)
+def cli_output(data):
+    result = io.StringIO()
+    writer = csv.DictWriter(result, fieldnames=data[0].keys(), delimiter='\t')
+    writer.writeheader()
+    writer.writerows(data)
+    return result.getvalue().encode('utf8')
 
 
 @hug.cli()
@@ -143,11 +153,16 @@ def get_coupon_state():
     JOIN booking b ON b.booked_by = u.user_name
     GROUP BY u.user_name, u.coupons
     """
-    print(f'Username\tTotal Bookings\tNumber of coupons')
+    ret = []
     for user in User.select():
         bookings = Booking.select().where(
             user.user_name == Booking.booked_by)
-        print(f'{user.user_name}\t{len(bookings)}\t{user.coupons}')
+        ret.append({
+            "name": user.user_name,
+            "num_bookings": len(bookings),
+            "coupons": user.coupons
+        })
+    return ret
 
 
 @hug.cli()
