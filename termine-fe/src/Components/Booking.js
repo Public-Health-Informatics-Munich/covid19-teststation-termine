@@ -53,7 +53,7 @@ export default function Booking({
           <Trans>Booking</Trans>
         </legend>
         <label htmlFor="firstName" className="displayFlex">
-          <Trans>Name</Trans> {errors.firstName && renderInputRequired()}
+          <Trans>Given Name</Trans> {errors.firstName && renderInputRequired()}
         </label>
         <input
           id="firstName"

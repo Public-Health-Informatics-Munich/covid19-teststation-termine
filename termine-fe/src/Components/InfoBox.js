@@ -36,7 +36,7 @@ export const InfoBox = ({
               </Trans>
             </h3>
             <p className="doc">
-              <Trans>Notify the patient of the Access-code:</Trans>
+              <Trans>Notify the patient of their access code:</Trans>
             </p>
             <h3>
               <code>{secret}</code>

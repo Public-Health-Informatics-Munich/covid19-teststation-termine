@@ -73,13 +73,13 @@ export default function BookingHistoryView({
               <Trans>Surname</Trans>
             </th>
             <th>
-              <Trans>Name</Trans>
+              <Trans>Given Name</Trans>
             </th>
             <th>
               <Trans>Mobile No.</Trans>
             </th>
             <th>
-              <Trans>Access-code</Trans>
+              <Trans>Access Code</Trans>
             </th>
           </tr>
         </thead>

@@ -160,7 +160,7 @@ function App({ i18n }) {
               ? i18n._(
                   t`The appointment is no longer available, please select another free appointment.`
                 )
-              : i18n._(t`Un unknown error occurred, please reload the page.`),
+              : i18n._(t`An unknown error occurred, please reload the page.`),
         });
         setStartDateTime("");
         setClaimToken("");
@@ -191,7 +191,7 @@ function App({ i18n }) {
               ? i18n._(
                   t`The appointment is no longer available, please select another free appointment.`
                 )
-              : i18n._(t`Un unknown error occurred, please reload the page.`),
+              : i18n._(t`An unknown error occurred, please reload the page.`),
         });
         setStartDateTime("");
         setClaimToken("");
