@@ -16,7 +16,8 @@ from secret_token.secret_token import get_random_string, hash_pw
 
 log = logging.getLogger('cli')
 
-@hug.default_output_format(apply_globally=False,cli=True,http=False)
+
+@hug.default_output_format(apply_globally=False, cli=True, http=False)
 def cli_output(data):
     result = io.StringIO()
     writer = csv.DictWriter(result, fieldnames=data[0].keys(), delimiter='\t')
@@ -95,21 +96,6 @@ def delete_timeslots(
 
 
 @hug.cli()
-def create_initial_appointments():
-    create_appointments(27, 3)
-    create_appointments(30, 3)
-    create_appointments(31, 3)
-    create_appointments(1, 4)
-    create_appointments(2, 4)
-    create_appointments(3, 4)
-    create_appointments(6, 4)
-    create_appointments(7, 4)
-    create_appointments(8, 4)
-    create_appointments(9, 4)
-    create_appointments(10, 4)
-
-
-@hug.cli()
 def init_db(for_real: hug.types.smart_boolean = False):
     if not for_real:
         print('this will create the database (potentially destroying data), run with --for_real, if you are sure '
@@ -119,10 +105,9 @@ def init_db(for_real: hug.types.smart_boolean = False):
         init_database()
 
 
-@hug.cli()
-def add_user(db: directives.PeeweeSession, username: hug.types.text, password: hug.types.text = None,
-             role: hug.types.one_of(UserRoles.user_roles()) = UserRoles.USER,
-             coupons: hug.types.number = 10):
+def _add_one_user(db: directives.PeeweeSession, username: hug.types.text, password: hug.types.text = None,
+                  role: hug.types.one_of(UserRoles.user_roles()) = UserRoles.USER,
+                  coupons: hug.types.number = 10):
     with db.atomic():
         name = username.lower()
         salt = get_random_string(2)
@@ -130,14 +115,19 @@ def add_user(db: directives.PeeweeSession, username: hug.types.text, password: h
         hashed_password = hash_pw(name, salt, secret_password)
         user = User.create(user_name=name, role=role, salt=salt, password=hashed_password, coupons=coupons)
         user.save()
-        print(f'{user.user_name}\t{secret_password}')
+        return {"name": user.user_name, "password": secret_password}
+
+@hug.cli()
+def add_user(db: directives.PeeweeSession, username: hug.types.text, password: hug.types.text = None,
+             role: hug.types.one_of(UserRoles.user_roles()) = UserRoles.USER,
+             coupons: hug.types.number = 10):
+    return [_add_one_user(db, username, password, role, coupons)]
 
 
 @hug.cli()
-def add_users(filename: hug.types.text, role: hug.types.one_of(['admin', 'doctor']) = 'doctor'):
+def add_users(db: directives.PeeweeSession, filename: hug.types.text, role: hug.types.one_of(UserRoles.user_roles()) = UserRoles.USER):
     with open(filename) as f:
-        for line in f:
-            add_user(line.strip(), role=role)
+        return [_add_one_user(db, line.strip(), role=role) for line in f]
 
 
 @hug.cli()
