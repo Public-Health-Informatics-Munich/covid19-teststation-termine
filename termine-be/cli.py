@@ -5,13 +5,14 @@ import sys
 from datetime import datetime, timedelta
 
 import hug
+from peewee import DatabaseError
 
 from peewee import fn
 
 from access_control.access_control import UserRoles
 from db import directives
 from db.migration import migrate_db, init_database
-from db.model import TimeSlot, Appointment, User, Booking
+from db.model import TimeSlot, Appointment, User, Booking, Migration
 from secret_token.secret_token import get_random_string, hash_pw
 
 log = logging.getLogger('cli')
@@ -95,16 +96,6 @@ def delete_timeslots(
             log.error(f"Some of these appointments are already booked, {'will' if for_real else 'would'} not delete!")
 
 
-@hug.cli()
-def init_db(for_real: hug.types.smart_boolean = False):
-    if not for_real:
-        print('this will create the database (potentially destroying data), run with --for_real, if you are sure '
-              '*and* have a backup')
-        sys.exit(1)
-    else:
-        init_database()
-
-
 def _add_one_user(db: directives.PeeweeSession, username: hug.types.text, password: hug.types.text = None,
                   role: hug.types.one_of(UserRoles.user_roles()) = UserRoles.USER,
                   coupons: hug.types.number = 10):
@@ -117,6 +108,7 @@ def _add_one_user(db: directives.PeeweeSession, username: hug.types.text, passwo
         user.save()
         return {"name": user.user_name, "password": secret_password}
 
+
 @hug.cli()
 def add_user(db: directives.PeeweeSession, username: hug.types.text, password: hug.types.text = None,
              role: hug.types.one_of(UserRoles.user_roles()) = UserRoles.USER,
@@ -125,14 +117,36 @@ def add_user(db: directives.PeeweeSession, username: hug.types.text, password: h
 
 
 @hug.cli()
-def add_users(db: directives.PeeweeSession, filename: hug.types.text, role: hug.types.one_of(UserRoles.user_roles()) = UserRoles.USER):
+def add_users(db: directives.PeeweeSession, filename: hug.types.text,
+              role: hug.types.one_of(UserRoles.user_roles()) = UserRoles.USER):
     with open(filename) as f:
         return [_add_one_user(db, line.strip(), role=role) for line in f]
 
 
 @hug.cli()
-def run_migrations():
-    migrate_db()
+def init_db(for_real: hug.types.smart_boolean = False):
+    if not for_real:
+        print('this will create the database (potentially destroying data), run with --for_real, if you are sure '
+              '*and* have a backup')
+        sys.exit(1)
+    else:
+        try:
+            version = Migration.get()
+            print(f'Migration level is already set to version {version} - implying the db has already been '
+                  f'initialized. Run command `run_migrations` instead.')
+            sys.exit(1)
+        except DatabaseError:
+            init_database()
+
+
+@hug.cli()
+def run_migrations(for_real: hug.types.smart_boolean = False):
+    if not for_real:
+        print('this will migrate the database (potentially destroying data), run with --for_real, if you are sure '
+              '*and* have a backup')
+        sys.exit(1)
+    else:
+        migrate_db()
 
 
 @hug.cli()
