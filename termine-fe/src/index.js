@@ -5,7 +5,7 @@ import "mini.css";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 import envConfig from "./config";
-import { BrowserRouter as Router } from "react-router-dom";
+import { HashRouter as Router } from "react-router-dom";
 import detectBrowserLanguage from "detect-browser-language";
 import { I18nProvider } from "@lingui/react";
 import { setupI18n } from "@lingui/core";
