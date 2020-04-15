@@ -190,16 +190,17 @@ def cancel_booking(db: directives.PeeweeSession, secret: hug.types.text, start_d
     with db.atomic():
         sdt = datetime.fromisoformat(start_date_time).replace(tzinfo=None)
         timeslot = TimeSlot.get(TimeSlot.start_date_time == sdt)
-        appointment = Appointment.get(Appointment.time_slot == timeslot)
-        booking = Booking.get((Booking.secret == secret) & \
-                              (Booking.appointment == appointment))
+        booking = Booking.select(Booking).join(Appointment).where(
+            (Booking.secret == secret) &
+            (Appointment.time_slot == timeslot)).get()
+
         if not for_real:
             print(f"This would delete the booking with id '{booking.id}' and secret '{booking.secret}'. Run with --for_real if you are sure.")
             sys.exit(1)
         else:
             print(f"Deleting the booking with id '{booking.id}' and secret '{booking.secret}'.")
+            booking.appointment.booked = False
+            booking.appointment.save()
             q = Booking.delete().where(Booking.id == booking.id)
             q.execute()
-            appointment.booked = False
-            appointment.save()
             print("Done.")
