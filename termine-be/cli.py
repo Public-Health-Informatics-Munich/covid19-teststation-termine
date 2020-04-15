@@ -186,9 +186,8 @@ def inc_coupon_count(db: directives.PeeweeSession, user_name: hug.types.text, in
 
 
 @hug.cli()
-def cancel_booking(secret: hug.types.text, start_date_time: hug.types.text, for_real: hug.types.smart_boolean = False):
-    _setup_db()
-    with db_proxy.transaction():
+def cancel_booking(db: directives.PeeweeSession, secret: hug.types.text, start_date_time: hug.types.text, for_real: hug.types.smart_boolean = False):
+    with db.atomic():
         sdt = datetime.fromisoformat(start_date_time).replace(tzinfo=None)
         timeslot = TimeSlot.get(TimeSlot.start_date_time == sdt)
         appointment = Appointment.get(Appointment.time_slot == timeslot)
