@@ -8,7 +8,7 @@ import hug
 
 from conftest import ADMIN, USER
 from db.model import User, TimeSlot, Appointment, Booking
-from peewee import DoesNotExist
+
 
 def parse_csv(csv_string: str) -> List[Dict]:
     return list(csv.DictReader(io.StringIO(csv_string), delimiter='\t'))
