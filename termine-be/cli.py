@@ -199,7 +199,7 @@ def cancel_booking(db: directives.PeeweeSession, secret: hug.types.text, start_d
         else:
             print(f"Deleting the booking with id '{booking.id}' and secret '{booking.secret}'.")
             q = Booking.delete().where(Booking.id == booking.id)
-            #q.execute()
+            q.execute()
             appointment.booked = False
             appointment.save()
             print("Done.")
