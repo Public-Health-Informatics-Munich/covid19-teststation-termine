@@ -4,27 +4,26 @@ import sys
 
 import hug
 
-import cli
 from access_control.access_control import authentication, admin_authentication
-from admin_api import admin_api
-from api import api
 from config.config import FrontendSettings
+from db.directives import PeeweeContext
 
 FORMAT = '%(asctime)s - %(levelname)s\t%(name)s: %(message)s'
 logging.basicConfig(format=FORMAT, stream=sys.stdout, level=logging.INFO)
-log = logging.getLogger('termine')
-
-hug_api = hug.API(__name__)
+log = logging.getLogger('appointments')
+hug_api = hug.API('appointments')
 hug_api.http.add_middleware(hug.middleware.LogMiddleware())
 
 
 @hug.extend_api("/api", requires=authentication)
 def with_api():
+    from api import api
     return [api]
 
 
 @hug.extend_api("/admin_api", requires=admin_authentication)
 def with_admin_api():
+    from admin_api import admin_api
     return [admin_api]
 
 
@@ -49,7 +48,7 @@ def instance_config():
 
 
 @hug.get("/admin/config.js", requires=admin_authentication, output=format_as_js)
-def instance_config():
+def instance_admin_config():
     return 'window.config = ' + FrontendSettings.json_by_env() + ';'
 
 
@@ -58,20 +57,24 @@ def health_check():
     return "healthy"
 
 
-@hug.get("/logout", requires=hug.authentication.basic(lambda e,f: False))
+@hug.get("/logout", requires=hug.authentication.basic(lambda e, f: False))
 def logout():
-    #raise hug.HTTPForbidden(headers={"WWW-Authenticate": ""})
-    return 'OK' # ä this will never authenticate
+    return 'OK'  # ä this will never authenticate
 
 
-# @hug.get("/logout_success", response_headers={"WWW-Authenticate": ""})
-@hug.get("/logout_success", requires=hug.authentication.basic(lambda e,f: True))
+@hug.get("/logout_success", requires=hug.authentication.basic(lambda e, f: True))
 def logout_success():
-    return 'Ok'  # todo could a redirect to / also work?
+    return 'OK'  # todo could a redirect to / also work?
 
 
-@hug.extend_api(sub_command="db")
+@hug.context_factory(apply_globally=True)
+def create_context(*args, **kwargs):
+    return PeeweeContext()
+
+
+@hug.extend_api()
 def with_cli():
+    import cli
     return cli,
 
 

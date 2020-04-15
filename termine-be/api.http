@@ -1,4 +1,5 @@
-PATCH http://localhost:8000/admin_api/user
+PATCH {{host}}/admin_api/user
+Authorization: Basic {{user}} {{pass}}
 Content-Type: application/json
 
 {
@@ -8,40 +9,46 @@ Content-Type: application/json
 
 ###
 
-GET http://localhost:8000/admin_api/user
+GET {{host}}/admin_api/user
+Authorization: Basic {{user}} {{pass}}
 
 ###
 
-GET http://localhost:8000/api/list_for_day.csv?date_of_day=2020-04-20
+GET {{host}}/api/list_for_day.csv?date_of_day=2020-03-26
+Authorization: Basic {{user}} {{pass}}
 
 ###
 
-DELETE http://localhost:8000/api/claim_token?claim_token=ySKhTgyNdrUqKksaCXyrcMBJDLjkWdkN
+DELETE {{host}}/api/claim_token?claim_token=ySKhTgyNdrUqKksaCXyrcMBJDLjkWdkN
+Authorization: Basic {{user}} {{pass}}
 Accept: application/json
 
 ###
-POST http://localhost:8000/api/book_appointment
+POST {{host}}/api/book_appointment
+Authorization: Basic {{user}} {{pass}}
 Content-Type: application/json
 
 {
-  "claim_token":  "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+  "claim_token":  "OooMeGCSYjLsrdAqVLfjnFbMbFsZIiPm",
   "office":  "Musterbehörde",
   "first_name":  "Max",
   "name":  "Mustermann",
   "phone":  "012/0123456",
-  "start_date_time": "2020-04-20T04:20:00+00:00"
+  "start_date_time": "2020-04-14T12:00:00"
 }
 
 ###
-GET http://localhost:8000/api/claim_appointment?start_date_time=2020-04-20T04:20:00
+GET {{host}}/api/claim_appointment?start_date_time=2020-04-14T12:00:00
+Authorization: Basic {{user}} {{pass}}
 Accept: application/json
 
 ###
-GET http://localhost:8000/api/next_free_slots
+GET {{host}}/api/next_free_slots
+Authorization: Basic {{user}} {{pass}}
 Accept: application/json
 
 ###
-GET http://localhost:8000/healthcheck
+GET {{host}}/healthcheck
 Accept: application/json
 
 ####

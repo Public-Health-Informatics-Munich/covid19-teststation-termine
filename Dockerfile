@@ -14,12 +14,6 @@ WORKDIR /app
 COPY --from=base_pipenv requirements.txt .
 RUN pip install -r requirements.txt
 
-# FROM base_python as tester
-# COPY --from=base_pipenv dev_requirements.txt .
-# RUN pip install -r dev_requirements.txt
-# COPY src/* ./src/
-# ENTRYPOINT ["pytest", "./src/"]
-
 FROM node:13 as yarn_fe_installer
 WORKDIR /app
 COPY termine-fe/package.json .
@@ -46,6 +40,12 @@ ENV PUBLIC_URL "/admin"
 RUN yarn build
 # for debugging
 CMD bash
+
+FROM base_python as tester
+COPY --from=base_pipenv dev_requirements.txt .
+RUN pip install -r dev_requirements.txt
+COPY termine-be/ .
+ENTRYPOINT ["pytest"]
 
 FROM base_python as base_server
 RUN pip install gunicorn

@@ -8,13 +8,18 @@ from peewee import fn, DoesNotExist, IntegrityError
 
 from access_control.access_control import authentication, UserRoles
 from config import config
-from db.db import db_instance, _setup_db
+from db.directives import PeeweeSession
 from db.model import TimeSlot, Appointment, Booking, SlotCode
 from secret_token.secret_token import get_random_string, get_secret_token
 
 
+@hug.format.content_type('text/comma-separated-values')
+def format_as_csv(data, request=None, response=None):
+    return data
+
+
 @hug.get("/next_free_slots", requires=authentication)
-def next_free_slots(user: hug.directives.user):
+def next_free_slots(db: PeeweeSession, user: hug.directives.user):
     """
     SELECT t.start_date_time, count(a.time_slot_id)
 FROM appointment a
@@ -25,8 +30,7 @@ WHERE a.booked IS false
 GROUP BY t.start_date_time
 ORDER BY t.start_date_time
     """
-    _setup_db()
-    with db_instance().transaction():
+    with db.atomic():
         # @formatter:off
         now = datetime.now(tz=config.Settings.tz).replace(tzinfo=None)
         slots = TimeSlot \
@@ -56,7 +60,7 @@ ORDER BY t.start_date_time
 
 
 @hug.get("/claim_appointment", requires=authentication)
-def claim_appointment(start_date_time: hug.types.text, user: hug.directives.user):
+def claim_appointment(db: PeeweeSession, start_date_time: hug.types.text, user: hug.directives.user):
     """
     UPDATE appointment app
     SET claim_token = 'claimed'
@@ -71,8 +75,7 @@ def claim_appointment(start_date_time: hug.types.text, user: hug.directives.user
               )
     RETURNING *
     """
-    _setup_db()
-    with db_instance().transaction():
+    with db.atomic():
         try:
             assert user.coupons > 0
             start_date_time_object = datetime.fromisoformat(start_date_time)
@@ -103,9 +106,8 @@ def claim_appointment(start_date_time: hug.types.text, user: hug.directives.user
 
 
 @hug.post("/book_appointment", requires=authentication)
-def book_appointment(body: hug.types.json, user: hug.directives.user):
-    _setup_db()
-    with db_instance().transaction():
+def book_appointment(db: PeeweeSession, body: hug.types.json, user: hug.directives.user):
+    with db.atomic():
         try:
             assert user.coupons > 0
             if all(key in body for key in ('claim_token', 'start_date_time', 'first_name', 'name', 'phone', 'office')):
@@ -126,7 +128,7 @@ def book_appointment(body: hug.types.json, user: hug.directives.user):
                 appointment.claimed_at = None
                 appointment.save()
                 success = False
-                with db_instance().transaction():
+                with db.atomic():
                     while not success:
                         secret = get_secret_token(6)
                         try:
@@ -157,9 +159,8 @@ def book_appointment(body: hug.types.json, user: hug.directives.user):
 
 
 @hug.delete("/claim_token", requires=authentication)
-def delete_claim_token(claim_token: hug.types.text):
-    _setup_db()
-    with db_instance().transaction():
+def delete_claim_token(db: PeeweeSession, claim_token: hug.types.text):
+    with db.atomic():
         try:
             appointment = Appointment.get(
                 (Appointment.booked == False) &
@@ -174,19 +175,13 @@ def delete_claim_token(claim_token: hug.types.text):
             pass
 
 
-@hug.format.content_type('text/comma-separated-values')
-def format_as_csv(data, request=None, response=None):
-    return data
-
-
 @hug.get("/list_for_day.csv", output=format_as_csv, requires=authentication)
-def list_for_day(user: hug.directives.user,
+def list_for_day(db: PeeweeSession, user: hug.directives.user,
                  date_of_day: hug.types.text = None):
-    _setup_db()
     if not date_of_day:
         date_of_day = (date.today() + timedelta(days=1)).isoformat()
     user_name = user.user_name
-    with db_instance().transaction():
+    with db.atomic():
         try:
             user_role = user.role
             requested_day_object = date.fromisoformat(date_of_day)
@@ -224,12 +219,12 @@ def format_as_xlsx(data, request=None, response=None):
 
 
 @hug.get("/booking_list.xlsx", output=format_as_xlsx, requires=authentication)
-def list_for_day(user: hug.directives.user,
+def list_for_day(db: PeeweeSession,
+                 user: hug.directives.user,
                  start_date: hug.types.text,
                  end_date: hug.types.text):
-    _setup_db()
     user_name = user.user_name
-    with db_instance().transaction():
+    with db.atomic():
         try:
             user_role = user.role
             start_day_object = date.fromisoformat(start_date)
@@ -294,11 +289,10 @@ def list_for_day(user: hug.directives.user,
 
 
 @hug.get("/booked", requires=authentication)
-def booked(user: hug.directives.user, start_date: hug.types.text,
+def booked(db: PeeweeSession, user: hug.directives.user, start_date: hug.types.text,
            end_date: hug.types.text):
-    _setup_db()
     user_name = user.user_name
-    with db_instance().transaction():
+    with db.atomic():
         try:
             user_role = user.role
             start_day_object = date.fromisoformat(start_date)
