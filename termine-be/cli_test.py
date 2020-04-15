@@ -1,6 +1,7 @@
 import csv
 import io
-from datetime import datetime
+import pytest
+from datetime import datetime, timedelta
 from typing import List, Dict, Tuple
 
 import hug
@@ -63,3 +64,76 @@ def test_get_coupon_state(testing_db):
     assert int(user_3['num_bookings']) == 1
     assert int(admin_3['coupons']) == 10
     assert int(user_3['coupons']) == 20
+
+def test_cancel_booking(testing_db):
+    now = datetime.now()
+    duration = 15
+
+    def get_booking_data(secret):
+        return {
+            "surname": "Mustermann",
+            "first_name": "Marianne",
+            "phone": "0123456789",
+            "office": "MusterOffice",
+            "secret": secret,
+            "booked_by": USER,
+            "booked_at": now
+        }
+
+    slot1 = TimeSlot.create(start_date_time=now, length_min=duration)
+    slot2 = TimeSlot.create(start_date_time=now + timedelta(minutes=duration),
+                            length_min=duration)
+
+    appointment1 = Appointment.create(booked=False, time_slot=slot1)
+    appointment2 = Appointment.create(booked=False, time_slot=slot1)
+    appointment3 = Appointment.create(booked=False, time_slot=slot2)
+    appointment4 = Appointment.create(booked=False, time_slot=slot2)
+
+    appointment5 = Appointment.create(booked=True, time_slot=slot1)
+    appointment6 = Appointment.create(booked=True, time_slot=slot1)
+    appointment7 = Appointment.create(booked=True, time_slot=slot2)
+    appointment8 = Appointment.create(booked=True, time_slot=slot2)
+
+    booking1 = Booking.create(**get_booking_data("SECRET1"), appointment=appointment5)
+    booking2 = Booking.create(**get_booking_data("SECRET2"), appointment=appointment6)
+    booking3 = Booking.create(**get_booking_data("SECRET3"), appointment=appointment7)
+    booking4 = Booking.create(**get_booking_data("SECRET4"), appointment=appointment8)
+
+    not_cancel_booking = booking1
+    cancel_booking = booking3
+
+    fail_cancel_args = {
+        "secret": not_cancel_booking.secret,
+        "start_date_time": cancel_booking.appointment.time_slot.start_date_time,
+    }
+
+    assert Booking.select().count() == 4
+    assert TimeSlot.select().count() == 2
+    assert Appointment.select().count() == 8
+    assert Appointment.get_by_id(cancel_booking.appointment.id).booked == True
+
+    hug.test.cli('cancel_booking', module='main', **fail_cancel_args)
+
+    assert Booking.select().count() == 4
+    assert TimeSlot.select().count() == 2
+    assert Appointment.select().count() == 8
+    assert Appointment.get_by_id(cancel_booking.appointment.id).booked == True
+
+    hug.test.cli('cancel_booking', module='main', **fail_cancel_args, for_real=True)
+
+    assert Booking.select().count() == 4
+    assert TimeSlot.select().count() == 2
+    assert Appointment.select().count() == 8
+    assert Appointment.get_by_id(cancel_booking.appointment.id).booked == True
+
+    success_cancel_args = {
+        "secret": cancel_booking.secret,
+        "start_date_time": cancel_booking.appointment.time_slot.start_date_time,
+    }
+
+    hug.test.cli('cancel_booking', module='main', **success_cancel_args, for_real=True)
+
+    assert Booking.select().count() == 3
+    assert TimeSlot.select().count() == 2
+    assert Appointment.select().count() == 8
+    assert Appointment.get_by_id(cancel_booking.appointment.id).booked == False

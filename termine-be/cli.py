@@ -183,3 +183,24 @@ def inc_coupon_count(db: directives.PeeweeSession, user_name: hug.types.text, in
         user = User.get(User.user_name == user_name)
         user.coupons += increment
         user.save()
+
+
+@hug.cli()
+def cancel_booking(db: directives.PeeweeSession, secret: hug.types.text, start_date_time: hug.types.text, for_real: hug.types.smart_boolean = False):
+    with db.atomic():
+        sdt = datetime.fromisoformat(start_date_time).replace(tzinfo=None)
+        timeslot = TimeSlot.get(TimeSlot.start_date_time == sdt)
+        booking = Booking.select(Booking).join(Appointment).where(
+            (Booking.secret == secret) &
+            (Appointment.time_slot == timeslot)).get()
+
+        if not for_real:
+            print(f"This would delete the booking with id '{booking.id}' and secret '{booking.secret}'. Run with --for_real if you are sure.")
+            sys.exit(1)
+        else:
+            print(f"Deleting the booking with id '{booking.id}' and secret '{booking.secret}'.")
+            booking.appointment.booked = False
+            booking.appointment.save()
+            q = Booking.delete().where(Booking.id == booking.id)
+            q.execute()
+            print("Done.")
