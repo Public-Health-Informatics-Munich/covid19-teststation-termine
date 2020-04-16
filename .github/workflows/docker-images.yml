@@ -3,7 +3,7 @@ name: Docker Images
 on: [push]
 
 env:
-  IMG_PREFIX: mayflower/covid19-teststation
+  IMG_PREFIX: mayflower/covid19-teststation-termine
 
 jobs:
 
