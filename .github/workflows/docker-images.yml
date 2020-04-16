@@ -1,6 +1,9 @@
 name: Docker Images
 
-on: [push]
+on:
+  push:
+    branches:
+      - master
 
 env:
   IMG_PREFIX: mayflower/covid19-teststation-termine
