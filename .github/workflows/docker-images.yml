@@ -12,4 +12,4 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Build the Docker image
-      run: DOCKER_BUILDKIT=1 docker build . --file Dockerfile --target=server --tag $IMG_PREFIX-server:$GITHUB_SHA
+      run: DOCKER_BUILDKIT=1 docker build . --progress=plain --file Dockerfile --target=server --tag $IMG_PREFIX-server:$GITHUB_SHA
