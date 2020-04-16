@@ -18,7 +18,7 @@ FROM node:13 as yarn_fe_installer
 WORKDIR /app
 COPY termine-fe/package.json .
 COPY termine-fe/yarn.lock .
-RUN yarn install
+RUN yarn install --network-timeout 100000
 
 FROM yarn_fe_installer as yarn_fe_builder
 COPY termine-fe/src src/
@@ -31,7 +31,7 @@ FROM node:13 as yarn_bo_installer
 WORKDIR /app
 COPY termine-bo/package.json .
 COPY termine-bo/yarn.lock .
-RUN yarn install
+RUN yarn install --network-timeout 100000
 
 FROM yarn_bo_installer as yarn_bo_builder
 COPY termine-bo/src src/
