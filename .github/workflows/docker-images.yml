@@ -4,7 +4,7 @@ on: [push]
 
 env:
   IMG_PREFIX: mayflower/covid19-teststation
-  IMG_SERVER: "${IMG_PREFIX}-server:$GITHUB_SHA"
+  IMG_SERVER: $IMG_PREFIX-server:$GITHUB_SHA
 
 jobs:
 
