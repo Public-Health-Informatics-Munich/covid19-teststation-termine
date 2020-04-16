@@ -13,3 +13,7 @@ jobs:
     - uses: actions/checkout@v2
     - name: Build the Docker image
       run: DOCKER_BUILDKIT=1 docker build . --progress=plain --file Dockerfile --target=server --tag $IMG_PREFIX-server:$GITHUB_SHA
+    - name: Push the Docker image
+      env:
+        DOCKER_HUB_TOKEN: ${{ secrets.docker_hub_token }}
+      run: docker login -u leux -p $DOCKER_HUB_TOKEN && docker push $IMG_PREFIX-server:$GITHUB_SHA
