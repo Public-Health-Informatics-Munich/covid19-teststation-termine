@@ -4,7 +4,6 @@ on: [push]
 
 env:
   IMG_PREFIX: mayflower/covid19-teststation
-  IMG_SERVER: $IMG_PREFIX-server:$GITHUB_SHA
 
 jobs:
 
@@ -13,4 +12,4 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --target=server --tag=$IMG_SERVER
+      run: docker build . --file Dockerfile --target=server --tag $IMG_PREFIX-server:$GITHUB_SHA
