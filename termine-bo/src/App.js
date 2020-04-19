@@ -1,5 +1,7 @@
 import React, { useEffect, useCallback, useRef, useState } from "react";
 import FocusLock from "react-focus-lock";
+import AddUser from "./Components/AddUser";
+
 import { trackPromise, usePromiseTracker } from "react-promise-tracker";
 
 import * as Api from "./Api";
@@ -118,32 +120,9 @@ function App() {
           {window.config.longInstanceName}
         </h3>
       </header>
-      <div className="row">
-        <FocusLock group="booking-workflow">
-          <form>
-            <h3>Neuen Benutzer anlegen:</h3>
-            <input
-              type="text"
-              name="new_user_name"
-              placeholder="Benutzername"
-              value=""
-            />
-            <input
-              type="password"
-              name="new_user_password"
-              placeholder="Passwort"
-              value=""
-            />
-            <input
-              type="password"
-              name="new_user_password_confirm"
-              placeholder="Passwortverifikation"
-              value=""
-            />
-            <input type="button" name="submit" value="Speichern" />
-          </form>
-        </FocusLock>
-      </div>
+      <FocusLock group="booking-workflow">
+        <AddUser onSuccess={refreshList} />
+      </FocusLock>
       <div className="row">
         <div className="col-lg-12">
           <FocusLock group="booking-workflow">

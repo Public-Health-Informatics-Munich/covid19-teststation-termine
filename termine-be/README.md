@@ -18,3 +18,10 @@ hug -f main.py -c create_appointments $(date +"%-d %-m")
 hug -f main.py
 ```
 
+### run tests
+
+```bash
+pipenv install --dev
+pipenv shell
+pytest
+```

@@ -76,3 +76,15 @@ export const fetchBooked = (startDate, endDate) => {
     },
   });
 };
+
+export const changePassword = (
+  old_user_password,
+  new_user_password,
+  new_user_password_confirm
+) => {
+  return axios.patch(config.API_BASE_URL + "/user", {
+    old_user_password,
+    new_user_password,
+    new_user_password_confirm,
+  });
+};

@@ -7,8 +7,6 @@ from datetime import datetime, timedelta
 import hug
 from peewee import DatabaseError
 
-from peewee import fn
-
 from access_control.access_control import UserRoles
 from db import directives
 from db.migration import migrate_db, init_database
@@ -121,6 +119,23 @@ def add_users(db: directives.PeeweeSession, filename: hug.types.text,
               role: hug.types.one_of(UserRoles.user_roles()) = UserRoles.USER):
     with open(filename) as f:
         return [_add_one_user(db, line.strip(), role=role) for line in f]
+
+
+@hug.cli()
+def change_user_pw(db: directives.PeeweeSession, username: hug.types.text, password: hug.types.text, for_real: hug.types.smart_boolean = False):
+    if not for_real:
+        print(f"this would change {username}'s pw to {password}. Run with --for_real if you're sure.")
+        sys.exit(1)
+    with db.atomic():
+        name = username.lower()
+        salt = get_random_string(2)
+        secret_password = password
+        hashed_password = hash_pw(name, salt, secret_password)
+        user = User.get(User.user_name == username)
+        user.salt = salt
+        user.password = hashed_password
+        user.save()
+        print(f"{user.user_name}'s pw successfully changed.")
 
 
 @hug.cli()
