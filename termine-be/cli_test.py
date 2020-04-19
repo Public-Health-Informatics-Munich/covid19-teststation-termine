@@ -1,6 +1,5 @@
 import csv
 import io
-import pytest
 from datetime import datetime, timedelta
 from typing import List, Dict, Tuple
 
@@ -14,17 +13,17 @@ def parse_csv(csv_string: str) -> List[Dict]:
     return list(csv.DictReader(io.StringIO(csv_string), delimiter='\t'))
 
 
+def _get_admin_and_user_data() -> Tuple[Dict, Dict]:
+    response = hug.test.cli('get_coupon_state', module='main', collect_output=True)
+    out = parse_csv(response)
+    a: Dict = next(a for a in out if a['name'] == ADMIN)
+    u: Dict = next(a for a in out if a['name'] == USER)
+    assert len(out) == 2
+    return a, u
 
 
 def test_get_coupon_state(testing_db):
-    def get_admin_and_user_data() -> Tuple[Dict, Dict]:
-        response = hug.test.cli('get_coupon_state', module='main', collect_output=True)
-        out = parse_csv(response)
-        a: Dict = next(a for a in out if a['name'] == ADMIN)
-        u: Dict = next(a for a in out if a['name'] == USER)
-        assert len(out) == 2
-        return a, u
-    admin_1, user_1 = get_admin_and_user_data()
+    admin_1, user_1 = _get_admin_and_user_data()
     assert int(admin_1['num_bookings']) == 0
     assert int(user_1['num_bookings']) == 0
     assert int(admin_1['coupons']) == 10
@@ -32,7 +31,7 @@ def test_get_coupon_state(testing_db):
 
     User.update({User.coupons: User.coupons + 11}).where(User.user_name == USER).execute()
 
-    admin_2, user_2 = get_admin_and_user_data()
+    admin_2, user_2 = _get_admin_and_user_data()
     assert int(admin_2['num_bookings']) == 0
     assert int(user_2['num_bookings']) == 0
     assert int(admin_2['coupons']) == 10
@@ -59,11 +58,12 @@ def test_get_coupon_state(testing_db):
     )
     User.update({User.coupons: User.coupons - 1}).where(User.user_name == USER).execute()
 
-    admin_3, user_3 = get_admin_and_user_data()
+    admin_3, user_3 = _get_admin_and_user_data()
     assert int(admin_3['num_bookings']) == 0
     assert int(user_3['num_bookings']) == 1
     assert int(admin_3['coupons']) == 10
     assert int(user_3['coupons']) == 20
+
 
 def test_cancel_booking(testing_db):
     now = datetime.now()
@@ -137,3 +137,24 @@ def test_cancel_booking(testing_db):
     assert TimeSlot.select().count() == 2
     assert Appointment.select().count() == 8
     assert Appointment.get_by_id(cancel_booking.appointment.id).booked == False
+
+
+def test_inc_and_set_coupon_count(testing_db):
+    admin_1, user_1 = _get_admin_and_user_data()
+    assert int(admin_1['num_bookings']) == 0
+    assert int(user_1['num_bookings']) == 0
+    assert int(admin_1['coupons']) == 10
+    assert int(user_1['coupons']) == 10
+    hug.test.cli('inc_coupon_count', module='main', user_name=USER, value=111)
+    admin_2, user_2 = _get_admin_and_user_data()
+    assert int(admin_2['num_bookings']) == 0
+    assert int(user_2['num_bookings']) == 0
+    assert int(admin_2['coupons']) == 10
+    assert int(user_2['coupons']) == 121
+    hug.test.cli('set_coupon_count', module='main', user_name=USER, value=111)
+    admin_3, user_3 = _get_admin_and_user_data()
+    assert int(admin_3['num_bookings']) == 0
+    assert int(user_3['num_bookings']) == 0
+    assert int(admin_3['coupons']) == 10
+    assert int(user_3['coupons']) == 111
+
