@@ -26,8 +26,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Build the commands Docker image
-      run: DOCKER_BUILDKIT=1 docker build . --progress=plain --file Dockerfile --target=command
-      --tag $IMG_PREFIX-command:$GITHUB_SHA
+      run: DOCKER_BUILDKIT=1 docker build . --progress=plain --file Dockerfile --target=command --tag $IMG_PREFIX-command:$GITHUB_SHA
     - name: Push the commands Docker image
       env:
         DOCKER_HUB_TOKEN: ${{ secrets.docker_hub_token }}
