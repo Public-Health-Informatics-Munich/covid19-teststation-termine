@@ -32,7 +32,9 @@
     "Booked at": "Booked at",
     Booking: "Booking",
     Cancel: "Cancel",
+    "Change password:": "Change password:",
     "Choose an appointment": "Choose an appointment",
+    "Current password": "Current password",
     "Currently <0><1>no Appointments</1></0> are free.":
       "Currently <0><1>no Appointments</1></0> are free.",
     Date: "Date",
@@ -47,15 +49,23 @@
     Logout: "Logout",
     "Mobile No.": "Mobile No.",
     "My appointments": "My appointments",
+    "New password": "New password",
     "Notify the patient of their access code:":
       "Notify the patient of their access code:",
     Office: "Office",
     Print: "Print",
+    "Repeat new password": "Repeat new password",
+    Save: "Save",
+    "Saving...": "Saving...",
+    Settings: "Settings",
     Surname: "Surname",
     "The appointment is no longer available, please select another free appointment.":
       "The appointment is no longer available, please select another free appointment.",
     "The navigation in the table is possible with Tab and Enter keys.":
       "The navigation in the table is possible with Tab and Enter keys.",
+    "The password has been changed. You are going to be logged out and can log in with the new password.":
+      "The password has been changed. You are going to be logged out and can log in with the new password.",
+    "The passwords do not match!": "The passwords do not match!",
     "This input is required.": "This input is required.",
     Timeslot: "Timeslot",
     To: "To",

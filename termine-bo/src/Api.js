@@ -8,3 +8,7 @@ export const fetchUsers = () => {
 export const patchUser = (data) => {
   return axios.patch(config.API_BASE_URL + "/user", { ...data });
 };
+
+export const addUser = (data) => {
+  return axios.put(config.API_BASE_URL + "/user", { ...data });
+};

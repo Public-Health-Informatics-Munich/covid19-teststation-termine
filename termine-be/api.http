@@ -52,3 +52,14 @@ GET {{host}}/healthcheck
 Accept: application/json
 
 ####
+PATCH http://localhost:8000/api/user
+Authorization: Basic {{user}} {{pass}}
+Content-Type: application/json
+
+{
+  "old_user_password": "pw",
+  "new_user_password": "new_pw",
+  "new_user_password_confirm": "new_pw"
+}
+
+###

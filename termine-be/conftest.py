@@ -38,6 +38,22 @@ def get_admin_login():
     return get_auth_header(ADMIN, ADMIN)
 
 
+def get_change_pw_mismatch():
+    return {"old_user_password": USER, "new_user_password": USER + "1", "new_user_password_confirm": USER}
+
+
+def get_change_pw_match():
+    return {"old_user_password": USER, "new_user_password": USER + "1", "new_user_password_confirm": USER + "1"}
+
+
+def get_create_user_pw_mismatch(username):
+    return {"newUserName": username, "newUserPassword": USER + "1", "newUserPasswordConfirm": USER}
+
+
+def get_create_user(username, password):
+    return {"newUserName": username, "newUserPassword": password, "newUserPasswordConfirm": password}
+
+
 @pytest.yield_fixture
 def testing_db():
     PeeweeContext.set_testing()

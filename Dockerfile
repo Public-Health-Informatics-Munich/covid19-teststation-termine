@@ -55,6 +55,11 @@ RUN pip install awscli
 COPY cloudformation/ cloudformation/
 CMD bash
 
+FROM base_python as command
+COPY termine-be/ .
+ENTRYPOINT ["hug", "-f", "main.py", "-c"]
+CMD ["help"]
+
 FROM base_server as server
 COPY termine-be/ .
 COPY --from=yarn_fe_builder /app/build/ build_fe/
