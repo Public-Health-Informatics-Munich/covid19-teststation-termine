@@ -1,5 +1,5 @@
 # Covid19 Teststation appointments booking app
-                                                                                                                                                                                                    
+
 An appointment booking app, currently designed for works doctors from official institutes.
 
 Developed for [LMU Division of Infectious Diseases and Tropical Medicine](http://www.klinikum.uni-muenchen.de/Abteilung-fuer-Infektions-und-Tropenmedizin/en/index.html) by	[Mayflower GmbH](https://mayflower.de)

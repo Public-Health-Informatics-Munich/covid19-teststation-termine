@@ -22,7 +22,9 @@
     "Booked at": "Gebucht am",
     Booking: "Terminbuchung",
     Cancel: "Abbrechen",
+    "Change password:": "Passwort \xE4ndern:",
     "Choose an appointment": "W\xE4hlen Sie einen Termin aus",
+    "Current password": "Aktuelles Passwort",
     "Currently <0><1>no Appointments</1></0> are free.":
       "Aktuell sind <0><1>keine Termine</1></0> mehr frei.",
     Date: "Datum",
@@ -37,15 +39,23 @@
     Logout: "Logout",
     "Mobile No.": "Handynummer",
     "My appointments": "Meine Buchungen",
+    "New password": "Neues Passwort",
     "Notify the patient of their access code:":
       "Teilen Sie dem Patienten jetzt den Berechtigungscode mit:",
     Office: "Beh\xF6rde",
     Print: "Drucken",
+    "Repeat new password": "Neues Passwort wiederholen",
+    Save: "Speichern",
+    "Saving...": "Wird gespeichert...",
+    Settings: "Einstellungen",
     Surname: "Nachname",
     "The appointment is no longer available, please select another free appointment.":
       "Leider ist der Termin inzwischen nicht mehr buchbar, bitte einen anderen Termin w\xE4hlen.",
     "The navigation in the table is possible with Tab and Enter keys.":
       "In der Tabelle kann mit Tab und Enter navigiert werden.",
+    "The password has been changed. You are going to be logged out and can log in with the new password.":
+      "Das Passwort wurde ge\xE4ndert. Sie werden ausgeloggt und k\xF6nnen sich mit dem neuen Passwort einloggen.",
+    "The passwords do not match!": "Die Passw\xF6rter sind nicht identisch!",
     "This input is required.": "Dies ist ein Pflichtfeld.",
     Timeslot: "Terminslot",
     To: "Bis",

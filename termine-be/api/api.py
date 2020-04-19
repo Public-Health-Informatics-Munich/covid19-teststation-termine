@@ -1,5 +1,6 @@
 import csv
 import io
+import logging
 from datetime import datetime, timedelta, date
 
 import hug
@@ -9,9 +10,10 @@ from peewee import fn, DoesNotExist, IntegrityError
 from access_control.access_control import authentication, UserRoles
 from config import config
 from db.directives import PeeweeSession
-from db.model import TimeSlot, Appointment, Booking, SlotCode
-from secret_token.secret_token import get_random_string, get_secret_token
+from db.model import TimeSlot, Appointment, Booking, SlotCode, User
+from secret_token.secret_token import get_random_string, get_secret_token, hash_pw
 
+log = logging.getLogger('api')
 
 @hug.format.content_type('text/comma-separated-values')
 def format_as_csv(data, request=None, response=None):
@@ -317,5 +319,32 @@ def booked(db: PeeweeSession, user: hug.directives.user, start_date: hug.types.t
             return bookings
         except DoesNotExist as e:
             raise hug.HTTPGone
+        except ValueError as e:
+            raise hug.HTTPBadRequest
+
+
+@hug.patch("/user", requires=authentication)
+def patch_user(db: PeeweeSession,
+               body: hug.types.json,
+               user: hug.directives.user):
+    old_user_password = body["old_user_password"]
+    new_user_password = body["new_user_password"]
+    new_user_password_confirm = body["new_user_password_confirm"]
+    if new_user_password != new_user_password_confirm:
+        raise hug.HTTPBadRequest
+    with db.atomic():
+        try:
+            if user.password != hash_pw(user.user_name, user.salt, old_user_password):
+                raise hug.HTTPBadRequest
+            salt = get_random_string(2)
+            secret_password = new_user_password
+            hashed_password = hash_pw(user.user_name, salt, secret_password)
+            user.salt = salt
+            user.password = hashed_password
+            user.save()
+            log.info(f"updated {user.user_name}'s pw.")
+            return "updated"
+        except DoesNotExist as e:
+            raise hug.HTTPBadRequest
         except ValueError as e:
             raise hug.HTTPBadRequest

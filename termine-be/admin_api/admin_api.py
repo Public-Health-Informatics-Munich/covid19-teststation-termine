@@ -1,10 +1,10 @@
 import hug
-from peewee import DoesNotExist
+from peewee import DoesNotExist, IntegrityError
 
 from access_control.access_control import admin_authentication, UserRoles
 from db.directives import PeeweeSession
 from db.model import User, Booking
-
+from secret_token.secret_token import get_random_string, hash_pw
 
 @hug.get("/user", requires=admin_authentication)
 def get_users():
@@ -43,3 +43,22 @@ def put_user(db: PeeweeSession, user_name: hug.types.text, coupons: hug.types.nu
             raise hug.HTTPBadRequest
         except AssertionError as e:
             raise hug.HTTPBadRequest
+
+
+@hug.put("/user", requires=admin_authentication)
+def put_user(db: PeeweeSession, newUserName: hug.types.text, newUserPassword: hug.types.text, newUserPasswordConfirm: hug.types.text):
+    if newUserPassword != newUserPasswordConfirm:
+        raise hug.HTTPBadRequest
+    with db.atomic():
+        try:
+            name = newUserName.lower()
+            salt = get_random_string(2)
+            secret_password = newUserPassword
+            hashed_password = hash_pw(name, salt, secret_password)
+            user = User.create(user_name=name, role=UserRoles.USER, salt=salt, password=hashed_password, coupons=10)
+            user.save()
+            return {
+                "username": user.user_name
+            }
+        except IntegrityError:
+            raise hug.HTTPConflict('User already exists.')

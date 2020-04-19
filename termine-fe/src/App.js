@@ -7,6 +7,7 @@ import { INFOBOX_STATES, ISOStringWithoutTimeZone } from "./utils";
 import * as Api from "./Api";
 import BookView from "./Views/BookView";
 import BookingHistoryView from "./Views/BookingHistoryView";
+import SettingsView from "./Views/SettingsView";
 
 function App({ i18n }) {
   const useFocus = () => {
@@ -20,6 +21,7 @@ function App({ i18n }) {
   const TAB = {
     BOOK: "/book",
     BOOKED: "/booked",
+    SETTINGS: "/settings",
   };
 
   let location = useLocation();
@@ -64,7 +66,7 @@ function App({ i18n }) {
           setCoupons(response.data.coupons);
         }
       })
-      .catch((error) => {
+      .catch(() => {
         //TODO: error handling
       });
   }, []);
@@ -79,7 +81,7 @@ function App({ i18n }) {
           setBookedList(response.data);
         }
       })
-      .catch((error) => {
+      .catch(() => {
         //TODO: error handling
       });
   }, [startDate, endDate]);
@@ -128,7 +130,7 @@ function App({ i18n }) {
 
   const claimAppointment = (startDateTime, slotLengthMin) => {
     if (claimToken !== "") {
-      Api.unClaimSlot(claimToken).catch((error) => {
+      Api.unClaimSlot(claimToken).catch(() => {
         // TODO: error handling?
       });
     }
@@ -239,6 +241,9 @@ function App({ i18n }) {
           <Link className="button" to={TAB.BOOKED}>
             <Trans>My appointments</Trans>
           </Link>
+          <Link className="button" to={TAB.SETTINGS}>
+            <Trans>Settings</Trans>
+          </Link>
           <div className="flexAlignRight">
             <input type="button" value={i18n._(t`Logout`)} onClick={logout} />
           </div>
@@ -279,6 +284,9 @@ function App({ i18n }) {
             endDate={endDate}
             setEndDate={setEndDate}
           />
+        </Route>
+        <Route path={TAB.SETTINGS}>
+          <SettingsView onSuccess={logout} />
         </Route>
       </Switch>
     </div>

@@ -50,7 +50,7 @@ def authentication(user_name, user_password, context: PeeweeContext):
 @hug.authentication.basic
 def admin_authentication(user_name, user_password, context: PeeweeContext):
     user = verify_user(user_name, user_password, context)
-    if user.role == UserRoles.ADMIN:
+    if user and user.role == UserRoles.ADMIN:
         return user
     log.warning("missing admin role for: %s", user_name)
     return False
