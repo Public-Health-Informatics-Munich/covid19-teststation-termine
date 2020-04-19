@@ -158,3 +158,27 @@ def test_inc_and_set_coupon_count(testing_db):
     assert int(admin_3['coupons']) == 10
     assert int(user_3['coupons']) == 111
 
+
+def test_create_appointments(testing_db):
+    assert len(Booking.select()) == 0
+    assert len(TimeSlot.select()) == 0
+    assert len(Appointment.select()) == 0
+    NUM_SLOTS = 5
+    create_kwargs = {
+        'day': 20,
+        'month': 4,
+        'year': 2020,
+        'start_hour': 16,
+        'start_min': 20,
+        'num_slots': NUM_SLOTS,
+        'num_appointment_per_slot': 3,
+        'slot_duration_min': 10
+    }
+    hug.test.cli('create_appointments', module='main', **create_kwargs)
+    assert len(Booking.select()) == 0
+    assert len(TimeSlot.select()) == 5
+    assert len(Appointment.select()) == 15
+    sdt = datetime(2020, 4, 20, 16, 20, tzinfo=None)
+    for i in range(NUM_SLOTS):
+        ts = TimeSlot.get(TimeSlot.start_date_time == sdt + timedelta(minutes=10 * i))
+        assert Appointment.select().where(Appointment.time_slot == ts).count() == 3
