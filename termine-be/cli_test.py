@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 from typing import List, Dict, Tuple
 
 import hug
+import pytest
 
 from conftest import ADMIN, USER
 from db.model import User, TimeSlot, Appointment, Booking
@@ -65,6 +66,7 @@ def test_get_coupon_state(testing_db):
     assert int(user_3['coupons']) == 20
 
 
+@pytest.mark.dependency(name="cancel_booking")
 def test_cancel_booking(testing_db):
     now = datetime.now()
     duration = 15
@@ -159,6 +161,7 @@ def test_inc_and_set_coupon_count(testing_db):
     assert int(user_3['coupons']) == 111
 
 
+@pytest.mark.dependency(name="create_appointments")
 def test_create_appointments(testing_db):
     assert len(Booking.select()) == 0
     assert len(TimeSlot.select()) == 0
@@ -185,10 +188,9 @@ def test_create_appointments(testing_db):
         assert Appointment.select().where(Appointment.time_slot == ts).count() == NUM_APPOINTMENTS
 
 
-# TODO mark as depending test
+@pytest.mark.dependency(depends=["cancel_booking", "create_appointments"])
 def test_delete_timeslots(testing_db):
-    # this test assumes that create_aapointments and cancel_booking both work. They are under test also.
-
+    # this test assumes that create_apointments and cancel_booking both work. They are under test also.
     # first, lets create some timeslots
     NUM_SLOTS = 5
     NUM_APPOINTMENTS = 3
