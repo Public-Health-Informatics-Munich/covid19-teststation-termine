@@ -6,6 +6,7 @@ from db.directives import PeeweeSession
 from db.model import User, Booking
 from secret_token.secret_token import get_random_string, hash_pw
 
+
 @hug.get("/user", requires=admin_authentication)
 def get_users():
     """
@@ -46,7 +47,8 @@ def patch_user(db: PeeweeSession, user_name: hug.types.text, coupons: hug.types.
 
 
 @hug.put("/user", requires=admin_authentication)
-def put_user(db: PeeweeSession, newUserName: hug.types.text, newUserPassword: hug.types.text, newUserPasswordConfirm: hug.types.text):
+def put_user(db: PeeweeSession, newUserName: hug.types.text, newUserPassword: hug.types.text,
+             newUserPasswordConfirm: hug.types.text):
     if newUserPassword != newUserPasswordConfirm:
         raise hug.HTTPBadRequest
     with db.atomic():
