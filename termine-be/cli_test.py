@@ -6,7 +6,8 @@ from typing import List, Dict, Tuple
 import hug
 import pytest
 
-from conftest import ADMIN, USER
+import main
+from conftest import ADMIN, USER, get_user_login, get_basic_auth, get_admin_login
 from db.model import User, TimeSlot, Appointment, Booking
 
 
@@ -243,7 +244,7 @@ def test_delete_timeslots(testing_db):
     assert len(Booking.select()) == 2
     assert len(TimeSlot.select()) == NUM_SLOTS
     assert len(Appointment.select()) == NUM_APPOINTMENTS * NUM_SLOTS
-    
+
     # so let's cancel the booking that conflicts
     hug.test.cli('cancel_booking', module='main', secret='secret2', start_date_time='2020-04-20T16:40', for_real=True)
     assert len(Booking.select()) == 1
@@ -258,3 +259,26 @@ def test_delete_timeslots(testing_db):
     for i in [0, 3, 4]:
         ts = TimeSlot.get(TimeSlot.start_date_time == sdt1 + timedelta(minutes=10 * i))
         assert Appointment.select().where(Appointment.time_slot == ts).count() == NUM_APPOINTMENTS
+
+
+def test_change_user_pw(testing_db):
+    NEW_PASSWORD = 'NEW_PASSWORD'
+    # first, verify that both users' logins work
+    response = hug.test.get(main, "/config.js", headers=get_user_login())
+    assert response.status == hug.HTTP_200
+    response = hug.test.get(main, "/admin/config.js", headers=get_admin_login())
+    assert response.status == hug.HTTP_200
+    # now, let's change the password
+    hug.test.cli('change_user_pw', module='main', username=USER, password=NEW_PASSWORD, for_real=True)
+
+    # check that the old login does not work anymore
+    response = hug.test.get(main, "/config.js", headers=get_user_login())
+    assert response.status == hug.HTTP_401
+
+    # and the new one does
+    response = hug.test.get(main, "/config.js", headers={"Authorization": get_basic_auth(USER, NEW_PASSWORD)})
+    assert response.status == hug.HTTP_200
+
+    # and the existing user wasn't changed
+    response = hug.test.get(main, "/admin/config.js", headers=get_admin_login())
+    assert response.status == hug.HTTP_200
