@@ -25,7 +25,7 @@ def get_users():
 
 
 @hug.patch("/user", requires=admin_authentication)
-def put_user(db: PeeweeSession, user_name: hug.types.text, coupons: hug.types.number):
+def patch_user(db: PeeweeSession, user_name: hug.types.text, coupons: hug.types.number):
     with db.atomic():
         try:
             user = User.get(User.user_name == user_name)
