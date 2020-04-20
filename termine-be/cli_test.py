@@ -164,6 +164,7 @@ def test_create_appointments(testing_db):
     assert len(TimeSlot.select()) == 0
     assert len(Appointment.select()) == 0
     NUM_SLOTS = 5
+    NUM_APPOINTMENTS = 3
     create_kwargs = {
         'day': 20,
         'month': 4,
@@ -171,14 +172,87 @@ def test_create_appointments(testing_db):
         'start_hour': 16,
         'start_min': 20,
         'num_slots': NUM_SLOTS,
-        'num_appointment_per_slot': 3,
+        'num_appointment_per_slot': NUM_APPOINTMENTS,
         'slot_duration_min': 10
     }
     hug.test.cli('create_appointments', module='main', **create_kwargs)
     assert len(Booking.select()) == 0
-    assert len(TimeSlot.select()) == 5
-    assert len(Appointment.select()) == 15
+    assert len(TimeSlot.select()) == NUM_SLOTS
+    assert len(Appointment.select()) == NUM_APPOINTMENTS * NUM_SLOTS
     sdt = datetime(2020, 4, 20, 16, 20, tzinfo=None)
     for i in range(NUM_SLOTS):
         ts = TimeSlot.get(TimeSlot.start_date_time == sdt + timedelta(minutes=10 * i))
-        assert Appointment.select().where(Appointment.time_slot == ts).count() == 3
+        assert Appointment.select().where(Appointment.time_slot == ts).count() == NUM_APPOINTMENTS
+
+
+# TODO mark as depending test
+def test_delete_timeslots(testing_db):
+    # this test assumes that create_aapointments and cancel_booking both work. They are under test also.
+
+    # first, lets create some timeslots
+    NUM_SLOTS = 5
+    NUM_APPOINTMENTS = 3
+    create_kwargs = {
+        'day': 20,
+        'month': 4,
+        'year': 2020,
+        'start_hour': 16,
+        'start_min': 20,
+        'num_slots': NUM_SLOTS,
+        'num_appointment_per_slot': NUM_APPOINTMENTS,
+        'slot_duration_min': 10
+    }
+    hug.test.cli('create_appointments', module='main', **create_kwargs)
+    assert len(Booking.select()) == 0
+    assert len(TimeSlot.select()) == NUM_SLOTS
+    assert len(Appointment.select()) == NUM_APPOINTMENTS * NUM_SLOTS
+
+    # now, lets create two bookings, one of them in a to-be-deleted timeslot
+    booking_data = {
+        'surname': "Mustermann",
+        'first_name': "Marianne",
+        'phone': "0123456789",
+        'office': "MusterOffice",
+        'booked_by': USER,
+        'booked_at': datetime.now()
+    }
+    sdt1 = datetime(2020, 4, 20, 16, 20, tzinfo=None)
+    sdt2 = datetime(2020, 4, 20, 16, 40, tzinfo=None)
+    a1 = Appointment.get(Appointment.time_slot == TimeSlot.get(TimeSlot.start_date_time == sdt1))
+    a2 = Appointment.get(Appointment.time_slot == TimeSlot.get(TimeSlot.start_date_time == sdt2))
+    a1.booked = True
+    a1.save()
+    a2.booked = True
+    a2.save()
+    Booking.create(**booking_data, secret="secret1", appointment=a1)
+    Booking.create(**booking_data, secret="secret2", appointment=a2)
+
+    # with a booking in a timeslot, we should not delete
+    delete_kwargs = {
+        'year': 2020,
+        'month': 4,
+        'day': 20,
+        'start_hour': 16,
+        'start_min': 30,
+        'num_slots': 2,
+        'for_real': True
+    }
+    hug.test.cli('delete_timeslots', module='main', **delete_kwargs)
+    assert len(Booking.select()) == 2
+    assert len(TimeSlot.select()) == NUM_SLOTS
+    assert len(Appointment.select()) == NUM_APPOINTMENTS * NUM_SLOTS
+    
+    # so let's cancel the booking that conflicts
+    hug.test.cli('cancel_booking', module='main', secret='secret2', start_date_time='2020-04-20T16:40', for_real=True)
+    assert len(Booking.select()) == 1
+    assert len(TimeSlot.select()) == NUM_SLOTS
+    assert len(Appointment.select()) == NUM_APPOINTMENTS * NUM_SLOTS
+
+    # and now let's retry the deletion
+    hug.test.cli('delete_timeslots', module='main', **delete_kwargs)
+    assert len(Booking.select()) == 1
+    assert len(TimeSlot.select()) == 3
+    assert len(Appointment.select()) == 9
+    for i in [0, 3, 4]:
+        ts = TimeSlot.get(TimeSlot.start_date_time == sdt1 + timedelta(minutes=10 * i))
+        assert Appointment.select().where(Appointment.time_slot == ts).count() == NUM_APPOINTMENTS
