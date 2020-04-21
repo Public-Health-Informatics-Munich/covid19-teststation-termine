@@ -4,6 +4,10 @@ An appointment booking app, currently designed for works doctors from official i
 
 Developed for [LMU Division of Infectious Diseases and Tropical Medicine](http://www.klinikum.uni-muenchen.de/Abteilung-fuer-Infektions-und-Tropenmedizin/en/index.html) by	[Mayflower GmbH](https://mayflower.de)
 
+
+<img src=".github/show/booking-app-1.png"/>
+<a href="screenshots.md">More Screenshots</a>
+
 ## Current dev setup
 
 ### Start the database container
