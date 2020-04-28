@@ -3,6 +3,8 @@ from datetime import datetime
 from peewee import Model, CharField, DatabaseProxy, ForeignKeyField, BooleanField, DateTimeField, IntegerField, \
     CompositeKey, DateField
 
+from playhouse.postgres_ext import JSONField
+
 from config import config
 
 db_proxy = DatabaseProxy()
@@ -67,4 +69,10 @@ class SlotCode(Model):
         primary_key = CompositeKey('date', 'secret')
 
 
-tables = [TimeSlot, Appointment, Booking, User, SlotCode, Migration]
+class FrontendConfig(Model):
+    config = JSONField()
+
+    class Meta:
+        database = db_proxy
+
+tables = [TimeSlot, Appointment, Booking, User, SlotCode, FrontendConfig, Migration]

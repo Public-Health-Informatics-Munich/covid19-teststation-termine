@@ -1,5 +1,6 @@
 import csv
 import io
+import json
 import logging
 import sys
 from datetime import datetime, timedelta
@@ -218,4 +219,36 @@ def cancel_booking(db: directives.PeeweeSession, secret: hug.types.text, start_d
             booking.appointment.save()
             q = Booking.delete().where(Booking.id == booking.id)
             q.execute()
+            print("Done.")
+
+
+@hug.cli()
+def set_frontend_config(db: directives.PeeweeSession, instance_name: hug.types.text, long_instance_name: hug.types.text, contact_info_coupons: hug.types.text,
+                        contact_info_appointments: hug.types.text = None, for_real: hug.types.smart_boolean = False):
+    with db.atomic():
+        if "@" in contact_info_coupons:
+            coupons_contact = f"<a href=\"mailto:{contact_info_coupons}\">{contact_info_coupons}</a>"
+        else:
+            coupons_contact = contact_info_coupons
+
+        if not contact_info_appointments:
+            appointments_contact = coupons_contact
+        else:
+            if "@" in contact_info_coupons:
+                appointments_contact = f"<a href=\"mailto:{contact_info_coupons}\">{contact_info_coupons}</a>"
+            else:
+                appointments_contact = contact_info_coupons
+
+        template = {
+            "instanceName": f"{instance_name}" ,
+            "longInstanceName": f"{long_instance_name}",
+            "contactInfoCoupons": "<span class=\"hintLabel\">Um mehr Termine vergeben zu können wenden Sie sich an {coupons_contact}</span>",
+            "contactInfoAppointment": "<span class=\"hintLabel\">Kontaktieren Sie {appointments_contact}</span>"
+        }
+
+        if not for_real:
+            print(f"This would update the config with '{json.dumps(template, indent=2)}'. Run with --for_real if you are sure.")
+            sys.exit(1)
+        else:
+            print(f"Updating the config with '{json.dumps(template, indent=2)}'.")
             print("Done.")
