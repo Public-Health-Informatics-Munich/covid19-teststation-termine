@@ -11,7 +11,7 @@ from peewee import DatabaseError
 from access_control.access_control import UserRoles
 from db import directives
 from db.migration import migrate_db, init_database
-from db.model import TimeSlot, Appointment, User, Booking, Migration
+from db.model import TimeSlot, Appointment, User, Booking, Migration, FrontendConfig
 from secret_token.secret_token import get_random_string, hash_pw
 
 log = logging.getLogger('cli')
@@ -255,4 +255,6 @@ def set_frontend_config(db: directives.PeeweeSession, instance_name: hug.types.t
             sys.exit(1)
         else:
             print(f"Updating the config with '{json.dumps(template, indent=2)}'.")
+            config = FrontendConfig.create(config=template)
+            config.save()
             print("Done.")
