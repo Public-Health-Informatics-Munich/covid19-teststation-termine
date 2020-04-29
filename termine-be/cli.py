@@ -225,16 +225,16 @@ def cancel_booking(db: directives.PeeweeSession, secret: hug.types.text, start_d
 
 @hug.cli()
 def set_frontend_config(db: directives.PeeweeSession, instance_name: hug.types.text, long_instance_name: hug.types.text,
-                        contact_info_coupons: hug.types.text, contact_info_appointments: hug.types.text = None,
+                        contact_info_bookings: hug.types.text, contact_info_appointments: hug.types.text = None,
                         for_real: hug.types.smart_boolean = False):
     with db.atomic():
-        if "@" in contact_info_coupons:
-            coupons_contact = f"<a href=\"mailto:{contact_info_coupons}\">{contact_info_coupons}</a>"
+        if "@" in contact_info_bookings:
+            bookings_contact = f"<a href=\"mailto:{contact_info_bookings}\">{contact_info_bookings}</a>"
         else:
-            coupons_contact = contact_info_coupons
+            bookings_contact = contact_info_bookings
 
         if not contact_info_appointments:
-            appointments_contact = coupons_contact
+            appointments_contact = bookings_contact
         else:
             if "@" in contact_info_appointments:
                 appointments_contact = f"<a href=\"mailto:{contact_info_appointments}\">{contact_info_appointments}</a>"
@@ -245,7 +245,7 @@ def set_frontend_config(db: directives.PeeweeSession, instance_name: hug.types.t
             "instanceName": f"{instance_name}",
             "longInstanceName": f"{long_instance_name}",
             "contactInfoCoupons": f"<span class=\"hintLabel\">Um mehr Termine vergeben zu können wenden Sie sich an "
-                                  f"{coupons_contact}</span>",
+                                  f"{bookings_contact}</span>",
             "contactInfoAppointment": f"<span class=\"hintLabel\">Kontaktieren Sie {appointments_contact}</span>"
         }
 
