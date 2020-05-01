@@ -6,8 +6,9 @@ from peewee import DateTimeField, IntegerField
 from playhouse.migrate import PostgresqlMigrator, ProgrammingError, migrate
 
 from config import config
+from config.config import FrontendSettings
 from db.directives import PeeweeSession
-from db.model import Migration, db_proxy, tables
+from db.model import Migration, db_proxy, tables, FrontendConfig
 
 import logging
 log = logging.getLogger('migration')
@@ -19,7 +20,7 @@ def init_database(db: PeeweeSession):
     with db.atomic():
         db_proxy.create_tables(tables)
         log.info("Tables created. Setting migration level.")
-        Migration.create(version=2)
+        Migration.create(version=3)
         log.info("Migration level set.")
 
 
@@ -66,4 +67,16 @@ def level_2(db, migration, migrator):
 
 
 def level_3(db, migration, migrator):
-    pass
+    with db.atomic():
+        log.info("creating table FrontendConfig...")
+        db.create_tables([FrontendConfig])
+        log.info("setting migration level to 3...")
+        migration.version = 3
+        migration.save()
+        try:
+            log.info("writing existing config to db...")
+            config = FrontendSettings.by_env()
+            FrontendConfig.create(config=config)
+            log.info("wrote existing config to db.")
+        except:
+            log.warning("no config found for env, set values with cli command set_frontend_config.")
