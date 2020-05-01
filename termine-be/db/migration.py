@@ -35,6 +35,8 @@ def migrate_db(db: PeeweeSession):
             if migration.version < 2:
                 # do everything for level 1
                 level_2(db, migration, migrator)
+            if migration.version < 3:
+                level_3(db, migration, migrator)
 
         except ProgrammingError:
             log.exception('Error - Migrations table not found, please run init_db first!')
@@ -61,3 +63,7 @@ def level_2(db, migration, migrator):
         )
         migration.version = 2
         migration.save()
+
+
+def level_3(db, migration, migrator):
+    pass

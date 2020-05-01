@@ -140,19 +140,20 @@ def change_user_pw(db: directives.PeeweeSession, username: hug.types.text, passw
 
 
 @hug.cli()
-def init_db(for_real: hug.types.smart_boolean = False):
+def init_db(db: directives.PeeweeSession, for_real: hug.types.smart_boolean = False):
     if not for_real:
         print('this will create the database (potentially destroying data), run with --for_real, if you are sure '
               '*and* have a backup')
         sys.exit(1)
     else:
-        try:
-            version = Migration.get()
-            print(f'Migration level is already set to version {version} - implying the db has already been '
-                  f'initialized. Run command `run_migrations` instead.')
-            sys.exit(1)
-        except DatabaseError:
-            init_database()
+        with db.atomic():
+            try:
+                migration = Migration.get()
+                print(f'Migration level is already set to version {migration.version} - implying the db has already been '
+                      f'initialized. Run command `run_migrations` instead.')
+                sys.exit(1)
+            except DatabaseError:
+                init_database()
 
 
 @hug.cli()
