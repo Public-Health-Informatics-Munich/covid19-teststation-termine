@@ -8,6 +8,27 @@ Developed for [LMU Division of Infectious Diseases and Tropical Medicine](http:/
 <img src=".github/show/booking-app-1.png"/>
 <a href="screenshots.md">More Screenshots</a>
 
+## Configuration of running instance
+
+### To generate or update the frontend configuration for the client (required for frontends)
+```bash
+cd termine-be
+pipenv install
+pipenv shell
+hug -f main.py -c set_frontend_config \
+  --instance_name STRING \
+  --long_instance_name STRING \
+  --contact_info_bookings EMAIL|PHONE \
+  [--contact_info_appointments EMAIL|PHONE]
+```
+`instance_name`         is the short form of
+`long_instance_name`    that is shown in the header of the frontends
+`contact_info_bookings` might be an email or phone number, and is shown when the number of possible bookings is depleted.
+`contact_info_appointments` might be an email or phone number,
+                            if left out takes the value of `contact_info_bookings`,
+                            and is shown when there are no free slots left to book appointments for.
+
+
 ## Current dev setup
 
 ### Start the database container

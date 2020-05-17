@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 import sys
@@ -5,8 +6,8 @@ import sys
 import hug
 
 from access_control.access_control import authentication, admin_authentication
-from config.config import FrontendSettings
-from db.directives import PeeweeContext
+from db.directives import PeeweeContext, PeeweeSession
+from db.model import FrontendConfig
 
 FORMAT = '%(asctime)s - %(levelname)s\t%(name)s: %(message)s'
 logging.basicConfig(format=FORMAT, stream=sys.stdout, level=logging.INFO)
@@ -43,13 +44,15 @@ def format_as_js(data: str, request=None, response=None):
 
 
 @hug.get("/config.js", requires=authentication, output=format_as_js)
-def instance_config():
-    return 'window.config = ' + FrontendSettings.json_by_env() + ';'
+def instance_config(db: PeeweeSession):
+    with db.atomic():
+        return f"window.config = {json.dumps(FrontendConfig.get().config)};"
 
 
 @hug.get("/admin/config.js", requires=admin_authentication, output=format_as_js)
-def instance_admin_config():
-    return 'window.config = ' + FrontendSettings.json_by_env() + ';'
+def instance_admin_config(db: PeeweeSession):
+    with db.atomic():
+        return f"window.config = {json.dumps(FrontendConfig.get().config)};"
 
 
 @hug.get("/healthcheck")

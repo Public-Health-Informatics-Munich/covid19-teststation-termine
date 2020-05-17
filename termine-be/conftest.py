@@ -63,6 +63,9 @@ def testing_db():
             hug.test.cli("init_db", for_real=True, module='main')
             hug.test.cli("add_user", ADMIN, password=ADMIN, role=UserRoles.ADMIN, module='main')
             hug.test.cli("add_user", USER, password=USER, role=UserRoles.USER, module='main')
+            hug.test.cli("set_frontend_config", instance_name="test", long_instance_name="test test test",
+                         contact_info_bookings="test@example.org", contact_info_appointments='1234567', for_real=True,
+                         module='main')
             log.info('in-mem test db setup done')
             yield pwc.db
             log.info('tearing down in-mem test db')

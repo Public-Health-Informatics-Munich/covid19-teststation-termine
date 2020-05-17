@@ -6,7 +6,7 @@ verify_ssl = true
 [dev-packages]
 pytest = "*"
 pysqlite3 = "*"
-pysqlite3-binary = "*"
+pytest-dependency = "*"
 
 [packages]
 hug = "*"

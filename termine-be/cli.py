@@ -1,5 +1,6 @@
 import csv
 import io
+import json
 import logging
 import sys
 from datetime import datetime, timedelta
@@ -10,7 +11,7 @@ from peewee import DatabaseError
 from access_control.access_control import UserRoles
 from db import directives
 from db.migration import migrate_db, init_database
-from db.model import TimeSlot, Appointment, User, Booking, Migration
+from db.model import TimeSlot, Appointment, User, Booking, Migration, FrontendConfig
 from secret_token.secret_token import get_random_string, hash_pw
 
 log = logging.getLogger('cli')
@@ -139,19 +140,20 @@ def change_user_pw(db: directives.PeeweeSession, username: hug.types.text, passw
 
 
 @hug.cli()
-def init_db(for_real: hug.types.smart_boolean = False):
+def init_db(db: directives.PeeweeSession, for_real: hug.types.smart_boolean = False):
     if not for_real:
         print('this will create the database (potentially destroying data), run with --for_real, if you are sure '
               '*and* have a backup')
         sys.exit(1)
     else:
-        try:
-            version = Migration.get()
-            print(f'Migration level is already set to version {version} - implying the db has already been '
-                  f'initialized. Run command `run_migrations` instead.')
-            sys.exit(1)
-        except DatabaseError:
-            init_database()
+        with db.atomic():
+            try:
+                migration = Migration.get()
+                print(f'Migration level is already set to version {migration.version} - implying the db has already been '
+                      f'initialized. Run command `run_migrations` instead.')
+                sys.exit(1)
+            except DatabaseError:
+                init_database()
 
 
 @hug.cli()
@@ -210,7 +212,8 @@ def cancel_booking(db: directives.PeeweeSession, secret: hug.types.text, start_d
             (Appointment.time_slot == timeslot)).get()
 
         if not for_real:
-            print(f"This would delete the booking with id '{booking.id}' and secret '{booking.secret}'. Run with --for_real if you are sure.")
+            print(f"This would delete the booking with id '{booking.id}' and secret '{booking.secret}'. Run with "
+                  f"--for_real if you are sure.")
             sys.exit(1)
         else:
             print(f"Deleting the booking with id '{booking.id}' and secret '{booking.secret}'.")
@@ -218,4 +221,41 @@ def cancel_booking(db: directives.PeeweeSession, secret: hug.types.text, start_d
             booking.appointment.save()
             q = Booking.delete().where(Booking.id == booking.id)
             q.execute()
+            print("Done.")
+
+
+@hug.cli()
+def set_frontend_config(db: directives.PeeweeSession, instance_name: hug.types.text, long_instance_name: hug.types.text,
+                        contact_info_bookings: hug.types.text, contact_info_appointments: hug.types.text = None,
+                        for_real: hug.types.smart_boolean = False):
+    with db.atomic():
+        if "@" in contact_info_bookings:
+            bookings_contact = f"<a href=\"mailto:{contact_info_bookings}\">{contact_info_bookings}</a>"
+        else:
+            bookings_contact = contact_info_bookings
+
+        if not contact_info_appointments:
+            appointments_contact = bookings_contact
+        else:
+            if "@" in contact_info_appointments:
+                appointments_contact = f"<a href=\"mailto:{contact_info_appointments}\">{contact_info_appointments}</a>"
+            else:
+                appointments_contact = contact_info_appointments
+
+        template = {
+            "instanceName": f"{instance_name}",
+            "longInstanceName": f"{long_instance_name}",
+            "contactInfoCoupons": f"<span class=\"hintLabel\">Um mehr Termine vergeben zu können wenden Sie sich an "
+                                  f"{bookings_contact}</span>",
+            "contactInfoAppointment": f"<span class=\"hintLabel\">Kontaktieren Sie {appointments_contact}</span>"
+        }
+
+        if not for_real:
+            print(f"This would update the config with '{json.dumps(template, indent=2)}'. Run with --for_real if you "
+                  f"are sure.")
+            sys.exit(1)
+        else:
+            print(f"Updating the config with '{json.dumps(template, indent=2)}'.")
+            config = FrontendConfig.create(config=template)
+            config.save()
             print("Done.")
