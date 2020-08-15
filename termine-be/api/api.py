@@ -20,8 +20,8 @@ def format_as_csv(data, request=None, response=None):
     return data
 
 
-@hug.get("/next_free_slots", requires=authentication)
-def next_free_slots(db: PeeweeSession, user: hug.directives.user):
+@hug.get("/next_free_slots")
+def next_free_slots(db: PeeweeSession):
     """
     SELECT t.start_date_time, count(a.time_slot_id)
 FROM appointment a
@@ -57,12 +57,12 @@ ORDER BY t.start_date_time
                 "timeSlotLength": slot.length_min
             } for slot in slots
             ],
-            "coupons": user.coupons
+            "coupons": 4
         }
 
 
-@hug.get("/claim_appointment", requires=authentication)
-def claim_appointment(db: PeeweeSession, start_date_time: hug.types.text, user: hug.directives.user):
+@hug.get("/claim_appointment")
+def claim_appointment(db: PeeweeSession, start_date_time: hug.types.text):
     """
     UPDATE appointment app
     SET claim_token = 'claimed'
@@ -79,7 +79,6 @@ def claim_appointment(db: PeeweeSession, start_date_time: hug.types.text, user: 
     """
     with db.atomic():
         try:
-            assert user.coupons > 0
             start_date_time_object = datetime.fromisoformat(start_date_time)
             now = datetime.now(tz=config.Settings.tz).replace(tzinfo=None)
             if start_date_time_object < now:
@@ -107,11 +106,10 @@ def claim_appointment(db: PeeweeSession, start_date_time: hug.types.text, user: 
             raise hug.HTTPBadRequest
 
 
-@hug.post("/book_appointment", requires=authentication)
-def book_appointment(db: PeeweeSession, body: hug.types.json, user: hug.directives.user):
+@hug.post("/book_appointment")
+def book_appointment(db: PeeweeSession, body: hug.types.json):
     with db.atomic():
         try:
-            assert user.coupons > 0
             if all(key in body for key in ('claim_token', 'start_date_time', 'first_name', 'name', 'phone', 'office')):
                 claim_token = body['claim_token']
                 start_date_time = body['start_date_time']
@@ -141,10 +139,8 @@ def book_appointment(db: PeeweeSession, body: hug.types.json, user: hug.directiv
 
                 booking = Booking.create(appointment=appointment, first_name=body['first_name'], surname=body['name'],
                                          phone=body['phone'], office=body['office'], secret=secret,
-                                         booked_by=user.user_name)
+                                         booked_by="unregistered_user")
                 booking.save()
-                user.coupons -= 1
-                user.save()
                 return {
                     "secret": booking.secret,
                     "time_slot": time_slot.start_date_time,
@@ -160,7 +156,7 @@ def book_appointment(db: PeeweeSession, body: hug.types.json, user: hug.directiv
             raise hug.HTTPBadRequest
 
 
-@hug.delete("/claim_token", requires=authentication)
+@hug.delete("/claim_token")
 def delete_claim_token(db: PeeweeSession, claim_token: hug.types.text):
     with db.atomic():
         try:
