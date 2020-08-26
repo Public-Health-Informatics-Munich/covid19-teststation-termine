@@ -52,7 +52,7 @@
     "New password": "New password",
     "Notify the patient of their access code:":
       "Notify the patient of their access code:",
-    Office: "Office",
+    Office: "Facility (Hospital/Station/Department)",
     Print: "Print",
     "Repeat new password": "Repeat new password",
     Save: "Save",

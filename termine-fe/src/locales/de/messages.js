@@ -42,7 +42,7 @@
     "New password": "Neues Passwort",
     "Notify the patient of their access code:":
       "Teilen Sie dem Patienten jetzt den Berechtigungscode mit:",
-    Office: "Beh\xF6rde",
+    Office: "Einrichtung (Klinik/Station/Abteilung)",
     Print: "Drucken",
     "Repeat new password": "Neues Passwort wiederholen",
     Save: "Speichern",
