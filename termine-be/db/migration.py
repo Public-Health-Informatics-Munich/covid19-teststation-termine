@@ -20,7 +20,7 @@ def init_database(db: PeeweeSession):
     with db.atomic():
         db_proxy.create_tables(tables)
         log.info("Tables created. Setting migration level.")
-        Migration.create(version=3)
+        Migration.create(version=4)
         log.info("Migration level set.")
 
 
@@ -38,6 +38,8 @@ def migrate_db(db: PeeweeSession):
                 level_2(db, migration, migrator)
             if migration.version < 3:
                 level_3(db, migration, migrator)
+            if migration.version < 4:
+                level_4(db, migration, migrator)
 
         except ProgrammingError:
             log.exception('Error - Migrations table not found, please run init_db first!')
