@@ -76,13 +76,52 @@ span.icon-refresh {
 span.icon-refresh.animated {
   animation: spinner-donut-anim 1.25s ease-in-out infinite;
 }
+
 .input-group.vertical > input {
   min-width: stretch;
   min-width: -moz-available;
   min-width: -webkit-fill-available;
-  min-height: fit-content;
+  min-height: 40px;
   min-height: -moz-fit-content;
   min-height: -webkit-fit-content;
+}
+
+.button.primary,
+[role="button"].primary,
+[type="button"].primary,
+[type="reset"].primary,
+[type="submit"].primary,
+button.primary {
+  --button-back-color: #1976d2;
+  --button-fore-color: #f8f8f8;
+  background-color: #1976d2;
+  color: #f8f8f8;
+}
+
+.button.primary:focus,
+.button.primary:hover,
+[role="button"].primary:focus,
+[role="button"].primary:hover,
+[type="button"].primary:focus,
+[type="button"].primary:hover,
+[type="reset"].primary:focus,
+[type="reset"].primary:hover,
+[type="submit"].primary:focus,
+[type="submit"].primary:hover,
+button.primary:focus,
+button.primary:hover {
+  --button-hover-back-color: #1565c0;
+  background-color: #1565c0;
+}
+
+table:not(.horizontal) td,
+table:not(.horizontal) th {
+  flex: 1 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 1.2em;
+  display: flex;
+  align-items: center;
 }
 
 @media print {
