@@ -2,7 +2,7 @@ import sys
 from datetime import datetime
 
 import hug
-from peewee import DateTimeField, IntegerField
+from peewee import DateTimeField, IntegerField, CharField, DateField
 from playhouse.migrate import PostgresqlMigrator, ProgrammingError, migrate
 
 from config import config
@@ -80,3 +80,22 @@ def level_3(db, migration, migrator):
             log.info("wrote existing config to db.")
         except:
             log.warning("no config found for env, set values with cli command set_frontend_config.")
+
+def level_4(db, migration, migrator):
+    with db.atomic():
+        street_field = CharField(null=True)
+        street_number_field = CharField(null=True)
+        post_code_field = CharField(null=True)
+        city_field = CharField(null=True)
+        birthday_field = DateField(null=True)
+        reason_field = CharField(null=True)
+        migrate(
+            migrator.add_column('booking', 'street', street_field),
+            migrator.add_column('booking', 'street_number', street_number_field),
+            migrator.add_column('booking', 'post_code', post_code_field),
+            migrator.add_column('booking', 'city', city_field),
+            migrator.add_column('booking', 'birthday', birthday_field),
+            migrator.add_column('booking', 'reason', reason_field)
+        )
+        migration.version = 4
+        migration.save()

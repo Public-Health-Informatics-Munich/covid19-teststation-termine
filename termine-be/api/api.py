@@ -138,7 +138,9 @@ def book_appointment(db: PeeweeSession, body: hug.types.json):
                             pass
 
                 booking = Booking.create(appointment=appointment, first_name=body['first_name'], surname=body['name'],
-                                         phone=body['phone'], office=body['office'], secret=secret,
+                                         phone=body['phone'], street=body['street'], street_number=body['street_number'],
+                                         post_code=body['post_code'], city=body['city'], birthday=body['birthday'],
+                                         reason=body['reason'], office=body['office'], secret=secret,
                                          booked_by="unregistered_user")
                 booking.save()
                 return {
@@ -242,15 +244,27 @@ def list_for_day(db: PeeweeSession,
             worksheet.set_column('G:G', 15)
             worksheet.set_column('H:H', 15)
             worksheet.set_column('I:I', 15)
+            worksheet.set_column('J:J', 15)
+            worksheet.set_column('K:K', 15)
+            worksheet.set_column('L:L', 15)
+            worksheet.set_column('M:M', 15)
+            worksheet.set_column('N:N', 15)
+            worksheet.set_column('O:O', 15)
             worksheet.write('A1', 'Termin', bold)
             worksheet.write('B1', 'Uhrzeit', bold)
             worksheet.write('C1', 'Vorname', bold)
             worksheet.write('D1', 'Nachname', bold)
             worksheet.write('E1', 'Telefon', bold)
-            worksheet.write('F1', 'Berechtigungscode', bold)
-            worksheet.write('G1', 'Behörde', bold)
-            worksheet.write('H1', 'Gebucht von', bold)
-            worksheet.write('I1', 'Gebucht am', bold)
+            worksheet.write('F1', 'Straße', bold)
+            worksheet.write('G1', 'Hausnummer', bold)
+            worksheet.write('H1', 'PLZ', bold)
+            worksheet.write('I1', 'Stadt', bold)
+            worksheet.write('J1', 'Geburtdatum', bold)
+            worksheet.write('K1', 'Grund des Tests', bold)
+            worksheet.write('L1', 'Berechtigungscode', bold)
+            worksheet.write('M1', 'Behörde', bold)
+            worksheet.write('N1', 'Gebucht von', bold)
+            worksheet.write('O1', 'Gebucht am', bold)
             row = 1
             col = 0
             for timeslot in TimeSlot.select().where(
@@ -270,10 +284,16 @@ def list_for_day(db: PeeweeSession,
                         worksheet.write_string(row, col + 2, booking.first_name)
                         worksheet.write_string(row, col + 3, booking.surname)
                         worksheet.write_string(row, col + 4, booking.phone)
-                        worksheet.write_string(row, col + 5, booking.secret)
-                        worksheet.write_string(row, col + 6, booking.office)
-                        worksheet.write_string(row, col + 7, booking.booked_by)
-                        worksheet.write_datetime(row, col + 8, booking.booked_at, date_format)
+                        worksheet.write_string(row, col + 5, booking.street)
+                        worksheet.write_string(row, col + 6, booking.street_number)
+                        worksheet.write_string(row, col + 7, booking.post_code)
+                        worksheet.write_string(row, col + 8, booking.city)
+                        worksheet.write_datetime(row, col + 9, booking.birthday, date_format)
+                        worksheet.write_string(row, col + 10, booking.reason)
+                        worksheet.write_string(row, col + 11, booking.secret)
+                        worksheet.write_string(row, col + 12, booking.office)
+                        worksheet.write_string(row, col + 13, booking.booked_by)
+                        worksheet.write_datetime(row, col + 14, booking.booked_at, date_format)
                         row += 1
                     except DoesNotExist as e:
                         pass
