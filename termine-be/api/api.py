@@ -15,6 +15,7 @@ from secret_token.secret_token import get_random_string, get_secret_token, hash_
 
 log = logging.getLogger('api')
 
+
 @hug.format.content_type('text/comma-separated-values')
 def format_as_csv(data, request=None, response=None):
     return data
@@ -128,6 +129,12 @@ def book_appointment(db: PeeweeSession, body: hug.types.json):
                 appointment.claimed_at = None
                 appointment.save()
                 success = False
+                street = body['street'] if 'street' in body else None
+                street_number = body['street_number'] if 'street_number' in body else None
+                post_code = body['post_code'] if 'post_code' in body else None
+                city = body['city'] if 'city' in body else None
+                birthday = body['birthday'] if 'birthday' in body else None
+                reason = body['reason'] if 'reason' in body else None
                 with db.atomic():
                     while not success:
                         secret = get_secret_token(6)
@@ -138,9 +145,10 @@ def book_appointment(db: PeeweeSession, body: hug.types.json):
                             pass
 
                 booking = Booking.create(appointment=appointment, first_name=body['first_name'], surname=body['name'],
-                                         phone=body['phone'], street=body['street'], street_number=body['street_number'],
-                                         post_code=body['post_code'], city=body['city'], birthday=body['birthday'],
-                                         reason=body['reason'], office=body['office'], secret=secret,
+                                         phone=body['phone'], street=street,
+                                         street_number=street_number,
+                                         post_code=post_code, city=city, birthday=birthday,
+                                         reason=reason, office=body['office'], secret=secret,
                                          booked_by="unregistered_user")
                 booking.save()
                 return {
