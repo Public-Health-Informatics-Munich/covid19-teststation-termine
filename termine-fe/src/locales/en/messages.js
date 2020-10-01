@@ -34,11 +34,13 @@
     Cancel: "Cancel",
     "Change password:": "Change password:",
     "Choose an appointment": "Choose an appointment",
+    City: "City",
     "Current password": "Current password",
     "Currently <0><1>no Appointments</1></0> are free.":
       "Currently <0><1>no Appointments</1></0> are free.",
     Date: "Date",
     "Date of Appointment": "Date of Appointment",
+    DayOfBirth: "Day of Birth",
     "Enter the information for the {0}, {1}": function (a) {
       return ["Enter the information for the ", a("0"), ", ", a("1")];
     },
@@ -46,6 +48,7 @@
     "Free appointments": "Free appointments",
     From: "From",
     "Given Name": "Given Name",
+    "Home Address": "Home Address",
     Logout: "Logout",
     "Mobile No.": "Mobile No.",
     "My appointments": "My appointments",
@@ -53,11 +56,15 @@
     "Notify the patient of their access code:":
       "Notify the patient of their access code:",
     Office: "Facility (Hospital/Station/Department)",
+    PostCode: "Postal Code",
     Print: "Print",
+    Reason: "Test Reason",
     "Repeat new password": "Repeat new password",
     Save: "Save",
     "Saving...": "Saving...",
     Settings: "Settings",
+    Street: "Street",
+    StreetNumber: "Street Number",
     Surname: "Surname",
     "The appointment is no longer available, please select another free appointment.":
       "The appointment is no longer available, please select another free appointment.",

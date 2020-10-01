@@ -40,7 +40,19 @@ export default function Booking({
     onBook({ ...data, claimToken, startDateTime });
   };
 
-  const { office, firstName, name, phone } = state;
+  const {
+    office,
+    firstName,
+    name,
+    street,
+    streetNumber,
+    postcode,
+    city,
+    phone,
+    dayOfBirth,
+    reason,
+  } = state;
+
   return (
     <form
       className={disable ? "disabled" : ""}
@@ -76,6 +88,59 @@ export default function Booking({
           value={name}
           ref={register({ required: true })}
         />
+        <fieldset className="input-group vertical">
+          <legend>
+            <Trans>Home Address</Trans>
+          </legend>
+          <label htmlFor="street" className="displayFlex">
+            <Trans>Street</Trans> {errors.name && renderInputRequired()}
+          </label>
+          <input
+            id="street"
+            name="street"
+            readOnly={disable}
+            disabled={disable}
+            onChange={updateField}
+            value={street}
+            ref={register({ required: true })}
+          />
+          <label htmlFor="streetnumber" className="displayFlex">
+            <Trans>StreetNumber</Trans> {errors.name && renderInputRequired()}
+          </label>
+          <input
+            id="streetNumber"
+            name="streetNumber"
+            readOnly={disable}
+            disabled={disable}
+            onChange={updateField}
+            value={streetNumber}
+            ref={register({ required: true })}
+          />
+          <label htmlFor="postCode" className="displayFlex">
+            <Trans>PostCode</Trans> {errors.name && renderInputRequired()}
+          </label>
+          <input
+            id="postCode"
+            name="postCode"
+            readOnly={disable}
+            disabled={disable}
+            onChange={updateField}
+            value={postcode}
+            ref={register({ required: true })}
+          />
+          <label htmlFor="city" className="displayFlex">
+            <Trans>City</Trans> {errors.name && renderInputRequired()}
+          </label>
+          <input
+            id="city"
+            name="city"
+            readOnly={disable}
+            disabled={disable}
+            onChange={updateField}
+            value={city}
+            ref={register({ required: true })}
+          />
+        </fieldset>
         <label htmlFor="phone" className="displayFlex">
           <Trans>Mobile No.</Trans> {errors.phone && renderInputRequired()}
         </label>
@@ -88,6 +153,18 @@ export default function Booking({
           value={phone}
           ref={register({ required: true })}
         />
+        <label htmlFor="dayOfBirth" className="displayFlex">
+          <Trans>DayOfBirth</Trans> {errors.phone && renderInputRequired()}
+        </label>
+        <input
+          id="dayOfBirth"
+          name="dayOfBirth"
+          readOnly={disable}
+          disabled={disable}
+          onChange={updateField}
+          value={dayOfBirth}
+          ref={register({ required: true })}
+        />
         <label htmlFor="office" className="displayFlex">
           <Trans>Office</Trans> {errors.office && renderInputRequired()}
         </label>
@@ -98,6 +175,18 @@ export default function Booking({
           disabled={disable}
           onChange={updateField}
           value={office}
+          ref={register({ required: true })}
+        />
+        <label htmlFor="reason" className="displayFlex">
+          <Trans>Reason</Trans> {errors.office && renderInputRequired()}
+        </label>
+        <input
+          id="reason"
+          name="reason"
+          readOnly={disable}
+          disabled={disable}
+          onChange={updateField}
+          value={reason}
           ref={register({ required: true })}
         />
         <input

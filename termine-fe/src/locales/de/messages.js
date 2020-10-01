@@ -24,11 +24,13 @@
     Cancel: "Abbrechen",
     "Change password:": "Passwort \xE4ndern:",
     "Choose an appointment": "W\xE4hlen Sie einen Termin aus",
+    City: "Ort",
     "Current password": "Aktuelles Passwort",
     "Currently <0><1>no Appointments</1></0> are free.":
       "Aktuell sind <0><1>keine Termine</1></0> mehr frei.",
     Date: "Datum",
     "Date of Appointment": "Datum des Termins",
+    DayOfBirth: "Geburtsdatum",
     "Enter the information for the {0}, {1}": function (a) {
       return ["Tragen Sie die Daten f\xFCr den ", a("0"), ", ", a("1"), " ein"];
     },
@@ -36,6 +38,7 @@
     "Free appointments": "Freie Termine",
     From: "Von",
     "Given Name": "Vorname",
+    "Home Address": "Privatanschrift",
     Logout: "Logout",
     "Mobile No.": "Handynummer",
     "My appointments": "Meine Buchungen",
@@ -43,11 +46,15 @@
     "Notify the patient of their access code:":
       "Teilen Sie dem Patienten jetzt den Berechtigungscode mit:",
     Office: "Einrichtung (Klinik/Station/Abteilung)",
+    PostCode: "Postleitzahl",
     Print: "Drucken",
+    Reason: "Grund des Tests",
     "Repeat new password": "Neues Passwort wiederholen",
     Save: "Speichern",
     "Saving...": "Wird gespeichert...",
     Settings: "Einstellungen",
+    Street: "Straße",
+    StreetNumber: "Hausnummer",
     Surname: "Nachname",
     "The appointment is no longer available, please select another free appointment.":
       "Leider ist der Termin inzwischen nicht mehr buchbar, bitte einen anderen Termin w\xE4hlen.",
