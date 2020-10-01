@@ -224,6 +224,15 @@ function App({ i18n }) {
       });
   };
 
+  const onDeleteBooking = (id) => {
+    Api.deleteBooking(id).then((response) => {
+      console.log(response.statusText);
+      if (response.status === 200) {
+        getBookedListData();
+      }
+    });
+  };
+
   const logout = () => {
     Api.logout();
   };
@@ -283,6 +292,7 @@ function App({ i18n }) {
             setStartDate={setStartDate}
             endDate={endDate}
             setEndDate={setEndDate}
+            onDeleteBooking={onDeleteBooking}
           />
         </Route>
         <Route path={TAB.SETTINGS}>

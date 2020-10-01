@@ -38,6 +38,14 @@ export const book = (data) => {
   });
 };
 
+export const deleteBooking = (id) => {
+  return axios.delete(config.API_BASE_URL + "/booking", {
+    params: {
+      booking_id: id,
+    },
+  });
+};
+
 export const logout = () => {
   // credits go to https://stackoverflow.com/a/12866277
   const redirect = "/";

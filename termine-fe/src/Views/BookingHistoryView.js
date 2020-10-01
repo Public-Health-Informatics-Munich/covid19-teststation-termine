@@ -16,6 +16,7 @@ export default function BookingHistoryView({
   setStartDate,
   endDate,
   setEndDate,
+  onDeleteBooking,
 }) {
   return (
     <div className="col">
@@ -81,6 +82,7 @@ export default function BookingHistoryView({
             <th>
               <Trans>Access Code</Trans>
             </th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
@@ -99,6 +101,24 @@ export default function BookingHistoryView({
                 <td>{booking.first_name}</td>
                 <td>{booking.phone}</td>
                 <td>{booking.secret}</td>
+                <td align="right">
+                  <button
+                    type="button"
+                    className="secondary"
+                    onClick={() => {
+                      if (
+                        window.confirm(
+                          "Wollen Sie die Buchung wirklich löschen? Dies kann nicht rückgängig gemacht werden."
+                        )
+                      ) {
+                        onDeleteBooking(booking.booking_id);
+                        console.log("Confirmed");
+                      }
+                    }}
+                  >
+                    Delete
+                  </button>
+                </td>
               </tr>
             );
           })}
