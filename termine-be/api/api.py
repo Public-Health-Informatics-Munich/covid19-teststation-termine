@@ -340,7 +340,7 @@ def booked(db: PeeweeSession, user: hug.directives.user, start_date: hug.types.t
                         bookings.append({'start_date_time': timeslot.start_date_time, 'first_name': booking.first_name,
                                          'surname': booking.surname, 'phone': booking.phone, 'office': booking.office,
                                          'secret': booking.secret, 'booked_by': booking.booked_by,
-                                         'booked_at': booking.booked_at})
+                                         'booked_at': booking.booked_at, 'booking_id': booking.get_id()})
                     except DoesNotExist as e:
                         pass
             return bookings
@@ -348,6 +348,23 @@ def booked(db: PeeweeSession, user: hug.directives.user, start_date: hug.types.t
             raise hug.HTTPGone
         except ValueError as e:
             raise hug.HTTPBadRequest
+
+
+@hug.delete("/booking", requires=authentication)
+def delete_booking(db: PeeweeSession, user: hug.directives.user, booking_id: hug.types.text):
+    if user.role == UserRoles.ADMIN:
+        with db.atomic():
+            try:
+                booking = Booking.get_by_id(booking_id)
+                appointment = booking.appointment
+                appointment.booked = False
+                appointment.save()
+                booking.delete_instance()
+            except DoesNotExist as e:
+                raise hug.HTTP_NOT_FOUND
+        return {"booking_id": booking_id, "deleted": "successful"}
+    else:
+        raise hug.HTTP_METHOD_NOT_ALLOWED
 
 
 @hug.patch("/user", requires=authentication)
