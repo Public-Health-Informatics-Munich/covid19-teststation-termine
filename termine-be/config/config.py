@@ -40,4 +40,4 @@ class FrontendSettings:
         return json.dumps(cls.instance_by_env())
 
 
-seed = os.getenv("PASSWORD_HASH_SEED_DO_NOT_CHANGE") or 'Wir sind SEEED'
+seed = os.environ.get("PASSWORD_HASH_SEED_DO_NOT_CHANGE", 'Wir sind SEEED')
