@@ -5,7 +5,7 @@ import sys
 
 import hug
 
-from access_control.access_control import admin_authentication, switchable_authentication, authentication
+from access_control.access_control import admin_authentication, switchable_authentication
 from db.directives import PeeweeContext, PeeweeSession
 from db.model import FrontendConfig
 
