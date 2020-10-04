@@ -54,9 +54,9 @@ yarn build
 cd termine-be
 pipenv install
 pipenv shell
-hug -f main.py -c db init_db --for_real
-hug -f main.py -c db add_user --u user [--role admin]
-hug -f main.py -c db create_appointments $(date +"%-d %-m")
+hug -f main.py -c init_db --for_real
+hug -f main.py -c add_user --u user [--role admin]
+hug -f main.py -c create_appointments $(date +"%-d %-m")
 hug -f main.py
 ```
 
