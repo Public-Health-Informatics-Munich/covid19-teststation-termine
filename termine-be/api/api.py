@@ -7,7 +7,7 @@ import hug
 import xlsxwriter
 from peewee import fn, DoesNotExist, IntegrityError
 
-from access_control.access_control import authentication, UserRoles
+from access_control.access_control import authentication, UserRoles, switchable_authentication
 from config import config
 from db.directives import PeeweeSession
 from db.model import TimeSlot, Appointment, Booking, SlotCode, User
@@ -21,8 +21,8 @@ def format_as_csv(data, request=None, response=None):
     return data
 
 
-@hug.get("/next_free_slots")
-def next_free_slots(db: PeeweeSession):
+@hug.get("/next_free_slots", requires=switchable_authentication)
+def next_free_slots(db: PeeweeSession, user: hug.directives.user):
     """
     SELECT t.start_date_time, count(a.time_slot_id)
 FROM appointment a
@@ -58,12 +58,12 @@ ORDER BY t.start_date_time
                 "timeSlotLength": slot.length_min
             } for slot in slots
             ],
-            "coupons": 4
+            "coupons": user.coupons
         }
 
 
-@hug.get("/claim_appointment")
-def claim_appointment(db: PeeweeSession, start_date_time: hug.types.text):
+@hug.get("/claim_appointment", requires=switchable_authentication)
+def claim_appointment(db: PeeweeSession, start_date_time: hug.types.text, user: hug.directives.user):
     """
     UPDATE appointment app
     SET claim_token = 'claimed'
@@ -80,6 +80,8 @@ def claim_appointment(db: PeeweeSession, start_date_time: hug.types.text):
     """
     with db.atomic():
         try:
+            if user.role != UserRoles.ANON:
+                assert user.coupons > 0
             start_date_time_object = datetime.fromisoformat(start_date_time)
             now = datetime.now(tz=config.Settings.tz).replace(tzinfo=None)
             if start_date_time_object < now:
@@ -107,8 +109,8 @@ def claim_appointment(db: PeeweeSession, start_date_time: hug.types.text):
             raise hug.HTTPBadRequest
 
 
-@hug.post("/book_appointment")
-def book_appointment(db: PeeweeSession, body: hug.types.json):
+@hug.post("/book_appointment", requires=switchable_authentication)
+def book_appointment(db: PeeweeSession, body: hug.types.json, user: hug.directives.user):
     with db.atomic():
         try:
             if all(key in body for key in ('claim_token', 'start_date_time', 'first_name', 'name', 'phone', 'office')):
@@ -149,7 +151,7 @@ def book_appointment(db: PeeweeSession, body: hug.types.json):
                                          street_number=street_number,
                                          post_code=post_code, city=city, birthday=birthday,
                                          reason=reason, office=body['office'], secret=secret,
-                                         booked_by="unregistered_user")
+                                         booked_by=user.user_name)
                 booking.save()
                 return {
                     "secret": booking.secret,
@@ -166,7 +168,7 @@ def book_appointment(db: PeeweeSession, body: hug.types.json):
             raise hug.HTTPBadRequest
 
 
-@hug.delete("/claim_token")
+@hug.delete("/claim_token", requires=switchable_authentication)
 def delete_claim_token(db: PeeweeSession, claim_token: hug.types.text):
     with db.atomic():
         try:
@@ -268,7 +270,7 @@ def list_for_day(db: PeeweeSession,
             worksheet.write('H1', 'PLZ', bold)
             worksheet.write('I1', 'Stadt', bold)
             worksheet.write('J1', 'Geburtdatum', bold)
-            worksheet.write('K1', 'Grund des Tests', bold)
+            worksheet.write('K1', 'Risikokategorie 1', bold)
             worksheet.write('L1', 'Berechtigungscode', bold)
             worksheet.write('M1', 'Behörde', bold)
             worksheet.write('N1', 'Gebucht von', bold)

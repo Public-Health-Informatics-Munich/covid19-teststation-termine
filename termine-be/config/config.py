@@ -1,17 +1,22 @@
 import json
 import os
+import marshmallow as ma
+import typing
 
 import pytz
 
 
 class Db:
-    url = os.getenv("DB_URL") or 'postgresql://postgres:example@localhost:5432/termine'
+    url = os.environ.get("DB_URL", 'postgresql://postgres:example@localhost:5432/termine')
 
 
 class Settings:
-    claim_timeout_min = int(os.getenv("CLAIM_TIMEOUT_MIN") or 5)
-    num_display_slots = int(os.getenv("DISPLAY_SLOTS_COUNT") or 150)
-    tz = pytz.timezone(os.getenv("TERMINE_TIME_ZONE") or 'Europe/Berlin')
+    _int_ma = ma.fields.Int(missing=typing.Any)
+    _bool_ma = ma.fields.Bool(missing=typing.Any)
+    claim_timeout_min = _int_ma.deserialize(os.environ.get("CLAIM_TIMEOUT_MIN", 5))
+    num_display_slots = _int_ma.deserialize(os.environ.get("DISPLAY_SLOTS_COUNT", 150))
+    tz = pytz.timezone(os.environ.get("TERMINE_TIME_ZONE", 'Europe/Berlin'))
+    disable_auth_for_booking = _bool_ma.deserialize(os.environ.get("DISABLE_AUTH", False))
 
 
 class FrontendSettings:
@@ -19,7 +24,7 @@ class FrontendSettings:
 
     @classmethod
     def by_env(cls):
-        env_name = os.getenv("ENVIRONMENT") or "local"
+        env_name = os.environ.get("ENVIRONMENT", "local")
         with open(os.path.join("config", 'by_env', f'{env_name}.json')) as file:
             frontend_conf = json.load(file)
             return frontend_conf
