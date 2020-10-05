@@ -101,7 +101,7 @@ export default function BookingHistoryView({
                 <td>{booking.first_name}</td>
                 <td>{booking.phone}</td>
                 <td>{booking.secret}</td>
-                <td align="right">
+                <td className="cellAlignRight">
                   <button
                     type="button"
                     className="secondary"
