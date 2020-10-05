@@ -9,6 +9,7 @@ import { Calendar } from "react-calendar";
 import { Trans, t } from "@lingui/macro";
 import config from "../config";
 import "react-calendar/dist/Calendar.css";
+import { MdDeleteForever } from "react-icons/md";
 
 export default function BookingHistoryView({
   i18n,
@@ -121,7 +122,7 @@ export default function BookingHistoryView({
                       }
                     }}
                   >
-                    Delete
+                    <MdDeleteForever />
                   </button>
                 </td>
               </tr>
