@@ -3,6 +3,7 @@ import {
   formatStartTime,
   ISOStringWithoutTimeZone,
 } from "../utils";
+import { ErrorBox } from "../Components/ErrorBox";
 import React from "react";
 import { Calendar } from "react-calendar";
 import { Trans, t } from "@lingui/macro";
@@ -14,6 +15,7 @@ export default function BookingHistoryView({
   bookedList,
   startDate,
   setStartDate,
+  errorMessage,
   endDate,
   setEndDate,
   onDeleteBooking,
@@ -60,6 +62,9 @@ export default function BookingHistoryView({
             return false;
           }}
         />
+      </div>
+      <div>
+        {errorMessage !== "" && <ErrorBox errorMessage={errorMessage} />}
       </div>
       <table className="dataTable printme" id="printme">
         <thead>

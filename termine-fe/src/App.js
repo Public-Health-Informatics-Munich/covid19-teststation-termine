@@ -57,6 +57,9 @@ function App({ i18n }) {
   const [bookedList, setBookedList] = useState([]);
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
+  const [bookingHistoryErrorMessage, setBookingHistoryErrorMessage] = useState(
+    ""
+  );
 
   const getSlotListData = useCallback(() => {
     return Api.fetchSlots()
@@ -225,12 +228,21 @@ function App({ i18n }) {
   };
 
   const onDeleteBooking = (id) => {
-    Api.deleteBooking(id).then((response) => {
-      console.log(response.statusText);
-      if (response.status === 200) {
-        getBookedListData();
-      }
-    });
+    Api.deleteBooking(id)
+      .then((response) => {
+        console.log(response.statusText);
+        if (response.status === 200) {
+          getBookedListData();
+          setBookingHistoryErrorMessage("");
+        }
+      })
+      .catch((error) => {
+        setBookingHistoryErrorMessage(
+          i18n._(
+            t`Deleting the appointment did not work. Please contact your administrator.`
+          )
+        );
+      });
   };
 
   const logout = () => {
@@ -291,6 +303,7 @@ function App({ i18n }) {
             startDate={startDate}
             setStartDate={setStartDate}
             endDate={endDate}
+            errorMessage={bookingHistoryErrorMessage}
             setEndDate={setEndDate}
             onDeleteBooking={onDeleteBooking}
           />
