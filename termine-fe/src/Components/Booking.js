@@ -5,6 +5,7 @@ import { INFOBOX_STATES } from "../utils";
 import DatePicker from "react-datepicker";
 import { format } from "date-fns";
 import "react-datepicker/dist/react-datepicker.css";
+let reasons = require("../locales/de/reasons.json");
 
 const renderInputRequired = () => (
   <span className="hintLabel">
@@ -63,6 +64,10 @@ export default function Booking({
     dayOfBirth,
     reason,
   } = state;
+
+  const reasonItems = reasons.map((value) => (
+    <option value={value}>{value}</option>
+  ));
 
   return (
     <form
@@ -193,15 +198,14 @@ export default function Booking({
         <label htmlFor="reason" className="displayFlex">
           <Trans>Reason</Trans> {errors.office && renderInputRequired()}
         </label>
-        <input
+        <select
           id="reason"
           name="reason"
-          readOnly={disable}
-          disabled={disable}
           onChange={updateField}
-          value={reason}
           ref={register({ required: true })}
-        />
+        >
+          {reasonItems}
+        </select>
         <input
           type="submit"
           className="primary"
