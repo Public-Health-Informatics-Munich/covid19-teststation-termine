@@ -1,7 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Trans, t } from "@lingui/macro";
 import { INFOBOX_STATES } from "../utils";
+import DatePicker from "react-datepicker";
+import { format } from "date-fns";
+import "react-datepicker/dist/react-datepicker.css";
 
 const renderInputRequired = () => (
   <span className="hintLabel">
@@ -20,12 +23,20 @@ export default function Booking({
   setState,
   inputRef,
 }) {
+  const [startDate, setStartDate] = useState(new Date("1990-01-01"));
   const { register, handleSubmit, reset, errors } = useForm();
 
   const updateField = (e) => {
     setState({
       ...state,
       [e.target.id]: e.target.value,
+    });
+  };
+
+  const updateDayOfBirth = (date) => {
+    setState({
+      ...state,
+      dayOfBirth: format(date, "yyyy-MM-dd"),
     });
   };
 
@@ -156,14 +167,16 @@ export default function Booking({
         <label htmlFor="dayOfBirth" className="displayFlex">
           <Trans>DayOfBirth</Trans> {errors.phone && renderInputRequired()}
         </label>
-        <input
-          id="dayOfBirth"
-          name="dayOfBirth"
-          readOnly={disable}
-          disabled={disable}
-          onChange={updateField}
-          value={dayOfBirth}
-          ref={register({ required: true })}
+        <DatePicker
+          showYearDropdown
+          dropdownMode="select"
+          maxDate={new Date()}
+          selected={startDate}
+          onChange={(date) => {
+            setStartDate(date);
+            updateDayOfBirth(date);
+            console.log(state.dayOfBirth);
+          }}
         />
         <label htmlFor="office" className="displayFlex">
           <Trans>Office</Trans> {errors.office && renderInputRequired()}

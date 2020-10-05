@@ -13,6 +13,7 @@
     "mini.css": "^3.0.1",
     "react": "^16.13.1",
     "react-calendar": "^3.0.1",
+    "react-datepicker": "^3.2.2",
     "react-dom": "^16.13.1",
     "react-focus-lock": "^2.2.1",
     "react-hook-form": "^5.1.3",
