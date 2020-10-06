@@ -108,55 +108,64 @@ export default function Booking({
           <legend>
             <Trans>Home Address</Trans>
           </legend>
-          <label htmlFor="street" className="displayFlex">
-            <Trans>Street</Trans> {errors.name && renderInputRequired()}
-          </label>
-          <input
-            id="street"
-            name="street"
-            readOnly={disable}
-            disabled={disable}
-            onChange={updateField}
-            value={street}
-            ref={register({ required: true })}
-          />
-          <label htmlFor="streetnumber" className="displayFlex">
-            <Trans>StreetNumber</Trans> {errors.name && renderInputRequired()}
-          </label>
-          <input
-            id="streetNumber"
-            name="streetNumber"
-            readOnly={disable}
-            disabled={disable}
-            onChange={updateField}
-            value={streetNumber}
-            ref={register({ required: true })}
-          />
+          <fieldset className="input-group noBorder horizontal">
+            <label htmlFor="street" className="displayFlex">
+              <Trans>Street</Trans> {errors.name && renderInputRequired()}
+            </label>
+            <label
+              htmlFor="streetnumber"
+              className="displayFlex flexAlignRight"
+            >
+              <Trans>StreetNumber</Trans> {errors.name && renderInputRequired()}
+            </label>
+          </fieldset>
+          <fieldset className="input-group noBorder horizontal">
+            <input
+              id="street"
+              name="street"
+              readOnly={disable}
+              disabled={disable}
+              onChange={updateField}
+              value={street}
+              ref={register({ required: true })}
+            />
+            <input
+              id="streetNumber"
+              name="streetNumber"
+              readOnly={disable}
+              disabled={disable}
+              onChange={updateField}
+              value={streetNumber}
+              ref={register({ required: true })}
+            />
+          </fieldset>
           <label htmlFor="postCode" className="displayFlex">
             <Trans>PostCode</Trans> {errors.name && renderInputRequired()}
           </label>
-          <input
-            type="number"
-            id="postCode"
-            name="postCode"
-            readOnly={disable}
-            disabled={disable}
-            onChange={updateField}
-            value={postCode}
-            ref={register({ required: true })}
-          />
           <label htmlFor="city" className="displayFlex">
             <Trans>City</Trans> {errors.name && renderInputRequired()}
           </label>
-          <input
-            id="city"
-            name="city"
-            readOnly={disable}
-            disabled={disable}
-            onChange={updateField}
-            value={city}
-            ref={register({ required: true })}
-          />
+          <fieldset className="input-group noBorder horizontal">
+            <input
+              type="number"
+              id="postCode"
+              name="postCode"
+              readOnly={disable}
+              disabled={disable}
+              onChange={updateField}
+              value={postCode}
+              ref={register({ required: true })}
+            />
+            <input
+              id="city"
+              name="city"
+              readOnly={disable}
+              disabled={disable}
+              onChange={updateField}
+              value={city}
+              ref={register({ required: true })}
+            />
+          </fieldset>
         </fieldset>
         <label htmlFor="phone" className="displayFlex">
           <Trans>Mobile No.</Trans> {errors.phone && renderInputRequired()}
