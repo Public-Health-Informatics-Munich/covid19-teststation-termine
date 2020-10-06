@@ -158,7 +158,7 @@ function App({ i18n }) {
           streetNumber: "",
           city: "",
           postCode: "",
-          dayOfBirth: new Date("1990-01-01"),
+          dayOfBirth: "1990-01-01",
         });
         setFocusOnList(false);
       })
