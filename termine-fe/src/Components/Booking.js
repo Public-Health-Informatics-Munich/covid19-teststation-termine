@@ -48,8 +48,8 @@ export default function Booking({
     });
   };
 
-  const localOnBook = (data) => {
-    onBook({ ...data, claimToken, startDateTime });
+  const localOnBook = (_) => {
+    onBook({ ...state, claimToken, startDateTime });
   };
 
   const {
@@ -190,6 +190,8 @@ export default function Booking({
           <Trans>DayOfBirth</Trans> {errors.phone && renderInputRequired()}
         </label>
         <DatePicker
+          id="dayOfBirth"
+          name="dayOfBirth"
           showYearDropdown
           showMonthDropdown
           dropdownMode="select"
