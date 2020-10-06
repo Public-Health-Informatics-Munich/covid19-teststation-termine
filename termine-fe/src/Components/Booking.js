@@ -67,7 +67,7 @@ export default function Booking({
 
   const reasonItems = reasons.map((key) => (
     <option key={key} value={key}>
-      {i18n._(t`${key}`)}
+      {i18n._(key)}
     </option>
   ));
   return (

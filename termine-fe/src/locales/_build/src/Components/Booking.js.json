@@ -1,26 +1,122 @@
 {
   "This input is required.": {
-    "origin": [["src/Components/Booking.js", 8]]
+    "origin": [
+      [
+        "src/Components/Booking.js",
+        12
+      ]
+    ]
   },
   "Booking": {
-    "origin": [["src/Components/Booking.js", 53]]
+    "origin": [
+      [
+        "src/Components/Booking.js",
+        82
+      ]
+    ]
   },
   "Given Name": {
-    "origin": [["src/Components/Booking.js", 56]]
+    "origin": [
+      [
+        "src/Components/Booking.js",
+        85
+      ]
+    ]
   },
   "Surname": {
-    "origin": [["src/Components/Booking.js", 68]]
+    "origin": [
+      [
+        "src/Components/Booking.js",
+        97
+      ]
+    ]
+  },
+  "Home Address": {
+    "origin": [
+      [
+        "src/Components/Booking.js",
+        110
+      ]
+    ]
+  },
+  "Street": {
+    "origin": [
+      [
+        "src/Components/Booking.js",
+        116
+      ]
+    ]
+  },
+  "StreetNumber": {
+    "origin": [
+      [
+        "src/Components/Booking.js",
+        130
+      ]
+    ]
+  },
+  "PostCode": {
+    "origin": [
+      [
+        "src/Components/Booking.js",
+        147
+      ]
+    ]
+  },
+  "City": {
+    "origin": [
+      [
+        "src/Components/Booking.js",
+        162
+      ]
+    ]
   },
   "Mobile No.": {
-    "origin": [["src/Components/Booking.js", 80]]
+    "origin": [
+      [
+        "src/Components/Booking.js",
+        178
+      ]
+    ]
+  },
+  "DayOfBirth": {
+    "origin": [
+      [
+        "src/Components/Booking.js",
+        191
+      ]
+    ]
   },
   "Office": {
-    "origin": [["src/Components/Booking.js", 92]]
+    "origin": [
+      [
+        "src/Components/Booking.js",
+        208
+      ]
+    ]
+  },
+  "Reason": {
+    "origin": [
+      [
+        "src/Components/Booking.js",
+        220
+      ]
+    ]
   },
   "Book Appointment": {
-    "origin": [["src/Components/Booking.js", 107]]
+    "origin": [
+      [
+        "src/Components/Booking.js",
+        234
+      ]
+    ]
   },
   "Cancel": {
-    "origin": [["src/Components/Booking.js", 115]]
+    "origin": [
+      [
+        "src/Components/Booking.js",
+        242
+      ]
+    ]
   }
 }

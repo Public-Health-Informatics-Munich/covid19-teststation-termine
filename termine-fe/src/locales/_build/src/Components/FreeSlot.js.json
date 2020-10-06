@@ -1,5 +1,10 @@
 {
   "Book Appointment": {
-    "origin": [["src/Components/FreeSlot.js", 32]]
+    "origin": [
+      [
+        "src/Components/FreeSlot.js",
+        32
+      ]
+    ]
   }
 }

@@ -1,32 +1,82 @@
 {
   "From": {
-    "origin": [["src/Views/BookingHistoryView.js", 24]]
+    "origin": [
+      [
+        "src/Views/BookingHistoryView.js",
+        28
+      ]
+    ]
   },
   "To": {
-    "origin": [["src/Views/BookingHistoryView.js", 33]]
+    "origin": [
+      [
+        "src/Views/BookingHistoryView.js",
+        37
+      ]
+    ]
   },
   "Excel": {
-    "origin": [["src/Views/BookingHistoryView.js", 52]]
+    "origin": [
+      [
+        "src/Views/BookingHistoryView.js",
+        56
+      ]
+    ]
   },
   "Print": {
-    "origin": [["src/Views/BookingHistoryView.js", 56]]
+    "origin": [
+      [
+        "src/Views/BookingHistoryView.js",
+        60
+      ]
+    ]
   },
   "Date of Appointment": {
-    "origin": [["src/Views/BookingHistoryView.js", 67]]
+    "origin": [
+      [
+        "src/Views/BookingHistoryView.js",
+        74
+      ]
+    ]
   },
   "Booked at": {
-    "origin": [["src/Views/BookingHistoryView.js", 70]]
+    "origin": [
+      [
+        "src/Views/BookingHistoryView.js",
+        77
+      ]
+    ]
   },
   "Surname": {
-    "origin": [["src/Views/BookingHistoryView.js", 73]]
+    "origin": [
+      [
+        "src/Views/BookingHistoryView.js",
+        80
+      ]
+    ]
   },
   "Given Name": {
-    "origin": [["src/Views/BookingHistoryView.js", 76]]
+    "origin": [
+      [
+        "src/Views/BookingHistoryView.js",
+        83
+      ]
+    ]
   },
   "Mobile No.": {
-    "origin": [["src/Views/BookingHistoryView.js", 79]]
+    "origin": [
+      [
+        "src/Views/BookingHistoryView.js",
+        86
+      ]
+    ]
   },
   "Access Code": {
-    "origin": [["src/Views/BookingHistoryView.js", 82]]
+    "origin": [
+      [
+        "src/Views/BookingHistoryView.js",
+        89
+      ]
+    ]
   }
 }
