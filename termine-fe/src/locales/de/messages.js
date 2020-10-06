@@ -46,14 +46,14 @@
     "Notify the patient of their access code:":
       "Teilen Sie dem Patienten jetzt den Berechtigungscode mit:",
     Office: "Einrichtung (Klinik/Station/Abteilung)",
-    PostCode: "Postleitzahl",
     Print: "Drucken",
+    PostCode: "Postleitzahl",
     Reason: "Grund des Tests",
     "Repeat new password": "Neues Passwort wiederholen",
     Save: "Speichern",
     "Saving...": "Wird gespeichert...",
     Settings: "Einstellungen",
-    Street: "Straße",
+    Street: "Stra\xDFe",
     StreetNumber: "Hausnummer",
     Surname: "Nachname",
     "The appointment is no longer available, please select another free appointment.":

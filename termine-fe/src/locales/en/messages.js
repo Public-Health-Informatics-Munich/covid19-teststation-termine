@@ -56,10 +56,10 @@
     "Notify the patient of their access code:":
       "Notify the patient of their access code:",
     Office: "Facility (Hospital/Station/Department)",
-    PostCode: "Postal Code",
+    PostCode: "Post Code",
     Print: "Print",
-    Reason: "Test Reason",
     "Repeat new password": "Repeat new password",
+    Reason: "Test Reason",
     Save: "Save",
     "Saving...": "Saving...",
     Settings: "Settings",
