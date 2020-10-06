@@ -63,6 +63,18 @@ fieldset.noBorder {
   display: flex;
 }
 
+.vertical {
+  flex-direction: column;
+}
+
+.weight-1 {
+  flex-grow: 1;
+}
+
+.weight-12 {
+  flex-grow: 12;
+}
+
 .flexAlignRight {
   margin-left: auto;
 }
