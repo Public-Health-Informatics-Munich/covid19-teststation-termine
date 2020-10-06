@@ -58,7 +58,7 @@ export default function Booking({
     name,
     street,
     streetNumber,
-    postcode,
+    postCode,
     city,
     phone,
     dayOfBirth,
@@ -141,7 +141,7 @@ export default function Booking({
             readOnly={disable}
             disabled={disable}
             onChange={updateField}
-            value={postcode}
+            value={postCode}
             ref={register({ required: true })}
           />
           <label htmlFor="city" className="displayFlex">

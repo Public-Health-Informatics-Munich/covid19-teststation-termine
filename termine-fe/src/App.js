@@ -154,6 +154,11 @@ function App({ i18n }) {
           firstName: "",
           name: "",
           phone: "",
+          street: "",
+          streetNumber: "",
+          city: "",
+          postCode: "",
+          dayOfBirth: new Date("1990-01-01"),
         });
         setFocusOnList(false);
       })
