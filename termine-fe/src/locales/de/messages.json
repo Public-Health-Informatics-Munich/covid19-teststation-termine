@@ -47,5 +47,7 @@
   "This input is required.": "Dies ist ein Pflichtfeld.",
   "Timeslot": "Terminslot",
   "To": "Bis",
+  "Asymptomatische Beschwerden": "Asymptomatische Beschwerden",
+  "Reiserückkehrer aus Ausland": "Reiserückkehrer aus Ausland",
   "{coupons, plural, =0 {You can book} =1 {You can still book} other {You can still book}}<0><1>{coupons, plural, =0 {no appointment} =1 {one appointment} other {# appointments}}</1></0>{coupons, plural, =0 {anymore} =1 {} other {}}": "{coupons, plural, =0 {Sie können} =1 {Sie können noch} other {Sie können noch}} <0><1>{coupons, plural, =0 {keinen Termin} =1 {einen Termin} other {# Termine}}</1></0> {coupons, plural, =0 {mehr buchen} =1 {buchen} other {buchen}}"
 }

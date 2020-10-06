@@ -5,7 +5,7 @@ import { INFOBOX_STATES } from "../utils";
 import DatePicker from "react-datepicker";
 import { format } from "date-fns";
 import "react-datepicker/dist/react-datepicker.css";
-let reasons = require("../locales/de/reasons.json");
+let reasons = require("../config/reasons.json");
 
 const renderInputRequired = () => (
   <span className="hintLabel">
@@ -65,10 +65,11 @@ export default function Booking({
     reason,
   } = state;
 
-  const reasonItems = reasons.map((value) => (
-    <option value={value}>{value}</option>
+  const reasonItems = reasons.map((key) => (
+    <option key={key} value={key}>
+      {i18n._(t`${key}`)}
+    </option>
   ));
-
   return (
     <form
       className={disable ? "disabled" : ""}

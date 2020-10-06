@@ -76,6 +76,8 @@
     "This input is required.": "This input is required.",
     Timeslot: "Timeslot",
     To: "To",
+    "Asymptomatische Beschwerden": "Asymptomatic Case",
+    "Reiser\xFCckkehrer aus Ausland": "Returning Travellers",
     "{coupons, plural, =0 {You can book} =1 {You can still book} other {You can still book}}<0><1>{coupons, plural, =0 {no appointment} =1 {one appointment} other {# appointments}}</1></0>{coupons, plural, =0 {anymore} =1 {} other {}}": function (
       a
     ) {

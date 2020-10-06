@@ -8,6 +8,7 @@ import * as Api from "./Api";
 import BookView from "./Views/BookView";
 import BookingHistoryView from "./Views/BookingHistoryView";
 import SettingsView from "./Views/SettingsView";
+const reasons = require("./config/reasons.json");
 
 function App({ i18n }) {
   const useFocus = () => {
@@ -159,6 +160,7 @@ function App({ i18n }) {
           city: "",
           postCode: "",
           dayOfBirth: "1990-01-01",
+          reason: reasons[0],
         });
         setFocusOnList(false);
       })
