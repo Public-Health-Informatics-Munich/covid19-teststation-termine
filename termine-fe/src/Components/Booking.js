@@ -136,6 +136,7 @@ export default function Booking({
             <Trans>PostCode</Trans> {errors.name && renderInputRequired()}
           </label>
           <input
+            type="number"
             id="postCode"
             name="postCode"
             readOnly={disable}
@@ -161,6 +162,7 @@ export default function Booking({
           <Trans>Mobile No.</Trans> {errors.phone && renderInputRequired()}
         </label>
         <input
+          type="number"
           id="phone"
           name="phone"
           readOnly={disable}
@@ -174,6 +176,7 @@ export default function Booking({
         </label>
         <DatePicker
           showYearDropdown
+          showMonthDropdown
           dropdownMode="select"
           maxDate={new Date()}
           selected={startDate}
