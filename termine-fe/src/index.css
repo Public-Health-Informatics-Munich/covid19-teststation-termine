@@ -67,12 +67,16 @@ fieldset.noBorder {
   flex-direction: column;
 }
 
-.weight-1 {
-  flex-grow: 1;
+.width20Percent {
+  width: 20%;
 }
 
-.weight-12 {
-  flex-grow: 12;
+.width80Percent {
+  width: 80%;
+}
+
+.justifyBetween {
+  justify-content: space-between;
 }
 
 .flexAlignRight {

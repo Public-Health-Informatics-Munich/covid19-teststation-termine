@@ -110,67 +110,69 @@ export default function Booking({
             <Trans>Home Address</Trans>
           </legend>
           <div className="displayFlex vertical">
-            <div className="displayFlex">
-              <div className="displayFlex vertical weight-12">
-                <label htmlFor="street">
-                  <Trans>Street</Trans> {errors.name && renderInputRequired()}
-                </label>
-                <input
-                  id="street"
-                  name="street"
-                  readOnly={disable}
-                  disabled={disable}
-                  onChange={updateField}
-                  value={street}
-                  ref={register({ required: true })}
-                />
-              </div>
-              <div className="displayFlex vertical weight-1">
-                <label htmlFor="streetnumber">
-                  <Trans>StreetNumber</Trans>{" "}
-                  {errors.name && renderInputRequired()}
-                </label>
-                <input
-                  id="streetNumber"
-                  name="streetNumber"
-                  readOnly={disable}
-                  disabled={disable}
-                  onChange={updateField}
-                  value={streetNumber}
-                  ref={register({ required: true })}
-                />
-              </div>
+            <div className="displayFlex justifyBetween">
+              <label htmlFor="street">
+                <Trans>Street</Trans> {errors.name && renderInputRequired()}
+              </label>
+              <label htmlFor="streetnumber">
+                <Trans>StreetNumber</Trans>{" "}
+                {errors.name && renderInputRequired()}
+              </label>
             </div>
             <div className="displayFlex">
-              <div className="displayFlex vertical weight-1">
-                <label htmlFor="postCode">
-                  <Trans>PostCode</Trans> {errors.name && renderInputRequired()}
-                </label>
-                <input
-                  type="number"
-                  id="postCode"
-                  name="postCode"
-                  readOnly={disable}
-                  disabled={disable}
-                  onChange={updateField}
-                  value={postCode}
-                  ref={register({ required: true })}
-                />
-              </div>
-              <div className="displayFlex vertical weight-12">
-                <label htmlFor="city">
-                  <Trans>City</Trans> {errors.name && renderInputRequired()}
-                </label>
-                <input
-                  id="city"
-                  name="city"
-                  readOnly={disable}
-                  disabled={disable}
-                  onChange={updateField}
-                  value={city}
-                  ref={register({ required: true })}
-                />
-              </div>
+              <input
+                id="street"
+                name="street"
+                className="width80Percent"
+                readOnly={disable}
+                disabled={disable}
+                onChange={updateField}
+                value={street}
+                ref={register({ required: true })}
+              />
+              <input
+                id="streetNumber"
+                name="streetNumber"
+                className="width20Percent"
+                readOnly={disable}
+                disabled={disable}
+                onChange={updateField}
+                value={streetNumber}
+                ref={register({ required: true })}
+              />
+            </div>
+          </div>
+          <div className="displayFlex vertical">
+            <div className="displayFlex justifyBetween">
+              <label htmlFor="postCode">
+                <Trans>PostCode</Trans> {errors.name && renderInputRequired()}
+              </label>
+              <label htmlFor="city">
+                <Trans>City</Trans> {errors.name && renderInputRequired()}
+              </label>
+            </div>
+            <div className="displayFlex">
+              <input
+                type="number"
+                id="postCode"
+                name="postCode"
+                className="width20Percent"
+                readOnly={disable}
+                disabled={disable}
+                onChange={updateField}
+                value={postCode}
+                ref={register({ required: true })}
+              />
+              <input
+                id="city"
+                name="city"
+                className="width80Percent"
+                readOnly={disable}
+                disabled={disable}
+                onChange={updateField}
+                value={city}
+                ref={register({ required: true })}
+              />
             </div>
           </div>
         </fieldset>
