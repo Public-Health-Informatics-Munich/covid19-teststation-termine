@@ -153,7 +153,6 @@ export default function Booking({
             </div>
             <div className="displayFlex">
               <input
-                type="number"
                 id="postCode"
                 name="postCode"
                 className="width20Percent"
@@ -180,7 +179,6 @@ export default function Booking({
           <Trans>Mobile No.</Trans> {errors.phone && renderInputRequired()}
         </label>
         <input
-          type="number"
           id="phone"
           name="phone"
           readOnly={disable}
