@@ -48,6 +48,15 @@ input[type="button"]:focus {
   --card-fore-color: var(--success-color);
 }
 
+.successIE {
+  color: var(--success-color);
+}
+
+.errorIE {
+  border-color: var(--error-color);
+  border-width: 10px;
+}
+
 form.disabled {
   opacity: 0.3;
 }

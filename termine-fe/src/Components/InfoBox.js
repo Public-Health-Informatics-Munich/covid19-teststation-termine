@@ -1,7 +1,7 @@
 import { formatDate, formatTime, INFOBOX_STATES } from "../utils";
 import React from "react";
 import { Trans } from "@lingui/macro";
-
+var ie = require("ie-version");
 export const InfoBox = ({
   infoboxState,
   errorMessage,
@@ -9,10 +9,17 @@ export const InfoBox = ({
   bookedAppointment,
   secret,
 }) => {
+  var successTitleClass = "doc";
+  var errorClass = "card error fluid";
+  if (ie.version) {
+    successTitleClass = "doc successIE";
+    errorClass += " errorIE";
+  }
+
   return (
     <div id="messages">
       {infoboxState === INFOBOX_STATES.ERROR && (
-        <div className="card error fluid">
+        <div className={errorClass}>
           <div className="section">
             <h3 className="doc">
               <Trans>An error occurred</Trans>
@@ -24,7 +31,7 @@ export const InfoBox = ({
       {infoboxState === INFOBOX_STATES.APPOINTMENT_SUCCESS && (
         <div className="card success fluid">
           <div className="section">
-            <h3 className="doc">
+            <h3 className={successTitleClass}>
               <Trans>
                 Appointment for the{" "}
                 {formatDate(bookedAppointment.startDateTime)},{" "}
@@ -35,7 +42,7 @@ export const InfoBox = ({
                 has been booked
               </Trans>
             </h3>
-            <p className="doc">
+            <p className={successTitleClass}>
               <Trans>Notify the patient of their access code:</Trans>
             </p>
             <h3>
