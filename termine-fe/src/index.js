@@ -11,9 +11,7 @@ import { I18nProvider } from "@lingui/react";
 import { setupI18n } from "@lingui/core";
 import catalogEn from "./locales/en/messages";
 import catalogDe from "./locales/de/messages";
-import "react-app-polyfill/ie11";
-import "react-app-polyfill/stable";
-import "babel-polyfill";
+import "core-js";
 
 const i18n = setupI18n();
 const supportedLanguages = { en: catalogEn, de: catalogDe };
