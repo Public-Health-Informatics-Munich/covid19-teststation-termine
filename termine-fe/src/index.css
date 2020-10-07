@@ -95,6 +95,12 @@ table.dataTable:not(.horizontal) {
 
 td.cellAlignRight {
   justify-content: flex-end;
+  padding: 0px;
+  margin: 0px;
+}
+
+button.icon {
+  padding: 2px 10px;
 }
 
 span.icon-refresh {

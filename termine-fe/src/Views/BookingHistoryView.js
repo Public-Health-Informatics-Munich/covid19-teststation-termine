@@ -110,7 +110,7 @@ export default function BookingHistoryView({
                 <td className="cellAlignRight">
                   <button
                     type="button"
-                    className="secondary"
+                    className="secondary icon"
                     onClick={() => {
                       if (
                         window.confirm(
@@ -122,7 +122,7 @@ export default function BookingHistoryView({
                       }
                     }}
                   >
-                    <MdDeleteForever />
+                    <MdDeleteForever size="2em" />
                   </button>
                 </td>
               </tr>
