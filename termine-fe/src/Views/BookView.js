@@ -21,8 +21,7 @@ export default function BookView({
   onCancelBooking,
   claimToken,
   startDateTime,
-  formState,
-  setFormState,
+  form,
   inputRef,
 }) {
   return (
@@ -64,7 +63,8 @@ export default function BookView({
               claimToken={claimToken}
               startDateTime={startDateTime}
               disable={focusOnList}
-              {...{ state: formState, setState: setFormState, inputRef }}
+              form={form}
+              inputRef={inputRef}
             />
           </div>
         </FocusLock>
