@@ -4,23 +4,22 @@ import os
 import pytz
 
 
+def _bool_convert(value):
+    truthy = {"t", "true", "on", "y", "yes", "1", 1, 1.0, True}
+    falsy = {"f", "false", "off", "n", "no", "0", 0, 0.0, False}
+    if isinstance(value, str):
+        value = value.lower()
+    if value in truthy:
+        return True
+    if value in falsy:
+        return False
+    return bool(value)
+
 class Db:
     url = os.environ.get("DB_URL", 'postgresql://postgres:example@localhost:5432/termine')
 
 
 class Settings:
-    @staticmethod
-    def _bool_convert(value):
-        truthy = {"t", "true", "on", "y", "yes", "1", 1, 1.0, True}
-        falsy = {"f", "false", "off", "n", "no", "0", 0, 0.0, False}
-        if isinstance(value, str):
-            value = value.lower()
-        if value in truthy:
-            return True
-        if value in falsy:
-            return False
-        return bool(value)
-
     claim_timeout_min = int(os.environ.get("CLAIM_TIMEOUT_MIN", 5))
     num_display_slots = int(os.environ.get("DISPLAY_SLOTS_COUNT", 150))
     tz = pytz.timezone(os.environ.get("TERMINE_TIME_ZONE", 'Europe/Berlin'))
