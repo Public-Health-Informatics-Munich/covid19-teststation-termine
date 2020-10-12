@@ -9,7 +9,8 @@ import { Calendar } from "react-calendar";
 import { Trans, t } from "@lingui/macro";
 import config from "../config";
 import "react-calendar/dist/Calendar.css";
-import { MdDeleteForever } from "react-icons/md";
+import { I18n } from "@lingui/react";
+import { ButtonWithConfirm } from "../Components/ButtonWithConfirm";
 
 export default function BookingHistoryView({
   i18n,
@@ -108,24 +109,11 @@ export default function BookingHistoryView({
                 <td>{booking.phone}</td>
                 <td>{booking.secret}</td>
                 <td className="cellAlignRight">
-                  <button
-                    type="button"
-                    className="secondary icon"
-                    onClick={() => {
-                      if (
-                        window.confirm(
-                          i18n._t(
-                            "Wollen Sie die Buchung wirklich löschen? Dies kann nicht rückgängig gemacht werden."
-                          )
-                        )
-                      ) {
-                        onDeleteBooking(booking.booking_id);
-                        console.log("Confirmed");
-                      }
-                    }}
-                  >
-                    <MdDeleteForever size="2em" />
-                  </button>
+                  <ButtonWithConfirm
+                    i18n={i18n}
+                    booking={booking}
+                    onDeleteBooking={onDeleteBooking}
+                  />
                 </td>
               </tr>
             );
