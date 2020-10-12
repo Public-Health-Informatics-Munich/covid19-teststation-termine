@@ -1,9 +1,7 @@
-import React, { useState } from "react";
-import { useForm } from "react-hook-form";
+import React from "react";
+import { Controller } from "react-hook-form";
 import { Trans, t } from "@lingui/macro";
-import { INFOBOX_STATES } from "../utils";
 import DatePicker from "react-datepicker";
-import { format } from "date-fns";
 import "react-datepicker/dist/react-datepicker.css";
 let reasons = require("../config/reasons.json");
 
@@ -20,62 +18,27 @@ export default function Booking({
   startDateTime,
   claimToken,
   disable,
-  state,
-  setState,
+  form,
   inputRef,
 }) {
-  const [startDate, setStartDate] = useState(new Date("1990-01-01"));
-  const { register, handleSubmit, reset, errors } = useForm();
+  const startDate = new Date("1990-01-01");
+  const { register, handleSubmit, reset, errors, control } = form;
 
-  const updateField = (e) => {
-    setState({
-      ...state,
-      [e.target.id]: e.target.value,
-    });
+  const localOnBook = (data) => {
+    onBook({ ...data, claimToken, startDateTime });
   };
-
-  const updateDayOfBirth = (date) => {
-    setState({
-      ...state,
-      dayOfBirth: format(date, "yyyy-MM-dd"),
-    });
-  };
-
-  const onFocusHandler = () => {
-    setState({
-      ...state,
-      infoboxState: INFOBOX_STATES.FORM_INPUT,
-    });
-  };
-
-  const localOnBook = (_) => {
-    onBook({ ...state, claimToken, startDateTime });
-  };
-
-  const {
-    office,
-    firstName,
-    name,
-    street,
-    streetNumber,
-    postCode,
-    city,
-    phone,
-    dayOfBirth,
-    reason,
-  } = state;
 
   const reasonItems = reasons.map((key) => (
     <option key={key} value={key}>
       {i18n._(key)}
     </option>
   ));
+
   return (
     <form
       className={disable ? "disabled" : ""}
       onSubmit={handleSubmit(localOnBook)}
       ref={inputRef}
-      onFocus={() => onFocusHandler()}
     >
       <fieldset className="input-group vertical">
         <legend>
@@ -85,24 +48,18 @@ export default function Booking({
           <Trans>Given Name</Trans> {errors.firstName && renderInputRequired()}
         </label>
         <input
-          id="firstName"
           name="firstName"
           readOnly={disable}
           disabled={disable}
-          onChange={updateField}
-          value={firstName}
           ref={register({ required: true })}
         />
         <label htmlFor="name" className="displayFlex">
           <Trans>Surname</Trans> {errors.name && renderInputRequired()}
         </label>
         <input
-          id="name"
           name="name"
           readOnly={disable}
           disabled={disable}
-          onChange={updateField}
-          value={name}
           ref={register({ required: true })}
         />
         <fieldset className="input-group vertical">
@@ -112,32 +69,26 @@ export default function Booking({
           <div className="displayFlex vertical">
             <div className="displayFlex justifyBetween">
               <label htmlFor="street">
-                <Trans>Street</Trans> {errors.name && renderInputRequired()}
+                <Trans>Street</Trans> {errors.street && renderInputRequired()}
               </label>
               <label htmlFor="streetnumber">
                 <Trans>StreetNumber</Trans>{" "}
-                {errors.name && renderInputRequired()}
+                {errors.streetNumber && renderInputRequired()}
               </label>
             </div>
             <div className="displayFlex">
               <input
-                id="street"
                 name="street"
                 className="width80Percent"
                 readOnly={disable}
                 disabled={disable}
-                onChange={updateField}
-                value={street}
                 ref={register({ required: true })}
               />
               <input
-                id="streetNumber"
                 name="streetNumber"
                 className="width20Percent"
                 readOnly={disable}
                 disabled={disable}
-                onChange={updateField}
-                value={streetNumber}
                 ref={register({ required: true })}
               />
             </div>
@@ -145,31 +96,26 @@ export default function Booking({
           <div className="displayFlex vertical">
             <div className="displayFlex justifyBetween">
               <label htmlFor="postCode">
-                <Trans>PostCode</Trans> {errors.name && renderInputRequired()}
+                <Trans>PostCode</Trans>{" "}
+                {errors.postCode && renderInputRequired()}
               </label>
               <label htmlFor="city">
-                <Trans>City</Trans> {errors.name && renderInputRequired()}
+                <Trans>City</Trans> {errors.city && renderInputRequired()}
               </label>
             </div>
             <div className="displayFlex">
               <input
-                id="postCode"
                 name="postCode"
                 className="width20Percent"
                 readOnly={disable}
                 disabled={disable}
-                onChange={updateField}
-                value={postCode}
                 ref={register({ required: true })}
               />
               <input
-                id="city"
                 name="city"
                 className="width80Percent"
                 readOnly={disable}
                 disabled={disable}
-                onChange={updateField}
-                value={city}
                 ref={register({ required: true })}
               />
             </div>
@@ -179,52 +125,43 @@ export default function Booking({
           <Trans>Mobile No.</Trans> {errors.phone && renderInputRequired()}
         </label>
         <input
-          id="phone"
           name="phone"
           readOnly={disable}
           disabled={disable}
-          onChange={updateField}
-          value={phone}
           ref={register({ required: true })}
         />
         <label htmlFor="dayOfBirth" className="displayFlex">
-          <Trans>DayOfBirth</Trans> {errors.phone && renderInputRequired()}
+          <Trans>DayOfBirth</Trans> {errors.dayOfBirth && renderInputRequired()}
         </label>
-        <DatePicker
-          id="dayOfBirth"
+        <Controller
           name="dayOfBirth"
-          showYearDropdown
-          showMonthDropdown
-          dropdownMode="select"
-          maxDate={new Date()}
-          selected={startDate}
-          onChange={(date) => {
-            setStartDate(date);
-            updateDayOfBirth(date);
-            console.log(state.dayOfBirth);
-          }}
+          control={control}
+          defaultValue={startDate}
+          render={(props) => (
+            <DatePicker
+              showYearDropdown
+              showMonthDropdown
+              selected={props.value}
+              onChange={(selectedDate) => props.onChange(selectedDate)}
+              dropdownMode="select"
+              maxDate={new Date()}
+            />
+          )}
+          rules={{ required: true }}
         />
         <label htmlFor="office" className="displayFlex">
           <Trans>Office</Trans> {errors.office && renderInputRequired()}
         </label>
         <input
-          id="office"
           name="office"
           readOnly={disable}
           disabled={disable}
-          onChange={updateField}
-          value={office}
           ref={register({ required: true })}
         />
         <label htmlFor="reason" className="displayFlex">
-          <Trans>Reason</Trans> {errors.office && renderInputRequired()}
+          <Trans>Reason</Trans> {errors.reason && renderInputRequired()}
         </label>
-        <select
-          id="reason"
-          name="reason"
-          onChange={updateField}
-          ref={register({ required: true })}
-        >
+        <select id="reason" name="reason" ref={register({ required: true })}>
           {reasonItems}
         </select>
         <input

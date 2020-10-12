@@ -2,13 +2,13 @@ import React, { useEffect, useCallback, useRef, useState } from "react";
 import { trackPromise, usePromiseTracker } from "react-promise-tracker";
 import { Switch, Route, Link, Redirect, useLocation } from "react-router-dom";
 import { Trans, t } from "@lingui/macro";
-
+import { useForm } from "react-hook-form";
+import { format } from "date-fns";
 import { INFOBOX_STATES, ISOStringWithoutTimeZone } from "./utils";
 import * as Api from "./Api";
 import BookView from "./Views/BookView";
 import BookingHistoryView from "./Views/BookingHistoryView";
 import SettingsView from "./Views/SettingsView";
-const reasons = require("./config/reasons.json");
 
 function App({ i18n }) {
   const useFocus = () => {
@@ -49,12 +49,9 @@ function App({ i18n }) {
     state: INFOBOX_STATES.INITIAL,
     msg: "",
   });
-  const [formState, setFormState] = useState({
-    firstName: "",
-    name: "",
-    phone: "",
-    office: "",
-  });
+
+  const form = useForm();
+
   const [bookedList, setBookedList] = useState([]);
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
@@ -150,18 +147,7 @@ function App({ i18n }) {
           lengthMin: slotLengthMin,
         });
         setClaimToken(response.data);
-        setFormState({
-          ...formState,
-          firstName: "",
-          name: "",
-          phone: "",
-          street: "",
-          streetNumber: "",
-          city: "",
-          postCode: "",
-          dayOfBirth: "1990-01-01",
-          reason: reasons[0],
-        });
+        form.reset();
         setFocusOnList(false);
       })
       .catch((error) => {
@@ -181,6 +167,11 @@ function App({ i18n }) {
   };
 
   const onBook = (data) => {
+    data = {
+      ...data,
+      dayOfBirth: format(data.dayOfBirth, "yyyy-MM-dd"),
+    };
+
     Api.book(data)
       .then((response) => {
         setInfoboxState({
@@ -221,12 +212,7 @@ function App({ i18n }) {
         setStartDateTime("");
         setClaimToken("");
         setFocusOnList(true);
-        setFormState({
-          ...formState,
-          firstName: "",
-          name: "",
-          phone: "",
-        });
+        form.reset();
       })
       .catch((error) => {
         //Todo handle error
@@ -298,8 +284,7 @@ function App({ i18n }) {
             onCancelBooking={onCancelBooking}
             claimToken={claimToken}
             startDateTime={startDateTime}
-            formState={formState}
-            setFormState={setFormState}
+            form={form}
             inputRef={inputRef}
           />
         </Route>
