@@ -38,7 +38,6 @@ FROM yarn_bo_installer as yarn_bo_builder
 COPY termine-bo/src src/
 COPY termine-bo/public public/
 ENV PUBLIC_URL "/admin"
-RUN yarn run compile-i18n
 RUN yarn build
 # for debugging
 CMD bash
