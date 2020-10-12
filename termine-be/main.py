@@ -5,7 +5,7 @@ import sys
 
 import hug
 
-from access_control.access_control import admin_authentication
+from access_control.access_control import admin_authentication, switchable_authentication
 from db.directives import PeeweeContext, PeeweeSession
 from db.model import FrontendConfig
 
@@ -16,7 +16,7 @@ hug_api = hug.API('appointments')
 hug_api.http.add_middleware(hug.middleware.LogMiddleware())
 
 
-@hug.extend_api("/api")
+@hug.extend_api("/api", requires=switchable_authentication)
 def with_api():
     from api import api
     return [api]
@@ -28,7 +28,7 @@ def with_admin_api():
     return [admin_api]
 
 
-@hug.static("/")
+@hug.static("/", requires=switchable_authentication)
 def static_dirs():
     return os.getenv("FE_STATICS_DIR") or "../termine-fe/build/",
 
@@ -43,7 +43,7 @@ def format_as_js(data: str, request=None, response=None):
     return data.encode('utf8')
 
 
-@hug.get("/config.js", output=format_as_js)
+@hug.get("/config.js", requires=switchable_authentication, output=format_as_js)
 def instance_config(db: PeeweeSession):
     with db.atomic():
         return f"window.config = {json.dumps(FrontendConfig.get().config)};"
