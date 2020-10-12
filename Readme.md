@@ -20,13 +20,16 @@ hug -f main.py -c set_frontend_config \
   --long_instance_name STRING \
   --contact_info_bookings EMAIL|PHONE \
   [--contact_info_appointments EMAIL|PHONE]
+  [--form_fields STRING]
 ```
-`instance_name`         is the short form of
-`long_instance_name`    that is shown in the header of the frontends
-`contact_info_bookings` might be an email or phone number, and is shown when the number of possible bookings is depleted.
+`instance_name`             is the short form of
+`long_instance_name`        that is shown in the header of the frontends
+`contact_info_bookings`     might be an email or phone number, and is shown when the number of possible bookings is depleted.
 `contact_info_appointments` might be an email or phone number,
                             if left out takes the value of `contact_info_bookings`,
                             and is shown when there are no free slots left to book appointments for.
+`form_fields`               comma separated list of form fields to be displayed in the appointment selector. possible values
+                            are `"base,address,dayOfBirth,reason"`
 
 
 ## Current dev setup

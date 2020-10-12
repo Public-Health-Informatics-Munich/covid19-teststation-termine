@@ -227,6 +227,7 @@ def cancel_booking(db: directives.PeeweeSession, secret: hug.types.text, start_d
 @hug.cli()
 def set_frontend_config(db: directives.PeeweeSession, instance_name: hug.types.text, long_instance_name: hug.types.text,
                         contact_info_bookings: hug.types.text, contact_info_appointments: hug.types.text = None,
+                        form_fields: hug.types.text = "base,address,dayOfBirth,reason",
                         for_real: hug.types.smart_boolean = False):
     with db.atomic():
         if "@" in contact_info_bookings:
@@ -247,7 +248,8 @@ def set_frontend_config(db: directives.PeeweeSession, instance_name: hug.types.t
             "longInstanceName": f"{long_instance_name}",
             "contactInfoCoupons": f"<span class=\"hintLabel\">Um mehr Termine vergeben zu können wenden Sie sich an "
                                   f"{bookings_contact}</span>",
-            "contactInfoAppointment": f"<span class=\"hintLabel\">Kontaktieren Sie {appointments_contact}</span>"
+            "contactInfoAppointment": f"<span class=\"hintLabel\">Kontaktieren Sie {appointments_contact}</span>",
+            "formFields": form_fields.split(","),
         }
 
         if not for_real:
