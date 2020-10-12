@@ -38,14 +38,28 @@ docker run -e POSTGRES_PASSWORD=example -e POSTGRES_DB=termine -p5432:5432 postg
 #### If you develop on the python server part
 to make the python server pick up and serve the frontends at localhost:8000
 ```bash
+
+## Update / Change translation strings
+The translation sources are in the follow folders:
+ * termine-fe/src/locales/de/messages.json
+ * termine-fe/src/locales/en/messages.json
+
+After change in the translation source you need to compile the changes to be applied to the used javascript code.
+```bash
+cd termine-fe
+yarn run compile-i18n
+```
+
 # works doctor facing at localhost:8000/
 cd termine-fe
 yarn install
+yarn run compile-i18n
 yarn build
 
 # admin facing at localhost:8000/admin
 cd termine-bo
 yarn install
+yarn run compile-i18n
 yarn build
 ```
 

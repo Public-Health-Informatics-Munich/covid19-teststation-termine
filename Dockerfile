@@ -23,6 +23,7 @@ RUN yarn install --network-timeout 100000
 FROM yarn_fe_installer as yarn_fe_builder
 COPY termine-fe/src src/
 COPY termine-fe/public public/
+RUN yarn run compile-i18n
 RUN yarn build
 # for debugging
 CMD bash
@@ -37,6 +38,7 @@ FROM yarn_bo_installer as yarn_bo_builder
 COPY termine-bo/src src/
 COPY termine-bo/public public/
 ENV PUBLIC_URL "/admin"
+RUN yarn run compile-i18n
 RUN yarn build
 # for debugging
 CMD bash
