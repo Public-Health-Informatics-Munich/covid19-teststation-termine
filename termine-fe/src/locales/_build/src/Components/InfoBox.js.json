@@ -3,7 +3,7 @@
     "origin": [
       [
         "src/Components/InfoBox.js",
-        18
+        25
       ]
     ]
   },
@@ -11,7 +11,7 @@
     "origin": [
       [
         "src/Components/InfoBox.js",
-        28
+        35
       ]
     ]
   },
@@ -19,7 +19,7 @@
     "origin": [
       [
         "src/Components/InfoBox.js",
-        39
+        46
       ]
     ]
   },
@@ -27,7 +27,7 @@
     "origin": [
       [
         "src/Components/InfoBox.js",
-        51
+        58
       ]
     ]
   },
@@ -35,7 +35,7 @@
     "origin": [
       [
         "src/Components/InfoBox.js",
-        61
+        68
       ]
     ]
   },
@@ -43,7 +43,7 @@
     "origin": [
       [
         "src/Components/InfoBox.js",
-        70
+        77
       ]
     ]
   },
@@ -51,7 +51,7 @@
     "origin": [
       [
         "src/Components/InfoBox.js",
-        73
+        80
       ]
     ]
   }

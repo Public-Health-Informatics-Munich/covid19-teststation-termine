@@ -114,7 +114,9 @@ export default function BookingHistoryView({
                     onClick={() => {
                       if (
                         window.confirm(
-                          "Wollen Sie die Buchung wirklich löschen? Dies kann nicht rückgängig gemacht werden."
+                          i18n._t(
+                            "Wollen Sie die Buchung wirklich löschen? Dies kann nicht rückgängig gemacht werden."
+                          )
                         )
                       ) {
                         onDeleteBooking(booking.booking_id);
