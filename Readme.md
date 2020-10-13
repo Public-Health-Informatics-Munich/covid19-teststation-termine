@@ -2,8 +2,7 @@
 
 An appointment booking app, currently designed for works doctors from official institutes.
 
-Developed for [LMU Division of Infectious Diseases and Tropical Medicine](http://www.klinikum.uni-muenchen.de/Abteilung-fuer-Infektions-und-Tropenmedizin/en/index.html) by	[Mayflower GmbH](https://mayflower.de)
-
+Developed for [LMU Division of Infectious Diseases and Tropical Medicine](http://www.klinikum.uni-muenchen.de/Abteilung-fuer-Infektions-und-Tropenmedizin/en/index.html) by [Mayflower GmbH](https://mayflower.de)
 
 <img src=".github/show/booking-app-1.png"/>
 <a href="screenshots.md">More Screenshots</a>
@@ -11,6 +10,7 @@ Developed for [LMU Division of Infectious Diseases and Tropical Medicine](http:/
 ## Configuration of running instance
 
 ### To generate or update the frontend configuration for the client (required for frontends)
+
 ```bash
 cd termine-be
 pipenv install
@@ -22,25 +22,29 @@ hug -f main.py -c set_frontend_config \
   [--contact_info_appointments EMAIL|PHONE]
   [--form_fields STRING]
 ```
-`instance_name`             is the short form of
-`long_instance_name`        that is shown in the header of the frontends
-`contact_info_bookings`     might be an email or phone number, and is shown when the number of possible bookings is depleted.
-`contact_info_appointments` might be an email or phone number,
-                            if left out takes the value of `contact_info_bookings`,
-                            and is shown when there are no free slots left to book appointments for.
-`form_fields`               comma separated list of form fields to be displayed in the appointment selector. possible values
-                            are `"base,address,dayOfBirth,reason"`
 
+`instance_name` is the short form of
+`long_instance_name` that is shown in the header of the frontends
+`contact_info_bookings` might be an email or phone number, and is shown when the number of possible bookings is depleted.
+`contact_info_appointments` might be an email or phone number,
+if left out takes the value of `contact_info_bookings`,
+and is shown when there are no free slots left to book appointments for.
+`form_fields` comma separated list of form fields to be displayed in the appointment selector. possible values
+are `"base,address,dayOfBirth,reason"`
 
 ## Current dev setup
 
 ### Start the database container
+
 ```bash
 docker run -e POSTGRES_PASSWORD=example -e POSTGRES_DB=termine -p5432:5432 postgres:11
 ```
+
 #### If you develop on the python server part
+
 to make the python server pick up and serve the frontends at localhost:8000
-```bash
+
+````bash
 
 ## Update / Change translation strings
 The translation sources are in the follow folders:
@@ -51,20 +55,35 @@ After change in the translation source you need to compile the changes to be app
 ```bash
 cd termine-fe
 yarn run compile-i18n
-```
+````
+
+## Update list of test reasons
+
+Add your reasons to `termine-fe/src/config/reasons.json`. These are what is written in the database and printed in the excel.
+
+If you want the test reasons to be translated, add the entries to:
+
+`termine-fe/src/locales/de/messages.json` and
+
+`termine-fe/src/locales/en/messages.json`
+
+and then follow the section above
 
 # works doctor facing at localhost:8000/
+
 cd termine-fe
 yarn install
 yarn run compile-i18n
 yarn build
 
 # admin facing at localhost:8000/admin
+
 cd termine-bo
 yarn install
 yarn run compile-i18n
 yarn build
-```
+
+````
 
 ### Prepare your python environment and start the hug server
 ```bash
@@ -75,10 +94,12 @@ hug -f main.py -c init_db --for_real
 hug -f main.py -c add_user --u user [--role admin]
 hug -f main.py -c create_appointments $(date +"%-d %-m")
 hug -f main.py
-```
+````
 
 #### If you develop on the frontend part
+
 To have the webpack dev server serve the project at localhost:3000
+
 ```bash
 # works doctor facing at localhost:3000/
 cd termine-fe
