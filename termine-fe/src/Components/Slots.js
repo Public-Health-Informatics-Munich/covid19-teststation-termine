@@ -1,6 +1,7 @@
 import React from "react";
 import { FreeSlot } from "./FreeSlot";
 import { Trans } from "@lingui/macro";
+import { AsLinkIfEmail } from "./AsLinkIfEmail";
 
 export default function Slots({
   i18n,
@@ -42,11 +43,12 @@ export default function Slots({
             are free.
           </Trans>
         </div>
-        <div
-          dangerouslySetInnerHTML={{
-            __html: window.config.contactInfoAppointment,
-          }}
-        />
+        <div>
+          <span className="hintLabel">
+            <Trans>Please contact</Trans>
+            <AsLinkIfEmail value={window.config.contactInfoAppointment} />
+          </span>
+        </div>
       </div>
     );
   }

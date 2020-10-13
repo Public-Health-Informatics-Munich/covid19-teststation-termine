@@ -230,25 +230,17 @@ def set_frontend_config(db: directives.PeeweeSession, instance_name: hug.types.t
                         form_fields: hug.types.text = "base,address,dayOfBirth,reason",
                         for_real: hug.types.smart_boolean = False):
     with db.atomic():
-        if "@" in contact_info_bookings:
-            bookings_contact = f"<a href=\"mailto:{contact_info_bookings}\">{contact_info_bookings}</a>"
-        else:
-            bookings_contact = contact_info_bookings
 
         if not contact_info_appointments:
-            appointments_contact = bookings_contact
+            appointments_contact = contact_info_bookings
         else:
-            if "@" in contact_info_appointments:
-                appointments_contact = f"<a href=\"mailto:{contact_info_appointments}\">{contact_info_appointments}</a>"
-            else:
-                appointments_contact = contact_info_appointments
+            appointments_contact = contact_info_appointments
 
         template = {
             "instanceName": f"{instance_name}",
             "longInstanceName": f"{long_instance_name}",
-            "contactInfoCoupons": f"<span class=\"hintLabel\">Um mehr Termine vergeben zu können wenden Sie sich an "
-                                  f"{bookings_contact}</span>",
-            "contactInfoAppointment": f"<span class=\"hintLabel\">Kontaktieren Sie {appointments_contact}</span>",
+            "contactInfoCoupons": f"{contact_info_bookings}",
+            "contactInfoAppointment": f"{appointments_contact}",
             "formFields": form_fields.split(","),
         }
 

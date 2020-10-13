@@ -1,5 +1,6 @@
 import React from "react";
 import { Trans, Plural } from "@lingui/macro";
+import { AsLinkIfEmail } from "./AsLinkIfEmail";
 
 export const CouponBox = ({ coupons }) => {
   return (
@@ -28,11 +29,14 @@ export const CouponBox = ({ coupons }) => {
         </div>
         {coupons === 0 ? (
           <>
-            <div
-              dangerouslySetInnerHTML={{
-                __html: window.config.contactInfoCoupons,
-              }}
-            />
+            <div>
+              <span className="hintLabel">
+                <label>
+                  <Trans>In order to book more appointments, contact</Trans>
+                  <AsLinkIfEmail value={window.config.contactInfoCoupons} />
+                </label>
+              </span>
+            </div>
           </>
         ) : (
           <div>&nbsp;</div>

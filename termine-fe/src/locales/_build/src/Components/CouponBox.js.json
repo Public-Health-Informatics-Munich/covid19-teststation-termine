@@ -3,7 +3,15 @@
     "origin": [
       [
         "src/Components/CouponBox.js",
-        9
+        10
+      ]
+    ]
+  },
+  "In order to book more appointments, contact": {
+    "origin": [
+      [
+        "src/Components/CouponBox.js",
+        35
       ]
     ]
   }

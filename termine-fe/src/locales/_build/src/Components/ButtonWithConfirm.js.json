@@ -1,0 +1,10 @@
+{
+  "Do you really want to delete this booking? This cannot be undone.": {
+    "origin": [
+      [
+        "src/Components/ButtonWithConfirm.js",
+        13
+      ]
+    ]
+  }
+}
