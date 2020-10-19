@@ -1,17 +1,9 @@
 {
-  "This input is required.": {
-    "origin": [
-      [
-        "src/Components/Booking.js",
-        10
-      ]
-    ]
-  },
   "Booking": {
     "origin": [
       [
         "src/Components/Booking.js",
-        45
+        41
       ]
     ]
   },
@@ -19,7 +11,7 @@
     "origin": [
       [
         "src/Components/Booking.js",
-        48
+        44
       ]
     ]
   },
@@ -27,47 +19,7 @@
     "origin": [
       [
         "src/Components/Booking.js",
-        57
-      ]
-    ]
-  },
-  "Home Address": {
-    "origin": [
-      [
-        "src/Components/Booking.js",
-        67
-      ]
-    ]
-  },
-  "Street": {
-    "origin": [
-      [
-        "src/Components/Booking.js",
-        72
-      ]
-    ]
-  },
-  "StreetNumber": {
-    "origin": [
-      [
-        "src/Components/Booking.js",
-        75
-      ]
-    ]
-  },
-  "PostCode": {
-    "origin": [
-      [
-        "src/Components/Booking.js",
-        99
-      ]
-    ]
-  },
-  "City": {
-    "origin": [
-      [
-        "src/Components/Booking.js",
-        103
+        53
       ]
     ]
   },
@@ -75,7 +27,7 @@
     "origin": [
       [
         "src/Components/Booking.js",
-        125
+        63
       ]
     ]
   },
@@ -83,7 +35,7 @@
     "origin": [
       [
         "src/Components/Booking.js",
-        134
+        74
       ]
     ]
   },
@@ -91,7 +43,7 @@
     "origin": [
       [
         "src/Components/Booking.js",
-        153
+        95
       ]
     ]
   },
@@ -99,7 +51,7 @@
     "origin": [
       [
         "src/Components/Booking.js",
-        162
+        106
       ]
     ]
   },
@@ -107,7 +59,7 @@
     "origin": [
       [
         "src/Components/Booking.js",
-        171
+        121
       ]
     ]
   },
@@ -115,7 +67,7 @@
     "origin": [
       [
         "src/Components/Booking.js",
-        179
+        129
       ]
     ]
   }

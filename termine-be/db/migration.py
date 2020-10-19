@@ -2,6 +2,7 @@ import sys
 from datetime import datetime
 
 import hug
+import re
 from peewee import DateTimeField, IntegerField, CharField, DateField
 from playhouse.migrate import PostgresqlMigrator, ProgrammingError, migrate
 
@@ -20,7 +21,7 @@ def init_database(db: PeeweeSession):
     with db.atomic():
         db_proxy.create_tables(tables)
         log.info("Tables created. Setting migration level.")
-        Migration.create(version=4)
+        Migration.create(version=5)
         log.info("Migration level set.")
 
 
@@ -40,6 +41,9 @@ def migrate_db(db: PeeweeSession):
                 level_3(db, migration, migrator)
             if migration.version < 4:
                 level_4(db, migration, migrator)
+            if migration.version < 5:
+                level_5(db, migration)
+
 
         except ProgrammingError:
             log.exception('Error - Migrations table not found, please run init_db first!')
@@ -101,3 +105,28 @@ def level_4(db, migration, migrator):
         )
         migration.version = 4
         migration.save()
+
+def level_5(db, migration):
+    left_part_coupons = '<span class="hintLabel">Um mehr Termine vergeben zu können wenden Sie sich an '
+    left_part_appointment = '<span class=\"hintLabel\">Kontaktieren Sie '
+    rigth_part = '</span>'
+    mail_extract = 'href="mailto:([a-zA-Z0-9!#$%&\'*+-/=?^_`{|}~.@]*)"'
+    with db.atomic():
+        try:
+            frontend_config = FrontendConfig.get()
+
+            contact_info_coupons = frontend_config.config['contactInfoCoupons']
+            contact_info_appointment = frontend_config.config['contactInfoAppointment']
+            contact_info_appointment = contact_info_appointment.lstrip(left_part_appointment).rstrip(rigth_part)
+            contact_info_coupons = contact_info_coupons.lstrip(left_part_coupons).rstrip(rigth_part)
+            if contact_info_coupons.find('@') >= 0:
+                contact_info_coupons = re.findall(mail_extract, contact_info_coupons)[0]
+            if contact_info_appointment.find('@') >= 0:
+                contact_info_appointment = re.findall(mail_extract, contact_info_appointment)[0]
+            frontend_config.config['contactInfoCoupons'] = contact_info_coupons
+            frontend_config.config['contactInfoAppointment'] = contact_info_appointment
+            frontend_config.save()
+            migration.version = 5
+            migration.save()
+        except IndexError:
+            log.info("No frontendconfig stored. No row migration needed")

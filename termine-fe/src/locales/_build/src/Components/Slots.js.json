@@ -3,7 +3,15 @@
     "origin": [
       [
         "src/Components/Slots.js",
-        37
+        38
+      ]
+    ]
+  },
+  "Kontaktieren Sie": {
+    "origin": [
+      [
+        "src/Components/Slots.js",
+        47
       ]
     ]
   },

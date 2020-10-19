@@ -15,6 +15,7 @@ def _bool_convert(value):
         return False
     return bool(value)
 
+
 class Db:
     url = os.environ.get("DB_URL", 'postgresql://postgres:example@localhost:5432/termine')
 
