@@ -250,7 +250,11 @@ def set_frontend_config(db: directives.PeeweeSession, instance_name: hug.types.t
             sys.exit(1)
         else:
             print(f"Updating the config with '{json.dumps(template, indent=2)}'.")
-            FrontendConfig.delete().execute()
-            config = FrontendConfig.create(config=template)
+            try:
+                config = FrontendConfig.get()
+                config.config = template
+            except FrontendConfig.DoesNotExist:
+                config = FrontendConfig.create(config=template)
+
             config.save()
             print("Done.")
