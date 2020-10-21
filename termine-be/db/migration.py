@@ -44,7 +44,6 @@ def migrate_db(db: PeeweeSession):
             if migration.version < 5:
                 level_5(db, migration)
 
-
         except ProgrammingError:
             log.exception('Error - Migrations table not found, please run init_db first!')
             txs.rollback()
@@ -87,6 +86,7 @@ def level_3(db, migration, migrator):
         except:
             log.warning("no config found for env, set values with cli command set_frontend_config.")
 
+
 def level_4(db, migration, migrator):
     with db.atomic():
         street_field = CharField(null=True)
@@ -105,6 +105,7 @@ def level_4(db, migration, migrator):
         )
         migration.version = 4
         migration.save()
+
 
 def level_5(db, migration):
     left_part_coupons = '<span class="hintLabel">Um mehr Termine vergeben zu können wenden Sie sich an '
@@ -125,6 +126,7 @@ def level_5(db, migration):
                 contact_info_appointment = re.findall(mail_extract, contact_info_appointment)[0]
             frontend_config.config['contactInfoCoupons'] = contact_info_coupons
             frontend_config.config['contactInfoAppointment'] = contact_info_appointment
+            frontend_config.config['formFields'] = ['base', 'address', 'dayOfBirth', 'reason']
             frontend_config.save()
             migration.version = 5
             migration.save()
