@@ -1,0 +1,26 @@
+version: "3.3"
+services:
+  postgres:
+    image: postgres:11
+    environment:
+      - POSTGRES_PASSWORD=termine_pw!
+      - POSTGRES_DB=termine
+    volumes:
+    - ./psql-data:/var/lib/postgresql/data
+  termine:
+    build:
+      context: .
+    depends_on:
+      - postgres
+    command: ["./wait-for-it.sh", "postgres:5432", "--", "./entrypoint.sh"]
+    environment:
+      - CLAIM_TIMEOUT_MIN=5
+      - DISPLAY_SLOTS_COUNT=150
+      - TERMINE_TIME_ZONE=Europe/Berlin
+      - DISABLE_AUTH=False
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=termine_pw!
+      - DB_HOST=postgres
+      - FRONTEND_CONF_JSON=config/by_env/staging.json
+    ports:
+    - 8000:8000

@@ -163,7 +163,9 @@ def run_migrations(for_real: hug.types.smart_boolean = False):
               '*and* have a backup')
         sys.exit(1)
     else:
+        print('Start database migration...')
         migrate_db()
+        print('Done.')
 
 
 @hug.cli()
@@ -258,3 +260,39 @@ def set_frontend_config(db: directives.PeeweeSession, instance_name: hug.types.t
 
             config.save()
             print("Done.")
+
+
+@hug.cli()
+def load_frontend_config(db: directives.PeeweeSession, frontend_config_file: hug.types.text,
+                         for_real: hug.types.smart_boolean = False):
+    with db.atomic():
+        with open(frontend_config_file, 'r') as j_file:
+            try:
+                new_config = json.load(j_file)
+                if 'instanceName' not in new_config or 'longInstanceName' not in new_config or \
+                        'contactInfoCoupons' not in new_config \
+                        or 'contactInfoAppointment' not in new_config or 'formFields' not in new_config:
+                    print(f"Given file '{json.dumps(new_config, indent=2)}' missing required fields!")
+                    sys.exit(1)
+                elif type(new_config['formFields']) != list:
+                    print("field formFields is not a list!")
+                    sys.exit(1)
+            except json.JSONDecodeError as e:
+                print("The file can not decoded as json!")
+                sys.exit(1)
+
+            if not for_real:
+                print(
+                    f"This would update the config with '{json.dumps(new_config, indent=2)}'. "
+                    f"Run with --for_real if you are sure.")
+                sys.exit(1)
+            else:
+                print(f"Updating the config with '{json.dumps(new_config, indent=2)}'.")
+                try:
+                    config = FrontendConfig.get()
+                    config.config = new_config
+                except FrontendConfig.DoesNotExist:
+                    config = FrontendConfig.create(config=new_config)
+
+                config.save()
+                print("Done.")

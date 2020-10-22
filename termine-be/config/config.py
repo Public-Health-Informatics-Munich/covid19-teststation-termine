@@ -17,7 +17,15 @@ def _bool_convert(value):
 
 
 class Db:
-    url = os.environ.get("DB_URL", 'postgresql://postgres:example@localhost:5432/termine')
+    if os.environ.get('DB_USERNAME') is not None:
+        db_username = os.environ.get('DB_USERNAME')
+        db_password = os.environ.get('DB_PASSWORD')
+        db_port = os.environ.get('DB_PORT', '5432')
+        db_host = os.environ.get('DB_HOST', 'localhost')
+        db_database = os.environ.get('DB_DATABASE', 'termine')
+        url = f"postgresql://{db_username}:{db_password}@{db_host}:{db_port}/{db_database}"
+    else:
+        url = os.environ.get("DB_URL", 'postgresql://postgres:example@localhost:5432/termine')
 
 
 class Settings:

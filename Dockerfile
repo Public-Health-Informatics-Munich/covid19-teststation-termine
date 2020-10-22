@@ -63,9 +63,11 @@ ENTRYPOINT ["hug", "-f", "main.py", "-c"]
 CMD ["help"]
 
 FROM base_server as server
+COPY entrypoint.sh .
+COPY wait-for-it.sh .
 COPY termine-be/ .
 COPY --from=yarn_fe_builder /app/build/ build_fe/
 COPY --from=yarn_bo_builder /app/build/ build_bo/
 ENV FE_STATICS_DIR "build_fe"
 ENV BO_STATICS_DIR "build_bo"
-CMD ["gunicorn", "--bind=0.0.0.0:8000", "main:__hug_wsgi__"]
+CMD ["./entrypoint.sh"]

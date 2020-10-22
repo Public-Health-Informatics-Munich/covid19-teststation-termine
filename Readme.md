@@ -23,14 +23,35 @@ hug -f main.py -c set_frontend_config \
   [--form_fields STRING]
 ```
 
-`instance_name` is the short form of
-`long_instance_name` that is shown in the header of the frontends
-`contact_info_bookings` might be an email or phone number, and is shown when the number of possible bookings is depleted.
-`contact_info_appointments` might be an email or phone number,
-if left out takes the value of `contact_info_bookings`,
+* `instance_name` is the short form of 
+* `long_instance_name` that is shown in the header of the frontends 
+* `contact_info_bookings` might be an email or phone number, and is shown when the number of possible bookings is depleted.
+* `contact_info_appointments` might be an email or phone number,
+if left out takes the value of `contact_info_bookings`, 
 and is shown when there are no free slots left to book appointments for.
-`form_fields` comma separated list of form fields to be displayed in the appointment selector. possible values
+* `form_fields` comma separated list of form fields to be displayed in the appointment selector. possible values
 are `"base,address,dayOfBirth,reason"`
+
+
+### If you want to use or try out the server with docker-compose there is now a example docker-compose.yaml in the project
+
+After start up of the docker-compose environment there a some additional steps to do if you don't persist your database.
+The same steps are needed on the first startup
+
+1. start the docker-compose environment `docker-compose up --build -d`
+1. get a shell in the _termine_ service `docker-compose exec termine /bin/bash`
+2. create a admin user `hug -f main.py -c create_user admin -r admin`
+3. add appointments to your system `hug -f main.py -c create_appointments DAY MOUNTH` 
+replace _**DAY**_ with the two digit day of the mount and _**MOUNTH**_ with the two digit mounth 
+
+Now you can start try out the application by open it with on your browser at http://localhost:8000/
+
+(**_HINT_**)
+To persist the postgres database create a directory add follow lines to the postgres service:
+```
+ volumes:
+  - ./postgres-data:/var/lib/postgresql/data
+```
 
 ## Current dev setup
 
