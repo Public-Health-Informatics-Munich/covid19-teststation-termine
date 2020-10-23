@@ -1,58 +1,23 @@
 {
   "An error occurred": {
-    "origin": [
-      [
-        "src/Components/InfoBox.js",
-        25
-      ]
-    ]
+    "origin": [["src/Components/InfoBox.js", 25]]
   },
   "Appointment for the {0}, {1} has been booked": {
-    "origin": [
-      [
-        "src/Components/InfoBox.js",
-        35
-      ]
-    ]
+    "origin": [["src/Components/InfoBox.js", 35]]
   },
   "Notify the patient of their access code:": {
-    "origin": [
-      [
-        "src/Components/InfoBox.js",
-        46
-      ]
-    ]
+    "origin": [["src/Components/InfoBox.js", 46]]
   },
   "Enter the information for the {0}, {1}": {
-    "origin": [
-      [
-        "src/Components/InfoBox.js",
-        58
-      ]
-    ]
+    "origin": [["src/Components/InfoBox.js", 58]]
   },
   "All fields are required.": {
-    "origin": [
-      [
-        "src/Components/InfoBox.js",
-        68
-      ]
-    ]
+    "origin": [["src/Components/InfoBox.js", 68]]
   },
   "Choose an appointment": {
-    "origin": [
-      [
-        "src/Components/InfoBox.js",
-        77
-      ]
-    ]
+    "origin": [["src/Components/InfoBox.js", 77]]
   },
   "The navigation in the table is possible with Tab and Enter keys.": {
-    "origin": [
-      [
-        "src/Components/InfoBox.js",
-        80
-      ]
-    ]
+    "origin": [["src/Components/InfoBox.js", 80]]
   }
 }

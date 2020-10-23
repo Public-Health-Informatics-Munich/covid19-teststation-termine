@@ -1,7 +1,5 @@
 import React from "react";
 import { MdDeleteForever } from "react-icons/md";
-import { withI18n } from "@lingui/react";
-import { t } from "@lingui/macro";
 
 export const ButtonWithConfirm = ({ i18n, booking, onDeleteBooking }) => (
   <button

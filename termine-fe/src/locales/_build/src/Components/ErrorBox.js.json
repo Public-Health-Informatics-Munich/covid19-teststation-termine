@@ -1,10 +1,5 @@
 {
   "An error occurred": {
-    "origin": [
-      [
-        "src/Components/ErrorBox.js",
-        9
-      ]
-    ]
+    "origin": [["src/Components/ErrorBox.js", 9]]
   }
 }

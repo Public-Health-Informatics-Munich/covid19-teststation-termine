@@ -1,42 +1,17 @@
 {
   "Home Address": {
-    "origin": [
-      [
-        "src/Components/AddressForm.js",
-        11
-      ]
-    ]
+    "origin": [["src/Components/AddressForm.js", 11]]
   },
   "Street": {
-    "origin": [
-      [
-        "src/Components/AddressForm.js",
-        16
-      ]
-    ]
+    "origin": [["src/Components/AddressForm.js", 16]]
   },
   "StreetNumber": {
-    "origin": [
-      [
-        "src/Components/AddressForm.js",
-        19
-      ]
-    ]
+    "origin": [["src/Components/AddressForm.js", 19]]
   },
   "PostCode": {
-    "origin": [
-      [
-        "src/Components/AddressForm.js",
-        43
-      ]
-    ]
+    "origin": [["src/Components/AddressForm.js", 43]]
   },
   "City": {
-    "origin": [
-      [
-        "src/Components/AddressForm.js",
-        46
-      ]
-    ]
+    "origin": [["src/Components/AddressForm.js", 46]]
   }
 }

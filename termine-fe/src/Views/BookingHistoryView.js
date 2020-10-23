@@ -9,7 +9,6 @@ import { Calendar } from "react-calendar";
 import { Trans, t } from "@lingui/macro";
 import config from "../config";
 import "react-calendar/dist/Calendar.css";
-import { I18n } from "@lingui/react";
 import { ButtonWithConfirm } from "../Components/ButtonWithConfirm";
 
 export default function BookingHistoryView({

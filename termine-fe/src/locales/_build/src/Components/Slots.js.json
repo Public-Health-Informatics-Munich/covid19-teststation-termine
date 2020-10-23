@@ -1,50 +1,20 @@
 {
   "Currently <0><1>no Appointments</1></0> are free.": {
-    "origin": [
-      [
-        "src/Components/Slots.js",
-        38
-      ]
-    ]
+    "origin": [["src/Components/Slots.js", 38]]
   },
   "Kontaktieren Sie": {
-    "origin": [
-      [
-        "src/Components/Slots.js",
-        47
-      ]
-    ]
+    "origin": [["src/Components/Slots.js", 47]]
   },
   "Date": {
-    "origin": [
-      [
-        "src/Components/Slots.js",
-        60
-      ]
-    ]
+    "origin": [["src/Components/Slots.js", 60]]
   },
   "Timeslot": {
-    "origin": [
-      [
-        "src/Components/Slots.js",
-        63
-      ]
-    ]
+    "origin": [["src/Components/Slots.js", 63]]
   },
   "Free appointments": {
-    "origin": [
-      [
-        "src/Components/Slots.js",
-        66
-      ]
-    ]
+    "origin": [["src/Components/Slots.js", 66]]
   },
   "Action": {
-    "origin": [
-      [
-        "src/Components/Slots.js",
-        72
-      ]
-    ]
+    "origin": [["src/Components/Slots.js", 72]]
   }
 }
