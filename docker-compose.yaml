@@ -5,8 +5,6 @@ services:
     environment:
       - POSTGRES_PASSWORD=termine_pw!
       - POSTGRES_DB=termine
-    volumes:
-    - ./psql-data:/var/lib/postgresql/data
   termine:
     build:
       context: .
