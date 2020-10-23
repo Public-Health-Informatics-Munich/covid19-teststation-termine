@@ -21,10 +21,12 @@ COPY termine-fe/yarn.lock .
 RUN yarn install --network-timeout 100000
 
 FROM yarn_fe_installer as yarn_fe_builder
-COPY termine-fe/.linguirc .linguirc
+COPY termine-fe/.linguirc .
+COPY termine-fe/jsconfig.json .
 COPY termine-fe/src src/
 COPY termine-fe/public public/
 RUN yarn run compile-i18n
+RUN yarn run format
 RUN yarn build
 # for debugging
 CMD bash
