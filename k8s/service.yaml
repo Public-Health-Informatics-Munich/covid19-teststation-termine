@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations: {}
+  labels:
+    application: termine.backend
+  name: termine
+spec:
+  type: NodePort
+  ports:
+  - name: "http"
+    port: 8000
+    targetPort: 8000
+  selector:
+    application: termine.backend
