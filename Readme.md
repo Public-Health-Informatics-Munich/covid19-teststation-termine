@@ -9,6 +9,25 @@ Developed for [LMU Division of Infectious Diseases and Tropical Medicine](http:/
 
 ## Configuration of running instance
 
+### Environment Variables to setup the Backend Server
+
+#### Setup The Database
+1. Set with multiple Environment variables
+    * DB_USERNAME => The usename to connect the database server
+    * DB_PASSWORD => The password to connect the database server
+    * DB_PORT     => the port of the database (Default: '5432')
+    * DB_HOST     => The hostname of the database server (Default: 'localhost')
+    * DB_DATABASE => The database to store the tables (Default: 'termine')
+2. Set with one url variable
+    * DB_URL => The url to connect the database (Default: 'postgresql://postgres:example@localhost:5432/termine')
+
+#### Setup behaviour of the Application
+* CLAIM_TIMEOUT_MIN   => Setup the timeout of claims for appointments (how long the slot is blocked after click in the bottom) (Default 5min)
+* DISPLAY_SLOTS_COUNT => Maximal displayed slot counts (Default 150)
+* TERMINE_TIME_ZONE   => Timezone of the Station (Default: 'Europe/Berlin')
+* DISABLE_AUTH        => Set to 'true' to allow anybody to get a appointment. Without to Login/Auth (Default: 'False')
+                         With this settings to 'true' you need only admin user! Doctor user are useless!
+
 ### To generate or update the frontend configuration for the client (required for frontends)
 
 ```bash
