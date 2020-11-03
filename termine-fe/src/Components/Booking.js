@@ -1,13 +1,11 @@
 import React from "react";
-import { useForm } from "react-hook-form";
+import { Controller } from "react-hook-form";
 import { Trans, t } from "@lingui/macro";
-import { INFOBOX_STATES } from "../utils";
-
-const renderInputRequired = () => (
-  <span className="hintLabel">
-    <Trans>This input is required.</Trans>
-  </span>
-);
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { InputRequired } from "./InputRequired";
+import { AddressForm } from "./AddressForm";
+let reasons = require("../config/reasons.json");
 
 export default function Booking({
   i18n,
@@ -16,90 +14,106 @@ export default function Booking({
   startDateTime,
   claimToken,
   disable,
-  state,
-  setState,
+  form,
   inputRef,
 }) {
-  const { register, handleSubmit, reset, errors } = useForm();
-
-  const updateField = (e) => {
-    setState({
-      ...state,
-      [e.target.id]: e.target.value,
-    });
-  };
-
-  const onFocusHandler = () => {
-    setState({
-      ...state,
-      infoboxState: INFOBOX_STATES.FORM_INPUT,
-    });
-  };
+  const startDate = new Date("1990-01-01");
+  const { register, handleSubmit, reset, errors, control } = form;
 
   const localOnBook = (data) => {
     onBook({ ...data, claimToken, startDateTime });
   };
 
-  const { office, firstName, name, phone } = state;
+  const reasonItems = reasons.map((key) => (
+    <option key={key} value={key}>
+      {i18n._(key)}
+    </option>
+  ));
+
   return (
     <form
       className={disable ? "disabled" : ""}
       onSubmit={handleSubmit(localOnBook)}
       ref={inputRef}
-      onFocus={() => onFocusHandler()}
     >
       <fieldset className="input-group vertical">
         <legend>
           <Trans>Booking</Trans>
         </legend>
         <label htmlFor="firstName" className="displayFlex">
-          <Trans>Given Name</Trans> {errors.firstName && renderInputRequired()}
+          <Trans>Given Name</Trans> {errors.firstName && <InputRequired />}
         </label>
         <input
-          id="firstName"
           name="firstName"
           readOnly={disable}
           disabled={disable}
-          onChange={updateField}
-          value={firstName}
           ref={register({ required: true })}
         />
         <label htmlFor="name" className="displayFlex">
-          <Trans>Surname</Trans> {errors.name && renderInputRequired()}
+          <Trans>Surname</Trans> {errors.name && <InputRequired />}
         </label>
         <input
-          id="name"
           name="name"
           readOnly={disable}
           disabled={disable}
-          onChange={updateField}
-          value={name}
           ref={register({ required: true })}
         />
+        <AddressForm form={form} disable={disable} />
         <label htmlFor="phone" className="displayFlex">
-          <Trans>Mobile No.</Trans> {errors.phone && renderInputRequired()}
+          <Trans>Mobile No.</Trans> {errors.phone && <InputRequired />}
         </label>
         <input
-          id="phone"
           name="phone"
           readOnly={disable}
           disabled={disable}
-          onChange={updateField}
-          value={phone}
           ref={register({ required: true })}
         />
+        {window.config.formFields.includes("dayOfBirth") && (
+          <React.Fragment>
+            <label htmlFor="dayOfBirth" className="displayFlex">
+              <Trans>DayOfBirth</Trans> {errors.dayOfBirth && <InputRequired />}
+            </label>
+            <Controller
+              name="dayOfBirth"
+              control={control}
+              defaultValue={startDate}
+              render={(props) => (
+                <DatePicker
+                  showYearDropdown
+                  showMonthDropdown
+                  selected={props.value}
+                  onChange={(selectedDate) => props.onChange(selectedDate)}
+                  dropdownMode="select"
+                  maxDate={new Date()}
+                />
+              )}
+              rules={{ required: true }}
+            />
+          </React.Fragment>
+        )}
         <label htmlFor="office" className="displayFlex">
-          <Trans>Office</Trans> {errors.office && renderInputRequired()}
+          <Trans>Office</Trans> {errors.office && <InputRequired />}
         </label>
         <input
-          id="office"
           name="office"
           readOnly={disable}
           disabled={disable}
-          onChange={updateField}
-          value={office}
           ref={register({ required: true })}
         />
+        {window.config.formFields.includes("dayOfBirth") && (
+          <React.Fragment>
+            <label htmlFor="reason" className="displayFlex">
+              <Trans>Reason</Trans> {errors.reason && <InputRequired />}
+            </label>
+            <select
+              id="reason"
+              name="reason"
+              ref={register({ required: true })}
+            >
+              {reasonItems}
+            </select>
+          </React.Fragment>
+        )}
         <input
           type="submit"
           className="primary"

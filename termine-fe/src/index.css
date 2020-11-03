@@ -48,12 +48,44 @@ input[type="button"]:focus {
   --card-fore-color: var(--success-color);
 }
 
+.successIE {
+  color: var(--success-color);
+}
+
+.errorIE {
+  border-color: var(--error-color);
+  border-width: 10px;
+}
+
 form.disabled {
   opacity: 0.3;
 }
 
+fieldset.noBorder {
+  border: 0px;
+  margin-left: 0px;
+  margin-right: 0px;
+  padding: 0px;
+}
+
 .displayFlex {
   display: flex;
+}
+
+.vertical {
+  flex-direction: column;
+}
+
+.width20Percent {
+  width: 20%;
+}
+
+.width80Percent {
+  width: 80%;
+}
+
+.justifyBetween {
+  justify-content: space-between;
 }
 
 .flexAlignRight {
@@ -70,19 +102,68 @@ table.dataTable:not(.horizontal) {
   margin-top: 1vh;
 }
 
+td.cellAlignRight {
+  justify-content: flex-end;
+  padding: 0px;
+  margin: 0px;
+}
+
+button.icon {
+  padding: 2px 10px;
+}
+
 span.icon-refresh {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-refresh-cw'%3E%3Cpolyline points='23 4 23 10 17 10'%3E%3C/polyline%3E%3Cpolyline points='1 20 1 14 7 14'%3E%3C/polyline%3E%3Cpath d='M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15'%3E%3C/path%3E%3C/svg%3E");
 }
 span.icon-refresh.animated {
   animation: spinner-donut-anim 1.25s ease-in-out infinite;
 }
+
 .input-group.vertical > input {
   min-width: stretch;
   min-width: -moz-available;
   min-width: -webkit-fill-available;
-  min-height: fit-content;
+  min-height: 40px;
   min-height: -moz-fit-content;
   min-height: -webkit-fit-content;
+}
+
+.button.primary,
+[role="button"].primary,
+[type="button"].primary,
+[type="reset"].primary,
+[type="submit"].primary,
+button.primary {
+  --button-back-color: #1976d2;
+  --button-fore-color: #f8f8f8;
+  background-color: #1976d2;
+  color: #f8f8f8;
+}
+
+.button.primary:focus,
+.button.primary:hover,
+[role="button"].primary:focus,
+[role="button"].primary:hover,
+[type="button"].primary:focus,
+[type="button"].primary:hover,
+[type="reset"].primary:focus,
+[type="reset"].primary:hover,
+[type="submit"].primary:focus,
+[type="submit"].primary:hover,
+button.primary:focus,
+button.primary:hover {
+  --button-hover-back-color: #1565c0;
+  background-color: #1565c0;
+}
+
+table:not(.horizontal) td,
+table:not(.horizontal) th {
+  flex: 1 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 1.2em;
+  display: flex;
+  align-items: center;
 }
 
 @media print {

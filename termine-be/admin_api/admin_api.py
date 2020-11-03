@@ -15,7 +15,7 @@ def get_users():
     JOIN booking b ON b.booked_by = u.user_name
     GROUP BY u.user_name, u.coupons
     """
-    users = User.select().order_by(User.role.desc(), User.user_name)
+    users = User.select().where(User.role != UserRoles.ANON).order_by(User.role.desc(), User.user_name)
     return [{
         "user_name": user.user_name,
         "is_admin": user.role == UserRoles.ADMIN,

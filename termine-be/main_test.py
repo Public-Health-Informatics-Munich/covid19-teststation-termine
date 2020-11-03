@@ -10,7 +10,7 @@ def test_test():
 
 
 def test_auth_no_verify(testing_db):
-    response = hug.test.get(main, "/config.js", headers=get_invalid_login())
+    response = hug.test.get(main, "/api/booked", headers=get_invalid_login())
     assert response.status == hug.HTTP_401
 
 

@@ -28,7 +28,21 @@ export const book = (data) => {
     office: data.office,
     first_name: data.firstName,
     name: data.name,
+    street: data.street,
+    street_number: data.streetNumber,
+    post_code: data.postCode,
+    city: data.city,
     phone: data.phone,
+    birthday: data.dayOfBirth,
+    reason: data.reason,
+  });
+};
+
+export const deleteBooking = (id) => {
+  return axios.delete(config.API_BASE_URL + "/booking", {
+    params: {
+      booking_id: id,
+    },
   });
 };
 

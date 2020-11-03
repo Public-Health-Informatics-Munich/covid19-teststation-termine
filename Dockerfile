@@ -21,8 +21,12 @@ COPY termine-fe/yarn.lock .
 RUN yarn install --network-timeout 100000
 
 FROM yarn_fe_installer as yarn_fe_builder
+COPY termine-fe/.linguirc .
+COPY termine-fe/jsconfig.json .
 COPY termine-fe/src src/
 COPY termine-fe/public public/
+RUN yarn run compile-i18n
+RUN yarn run format
 RUN yarn build
 # for debugging
 CMD bash
@@ -61,9 +65,11 @@ ENTRYPOINT ["hug", "-f", "main.py", "-c"]
 CMD ["help"]
 
 FROM base_server as server
+COPY entrypoint.sh .
+COPY wait-for-it.sh .
 COPY termine-be/ .
 COPY --from=yarn_fe_builder /app/build/ build_fe/
 COPY --from=yarn_bo_builder /app/build/ build_bo/
 ENV FE_STATICS_DIR "build_fe"
 ENV BO_STATICS_DIR "build_bo"
-CMD ["gunicorn", "--bind=0.0.0.0:8000", "main:__hug_wsgi__"]
+CMD ["./entrypoint.sh"]

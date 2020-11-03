@@ -27,6 +27,7 @@
     "Appointment for the {0}, {1} has been booked": function (a) {
       return ["Appointment for the ", a("0"), ", ", a("1"), " has been booked"];
     },
+    "Asymptomatische Beschwerden": "Asymptomatic Case",
     "Book Appointment": "Book Appointment",
     "Book appointments": "Book appointments",
     "Booked at": "Booked at",
@@ -34,11 +35,17 @@
     Cancel: "Cancel",
     "Change password:": "Change password:",
     "Choose an appointment": "Choose an appointment",
+    City: "City",
     "Current password": "Current password",
     "Currently <0><1>no Appointments</1></0> are free.":
       "Currently <0><1>no Appointments</1></0> are free.",
     Date: "Date",
     "Date of Appointment": "Date of Appointment",
+    DayOfBirth: "Day of Birth",
+    "Deleting the appointment did not work. Please contact your administrator.":
+      "Deleting the appointment did not work. Please contact your administrator.",
+    "Do you really want to delete this booking? This cannot be undone.":
+      "Do you really want to delete this booking? This cannot be undone.",
     "Enter the information for the {0}, {1}": function (a) {
       return ["Enter the information for the ", a("0"), ", ", a("1")];
     },
@@ -46,18 +53,27 @@
     "Free appointments": "Free appointments",
     From: "From",
     "Given Name": "Given Name",
+    "Home Address": "Home Address",
+    "In order to book more appointments, contact":
+      "In order to book more appointments, contact",
+    "Please contact": "Please contact",
     Logout: "Logout",
     "Mobile No.": "Mobile No.",
     "My appointments": "My appointments",
     "New password": "New password",
     "Notify the patient of their access code:":
       "Notify the patient of their access code:",
-    Office: "Office",
+    Office: "Facility (Hospital/Station/Department)",
+    PostCode: "Post Code",
     Print: "Print",
+    Reason: "Test Reason",
+    "Reiser\xFCckkehrer aus Ausland": "Returning Travellers",
     "Repeat new password": "Repeat new password",
     Save: "Save",
     "Saving...": "Saving...",
     Settings: "Settings",
+    Street: "Street",
+    StreetNumber: "Street Number",
     Surname: "Surname",
     "The appointment is no longer available, please select another free appointment.":
       "The appointment is no longer available, please select another free appointment.",

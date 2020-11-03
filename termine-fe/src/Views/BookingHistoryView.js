@@ -3,19 +3,23 @@ import {
   formatStartTime,
   ISOStringWithoutTimeZone,
 } from "../utils";
+import { ErrorBox } from "../Components/ErrorBox";
 import React from "react";
 import { Calendar } from "react-calendar";
 import { Trans, t } from "@lingui/macro";
 import config from "../config";
 import "react-calendar/dist/Calendar.css";
+import { ButtonWithConfirm } from "../Components/ButtonWithConfirm";
 
 export default function BookingHistoryView({
   i18n,
   bookedList,
   startDate,
   setStartDate,
+  errorMessage,
   endDate,
   setEndDate,
+  onDeleteBooking,
 }) {
   return (
     <div className="col">
@@ -60,6 +64,9 @@ export default function BookingHistoryView({
           }}
         />
       </div>
+      <div>
+        {errorMessage !== "" && <ErrorBox errorMessage={errorMessage} />}
+      </div>
       <table className="dataTable printme" id="printme">
         <thead>
           <tr>
@@ -81,6 +88,7 @@ export default function BookingHistoryView({
             <th>
               <Trans>Access Code</Trans>
             </th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
@@ -99,6 +107,13 @@ export default function BookingHistoryView({
                 <td>{booking.first_name}</td>
                 <td>{booking.phone}</td>
                 <td>{booking.secret}</td>
+                <td className="cellAlignRight">
+                  <ButtonWithConfirm
+                    i18n={i18n}
+                    booking={booking}
+                    onDeleteBooking={onDeleteBooking}
+                  />
+                </td>
               </tr>
             );
           })}

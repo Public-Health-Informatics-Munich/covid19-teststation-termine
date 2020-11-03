@@ -264,7 +264,7 @@ def test_delete_timeslots(testing_db):
 def test_change_user_pw(testing_db):
     NEW_PASSWORD = 'NEW_PASSWORD'
     # first, verify that both users' logins work
-    response = hug.test.get(main, "/config.js", headers=get_user_login())
+    response = hug.test.get(main, "/api/booked", headers=get_user_login(), start_date="2020-03-26", end_date="2020-03-26")
     assert response.status == hug.HTTP_200
     response = hug.test.get(main, "/admin/config.js", headers=get_admin_login())
     assert response.status == hug.HTTP_200
@@ -272,11 +272,11 @@ def test_change_user_pw(testing_db):
     hug.test.cli('change_user_pw', module='main', username=USER, password=NEW_PASSWORD, for_real=True)
 
     # check that the old login does not work anymore
-    response = hug.test.get(main, "/config.js", headers=get_user_login())
+    response = hug.test.get(main, "/api/booked", headers=get_user_login(), start_date="2020-03-26", end_date="2020-03-26")
     assert response.status == hug.HTTP_401
 
     # and the new one does
-    response = hug.test.get(main, "/config.js", headers={"Authorization": get_basic_auth(USER, NEW_PASSWORD)})
+    response = hug.test.get(main, "/api/booked", headers={"Authorization": get_basic_auth(USER, NEW_PASSWORD)}, start_date="2020-03-26", end_date="2020-03-26")
     assert response.status == hug.HTTP_200
 
     # and the existing user wasn't changed

@@ -1,0 +1,80 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    application: termine.backend
+  name: termine
+spec:
+  selector:
+    matchLabels:
+      application: termine.backend
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        application: termine.backend
+    spec:
+      initContainers:
+        - name: initdb
+          image: termine-command:latest
+          imagePullPolicy: IfNotPresent
+          command:
+            - bash
+            - /setup/setup.sh
+          env:
+            - name: DB_HOST
+              value: postgres
+            - name: DB_PASSWORD
+              value: termine_pw!
+            - name: DB_USERNAME
+              value: postgres
+            - name: FRONTEND_CONF_JSON
+              value: config/by_env/staging.json
+          volumeMounts:
+            - mountPath: /setup
+              name: setup
+      containers:
+        - image: termine-server:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: CLAIM_TIMEOUT_MIN
+              value: "5"
+            - name: DB_HOST
+              value: postgres
+            - name: DB_PASSWORD
+              value: termine_pw!
+            - name: DB_USERNAME
+              value: postgres
+            - name: DISABLE_AUTH
+              value: "False"
+            - name: DISPLAY_SLOTS_COUNT
+              value: "150"
+            - name: TERMINE_TIME_ZONE
+              value: Europe/Berlin
+          name: termine
+          ports:
+            - containerPort: 8000
+          resources: {}
+      restartPolicy: Always
+      volumes:
+        - name: setup
+          configMap:
+            name: setup
+            items:
+              - key: setup.sh
+                path: setup.sh
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: setup
+data:
+  setup.sh: |
+    #!/usr/bin/env bash
+
+    hug -f main.py -c init_db --for_real || hug -f main.py -c run_migrations --for_real
+
+    if [ "${FRONTEND_CONF_JSON}" != "" ]; then
+      hug -f main.py -c load_frontend_config "${FRONTEND_CONF_JSON}" --for_real
+    fi

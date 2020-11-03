@@ -7,6 +7,8 @@ verify_ssl = true
 pytest = "*"
 pysqlite3 = "*"
 pytest-dependency = "*"
+pylint = "*"
+autopep8 = "*"
 
 [packages]
 hug = "*"

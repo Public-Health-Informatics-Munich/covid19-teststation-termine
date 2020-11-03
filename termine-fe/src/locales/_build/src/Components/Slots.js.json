@@ -1,6 +1,9 @@
 {
   "Currently <0><1>no Appointments</1></0> are free.": {
-    "origin": [["src/Components/Slots.js", 37]]
+    "origin": [["src/Components/Slots.js", 38]]
+  },
+  "Kontaktieren Sie": {
+    "origin": [["src/Components/Slots.js", 47]]
   },
   "Date": {
     "origin": [["src/Components/Slots.js", 60]]

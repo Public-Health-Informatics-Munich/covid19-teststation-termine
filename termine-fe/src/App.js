@@ -2,7 +2,8 @@ import React, { useEffect, useCallback, useRef, useState } from "react";
 import { trackPromise, usePromiseTracker } from "react-promise-tracker";
 import { Switch, Route, Link, Redirect, useLocation } from "react-router-dom";
 import { Trans, t } from "@lingui/macro";
-
+import { useForm } from "react-hook-form";
+import { format } from "date-fns";
 import { INFOBOX_STATES, ISOStringWithoutTimeZone } from "./utils";
 import * as Api from "./Api";
 import BookView from "./Views/BookView";
@@ -48,15 +49,15 @@ function App({ i18n }) {
     state: INFOBOX_STATES.INITIAL,
     msg: "",
   });
-  const [formState, setFormState] = useState({
-    firstName: "",
-    name: "",
-    phone: "",
-    office: "",
-  });
+
+  const form = useForm();
+
   const [bookedList, setBookedList] = useState([]);
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
+  const [bookingHistoryErrorMessage, setBookingHistoryErrorMessage] = useState(
+    ""
+  );
 
   const getSlotListData = useCallback(() => {
     return Api.fetchSlots()
@@ -146,12 +147,7 @@ function App({ i18n }) {
           lengthMin: slotLengthMin,
         });
         setClaimToken(response.data);
-        setFormState({
-          ...formState,
-          firstName: "",
-          name: "",
-          phone: "",
-        });
+        form.reset();
         setFocusOnList(false);
       })
       .catch((error) => {
@@ -171,6 +167,11 @@ function App({ i18n }) {
   };
 
   const onBook = (data) => {
+    data = {
+      ...data,
+      dayOfBirth: format(data.dayOfBirth, "yyyy-MM-dd"),
+    };
+
     Api.book(data)
       .then((response) => {
         setInfoboxState({
@@ -211,16 +212,29 @@ function App({ i18n }) {
         setStartDateTime("");
         setClaimToken("");
         setFocusOnList(true);
-        setFormState({
-          ...formState,
-          firstName: "",
-          name: "",
-          phone: "",
-        });
+        form.reset();
       })
       .catch((error) => {
         //Todo handle error
         console.error(error);
+      });
+  };
+
+  const onDeleteBooking = (id) => {
+    Api.deleteBooking(id)
+      .then((response) => {
+        console.log(response.statusText);
+        if (response.status === 200) {
+          getBookedListData();
+          setBookingHistoryErrorMessage("");
+        }
+      })
+      .catch((error) => {
+        setBookingHistoryErrorMessage(
+          i18n._(
+            t`Deleting the appointment did not work. Please contact your administrator.`
+          )
+        );
       });
   };
 
@@ -270,8 +284,7 @@ function App({ i18n }) {
             onCancelBooking={onCancelBooking}
             claimToken={claimToken}
             startDateTime={startDateTime}
-            formState={formState}
-            setFormState={setFormState}
+            form={form}
             inputRef={inputRef}
           />
         </Route>
@@ -282,7 +295,9 @@ function App({ i18n }) {
             startDate={startDate}
             setStartDate={setStartDate}
             endDate={endDate}
+            errorMessage={bookingHistoryErrorMessage}
             setEndDate={setEndDate}
+            onDeleteBooking={onDeleteBooking}
           />
         </Route>
         <Route path={TAB.SETTINGS}>

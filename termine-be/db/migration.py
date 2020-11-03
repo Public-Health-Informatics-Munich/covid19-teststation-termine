@@ -2,7 +2,8 @@ import sys
 from datetime import datetime
 
 import hug
-from peewee import DateTimeField, IntegerField
+import re
+from peewee import DateTimeField, IntegerField, CharField, DateField
 from playhouse.migrate import PostgresqlMigrator, ProgrammingError, migrate
 
 from config import config
@@ -20,7 +21,7 @@ def init_database(db: PeeweeSession):
     with db.atomic():
         db_proxy.create_tables(tables)
         log.info("Tables created. Setting migration level.")
-        Migration.create(version=3)
+        Migration.create(version=5)
         log.info("Migration level set.")
 
 
@@ -38,6 +39,10 @@ def migrate_db(db: PeeweeSession):
                 level_2(db, migration, migrator)
             if migration.version < 3:
                 level_3(db, migration, migrator)
+            if migration.version < 4:
+                level_4(db, migration, migrator)
+            if migration.version < 5:
+                level_5(db, migration)
 
         except ProgrammingError:
             log.exception('Error - Migrations table not found, please run init_db first!')
@@ -80,3 +85,50 @@ def level_3(db, migration, migrator):
             log.info("wrote existing config to db.")
         except:
             log.warning("no config found for env, set values with cli command set_frontend_config.")
+
+
+def level_4(db, migration, migrator):
+    with db.atomic():
+        street_field = CharField(null=True)
+        street_number_field = CharField(null=True)
+        post_code_field = CharField(null=True)
+        city_field = CharField(null=True)
+        birthday_field = DateField(null=True)
+        reason_field = CharField(null=True)
+        migrate(
+            migrator.add_column('booking', 'street', street_field),
+            migrator.add_column('booking', 'street_number', street_number_field),
+            migrator.add_column('booking', 'post_code', post_code_field),
+            migrator.add_column('booking', 'city', city_field),
+            migrator.add_column('booking', 'birthday', birthday_field),
+            migrator.add_column('booking', 'reason', reason_field)
+        )
+        migration.version = 4
+        migration.save()
+
+
+def level_5(db, migration):
+    left_part_coupons = '<span class="hintLabel">Um mehr Termine vergeben zu können wenden Sie sich an '
+    left_part_appointment = '<span class=\"hintLabel\">Kontaktieren Sie '
+    rigth_part = '</span>'
+    mail_extract = 'href="mailto:([a-zA-Z0-9!#$%&\'*+-/=?^_`{|}~.@]*)"'
+    with db.atomic():
+        try:
+            frontend_config = FrontendConfig.get()
+
+            contact_info_coupons = frontend_config.config['contactInfoCoupons']
+            contact_info_appointment = frontend_config.config['contactInfoAppointment']
+            contact_info_appointment = contact_info_appointment.lstrip(left_part_appointment).rstrip(rigth_part)
+            contact_info_coupons = contact_info_coupons.lstrip(left_part_coupons).rstrip(rigth_part)
+            if contact_info_coupons.find('@') >= 0:
+                contact_info_coupons = re.findall(mail_extract, contact_info_coupons)[0]
+            if contact_info_appointment.find('@') >= 0:
+                contact_info_appointment = re.findall(mail_extract, contact_info_appointment)[0]
+            frontend_config.config['contactInfoCoupons'] = contact_info_coupons
+            frontend_config.config['contactInfoAppointment'] = contact_info_appointment
+            frontend_config.config['formFields'] = ['base', 'address', 'dayOfBirth', 'reason']
+            frontend_config.save()
+            migration.version = 5
+            migration.save()
+        except IndexError:
+            log.info("No frontendconfig stored. No row migration needed")
