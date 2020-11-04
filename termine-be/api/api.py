@@ -354,10 +354,12 @@ def booked(db: PeeweeSession, user: hug.directives.user, start_date: hug.types.t
 
 @hug.delete("/booking", requires=authentication)
 def delete_booking(db: PeeweeSession, user: hug.directives.user, booking_id: hug.types.text):
-    if user.role == UserRoles.ADMIN:
+    if user.role != UserRoles.ANON:
         with db.atomic():
             try:
                 booking = Booking.get_by_id(booking_id)
+                if user.role == UserRoles.USER and booking.booked_by != user.user_name:
+                    return hug.HTTP_METHOD_NOT_ALLOWED
                 appointment = booking.appointment
                 appointment.booked = False
                 appointment.save()
