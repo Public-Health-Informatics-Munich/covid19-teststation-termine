@@ -100,7 +100,7 @@ export default function Booking({
           disabled={disable}
           ref={register({ required: true })}
         />
-        {window.config.formFields.includes("dayOfBirth") && (
+        {window.config.formFields.includes("reason") && (
           <React.Fragment>
             <label htmlFor="reason" className="displayFlex">
               <Trans>Reason</Trans> {errors.reason && <InputRequired />}
