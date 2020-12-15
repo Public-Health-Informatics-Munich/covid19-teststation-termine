@@ -59,7 +59,7 @@ The same steps are needed on the first startup
 
 1. start the docker-compose environment `docker-compose up --build -d`
 1. get a shell in the _termine_ service `docker-compose exec termine /bin/bash`
-2. create a admin user `hug -f main.py -c add_user admin`
+2. create a admin user `hug -f main.py -c add_user admin -r admin`
 3. add appointments to your system `hug -f main.py -c create_appointments DAY MOUNTH` 
 replace _**DAY**_ with the two digit day of the mount and _**MOUNTH**_ with the two digit mounth 
 
