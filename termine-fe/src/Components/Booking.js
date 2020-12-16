@@ -5,6 +5,12 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { InputRequired } from "./InputRequired";
 import { AddressForm } from "./AddressForm";
+
+import { registerLocale, setDefaultLocale } from "react-datepicker";
+import de from "date-fns/locale/de";
+registerLocale("de", de);
+setDefaultLocale("de");
+
 let reasons = require("../config/reasons.json");
 
 export default function Booking({
@@ -84,6 +90,7 @@ export default function Booking({
                   selected={props.value}
                   onChange={(selectedDate) => props.onChange(selectedDate)}
                   dropdownMode="select"
+                  dateFormat="dd.MM.yyyy"
                   maxDate={new Date()}
                 />
               )}
@@ -100,7 +107,7 @@ export default function Booking({
           disabled={disable}
           ref={register({ required: true })}
         />
-        {window.config.formFields.includes("dayOfBirth") && (
+        {window.config.formFields.includes("reason") && (
           <React.Fragment>
             <label htmlFor="reason" className="displayFlex">
               <Trans>Reason</Trans> {errors.reason && <InputRequired />}

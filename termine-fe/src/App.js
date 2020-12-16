@@ -167,10 +167,12 @@ function App({ i18n }) {
   };
 
   const onBook = (data) => {
-    data = {
-      ...data,
-      dayOfBirth: format(data.dayOfBirth, "yyyy-MM-dd"),
-    };
+    if (window.config.formFields.includes("dayOfBirth")) {
+      data = {
+        ...data,
+        dayOfBirth: format(data.dayOfBirth, "yyyy-MM-dd"),
+      };
+    }
 
     Api.book(data)
       .then((response) => {
