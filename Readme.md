@@ -7,6 +7,36 @@ Developed for [LMU Division of Infectious Diseases and Tropical Medicine](http:/
 <img src=".github/show/booking-app-1.png"/>
 <a href="screenshots.md">More Screenshots</a>
 
+## Quickstart with docker-compose
+
+1. start the docker-compose environment 
+```
+docker-compose up --build -d
+```
+2. get a shell in the _termine_ service 
+```
+docker-compose exec termine /bin/bash
+```
+3. create a admin user 
+```
+hug -f main.py -c add_user admin -r admin
+```
+4. add appointments to your system 
+```
+hug -f main.py -c create_appointments -y 2021 DAY MONTH
+``` 
+replace _**DAY**_ with the two digit day of the month and _**MONTH**_ with the two digit month 
+
+Now browse the app with your browser at http://localhost:8000/
+
+(**_HINT_**)
+To persist the postgres database create a directory add follow lines to the postgres service:
+```
+ volumes:
+  - ./postgres-data:/var/lib/postgresql/data
+```
+<br/>
+
 ## Configuration of running instance
 
 ### Environment Variables to setup the Backend Server
@@ -50,27 +80,6 @@ if left out takes the value of `contact_info_bookings`,
 and is shown when there are no free slots left to book appointments for.
 * `form_fields` comma separated list of form fields to be displayed in the appointment selector. possible values
 are `"base,address,dayOfBirth,reason"`
-
-
-### If you want to use or try out the server with docker-compose there is now a example docker-compose.yaml in the project
-
-After start up of the docker-compose environment there a some additional steps to do if you don't persist your database.
-The same steps are needed on the first startup
-
-1. start the docker-compose environment `docker-compose up --build -d`
-1. get a shell in the _termine_ service `docker-compose exec termine /bin/bash`
-2. create a admin user `hug -f main.py -c add_user admin -r admin`
-3. add appointments to your system `hug -f main.py -c create_appointments DAY MOUNTH` 
-replace _**DAY**_ with the two digit day of the mount and _**MOUNTH**_ with the two digit mounth 
-
-Now you can start try out the application by open it with on your browser at http://localhost:8000/
-
-(**_HINT_**)
-To persist the postgres database create a directory add follow lines to the postgres service:
-```
- volumes:
-  - ./postgres-data:/var/lib/postgresql/data
-```
 
 ## Current dev setup
 
