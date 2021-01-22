@@ -42,7 +42,7 @@ ldapsearch -h localhost -v -x -D 'cn=Directory Manager' -y ldap.pw -b "dc=exampl
 
 Test the app user:
 ```
-ldapsearch -h localhost -v -x -D 'uid=termine,ou=Application,dc=example,dc=com' -w appsecret -b uid=termine,ou=Application,dc=example,dc=com -s base
+ldapsearch -h localhost -v -x -D 'uid=termine,ou=Application,dc=example,dc=com' -w appsecret -b ou=People,dc=example,dc=com -s sub
 ```
 
 Test user:
