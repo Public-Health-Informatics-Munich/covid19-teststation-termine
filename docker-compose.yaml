@@ -1,5 +1,10 @@
 version: "3.3"
 services:
+  ldap:
+    image: 389ds/dirsrv:latest
+    ports:
+    - 389:3389
+    - 636:3636
   postgres:
     image: postgres:11
     environment:
