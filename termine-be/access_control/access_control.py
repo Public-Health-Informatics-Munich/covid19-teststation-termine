@@ -3,6 +3,7 @@ import logging
 import hug
 import base64
 import binascii
+from ldap3 import Server, Connection, ALL
 from peewee import DoesNotExist, DatabaseError
 from falcon import HTTPUnauthorized
 
@@ -30,23 +31,32 @@ def normalize_user(user_name):
 
 def verify_user(user_name, user_password, context: PeeweeContext):
     name = normalize_user(user_name)
-    with context.db.atomic():
-        try:
-            user = User.get(User.user_name == name)
-            if user.role == UserRoles.ANON:
-                return user
-            salt = user.salt
-            hashed = hash_pw(name, salt, user_password)
-            if hashed == user.password:
-                return user
-            log.warning("invalid credentials for user: %s", user_name)
-            return False
-        except DoesNotExist:
-            log.warning("user not found: %s", user_name)
-            return False
-        except DatabaseError:
-            log.exception("unknown error logging in: %s", user_name)
-            return False
+    if config.Settings.use_ldap:
+        server = Server(config.Ldap.url, port=3389, get_info=ALL)
+        connection = Connection(
+            server, 'uid=termine,ou=Application,dc=example,dc=com', 'appsecret')
+        result = connection.bind()
+        log.info(result)
+        log.info(connection)
+        return result
+    else:
+        with context.db.atomic():
+            try:
+                user = User.get(User.user_name == name)
+                if user.role == UserRoles.ANON:
+                    return user
+                salt = user.salt
+                hashed = hash_pw(name, salt, user_password)
+                if hashed == user.password:
+                    return user
+                log.warning("invalid credentials for user: %s", user_name)
+                return False
+            except DoesNotExist:
+                log.warning("user not found: %s", user_name)
+                return False
+            except DatabaseError:
+                log.exception("unknown error logging in: %s", user_name)
+                return False
 
 
 def get_or_create_anon_user(context: PeeweeContext):
@@ -56,7 +66,8 @@ def get_or_create_anon_user(context: PeeweeContext):
             user = User.get(User.user_name == name)
             return user
         except DoesNotExist:
-            user = User.create(user_name=name, role=UserRoles.ANON, salt="", password="", coupons=4)
+            user = User.create(user_name=name, role=UserRoles.ANON,
+                               salt="", password="", coupons=4)
             user.save()
             return user
 
@@ -86,7 +97,8 @@ def basic(request, response, own_verify_user, realm="simple", context=None, **kw
     if auth_type.lower() == "basic":
         try:
             user_id, key = (
-                base64.decodebytes(bytes(user_and_key.strip(), "utf8")).decode("utf8").split(":", 1)
+                base64.decodebytes(bytes(user_and_key.strip(), "utf8")).decode(
+                    "utf8").split(":", 1)
             )
             user = own_verify_user(user_id, key, context)
             if user:
@@ -121,4 +133,3 @@ def admin_authentication(user_name, user_password, context: PeeweeContext):
         return user
     log.warning("missing admin role for: %s", user_name)
     return False
-

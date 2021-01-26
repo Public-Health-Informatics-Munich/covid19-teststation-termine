@@ -3,8 +3,8 @@ services:
   ldap:
     image: 389ds/dirsrv:latest
     ports:
-    - 389:3389
-    - 636:3636
+      - 389:3389
+      - 636:3636
   postgres:
     image: postgres:11
     environment:
@@ -15,6 +15,7 @@ services:
       context: .
     depends_on:
       - postgres
+      - ldap
     command: ["./wait-for-it.sh", "postgres:5432", "--", "./entrypoint.sh"]
     environment:
       - CLAIM_TIMEOUT_MIN=5
@@ -25,5 +26,7 @@ services:
       - DB_PASSWORD=termine_pw!
       - DB_HOST=postgres
       - FRONTEND_CONF_JSON=config/by_env/staging.json
+      - USE_LDAP=True
+      - LDAP_URL=ldap
     ports:
-    - 8000:8000
+      - 8000:8000

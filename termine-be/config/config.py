@@ -33,7 +33,12 @@ class Settings:
     num_display_slots = int(os.environ.get("DISPLAY_SLOTS_COUNT", 150))
     tz = pytz.timezone(os.environ.get("TERMINE_TIME_ZONE", 'Europe/Berlin'))
     disable_auth_for_booking = _bool_convert(os.environ.get("DISABLE_AUTH", False))
+    use_ldap = _bool_convert(os.environ.get("USE_LDAP", False))
 
+class Ldap:
+    url = os.environ.get("LDAP_URL", "")
+    user_dn = os.environ.get("LDAP_USER_DN", "")
+    user_pw = os.environ.get("LDAP_USER_PW", "")
 
 class FrontendSettings:
     _inst = None
