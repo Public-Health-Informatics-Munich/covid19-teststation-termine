@@ -30,5 +30,6 @@ services:
       - FRONTEND_CONF_JSON=config/by_env/staging.json
       - USE_LDAP=True
       - LDAP_URL=ldap
+      - LDAP_DN=uid={uid},ou=People,dc=example,dc=com
     ports:
       - 8000:8000

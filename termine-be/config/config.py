@@ -40,8 +40,7 @@ class Settings:
 
 class Ldap:
     url = os.environ.get("LDAP_URL", "")
-    user_dn = os.environ.get("LDAP_USER_DN", "")
-    user_pw = os.environ.get("LDAP_USER_PW", "")
+    user_dn = os.environ.get("LDAP_DN", "")
     user_coupon_number = int(os.environ.get("LDAP_USER_COUPONS", 3))
 
 
