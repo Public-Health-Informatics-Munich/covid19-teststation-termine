@@ -3,8 +3,9 @@ import logging
 import hug
 import base64
 import binascii
-from ldap3 import Server, Connection, ALL
-from peewee import DoesNotExist, DatabaseError
+from ldap3 import Server, Connection, ALL, NTLM
+import ldap3
+from peewee import Context, DoesNotExist, DatabaseError
 from falcon import HTTPUnauthorized
 
 from db.directives import PeeweeContext
@@ -19,10 +20,11 @@ class UserRoles:
     ADMIN = 'admin'
     USER = 'doctor'
     ANON = 'anonymous'
+    LDAP = 'ldap'
 
     @staticmethod
     def user_roles():
-        return [UserRoles.ADMIN, UserRoles.USER, UserRoles.ANON]
+        return [UserRoles.ADMIN, UserRoles.USER, UserRoles.ANON, UserRoles.LDAP]
 
 
 def normalize_user(user_name):
@@ -31,43 +33,56 @@ def normalize_user(user_name):
 
 def verify_user(user_name, user_password, context: PeeweeContext):
     name = normalize_user(user_name)
-    if config.Settings.use_ldap:
-        server = Server(config.Ldap.url, port=3389, get_info=ALL)
-        connection = Connection(
-            server, 'uid=termine,ou=Application,dc=example,dc=com', 'appsecret')
-        result = connection.bind()
-        log.info(result)
-        log.info(connection)
-        return result
-    else:
-        with context.db.atomic():
-            try:
-                user = User.get(User.user_name == name)
-                if user.role == UserRoles.ANON:
-                    return user
-                salt = user.salt
-                hashed = hash_pw(name, salt, user_password)
-                if hashed == user.password:
-                    return user
-                log.warning("invalid credentials for user: %s", user_name)
-                return False
-            except DoesNotExist:
+    with context.db.atomic():
+        try:
+            user = User.get(User.user_name == name)
+            if user.role == UserRoles.ANON:
+                return user
+            salt = user.salt
+            hashed = hash_pw(name, salt, user_password)
+            if hashed == user.password:
+                return user
+            log.warning("invalid credentials for user: %s", user_name)
+            return False
+        except DoesNotExist:
+            if config.Settings.use_ldap:
+                return search_ldap_user(user_name, user_password, context)
+            else:
                 log.warning("user not found: %s", user_name)
                 return False
-            except DatabaseError:
-                log.exception("unknown error logging in: %s", user_name)
-                return False
+        except DatabaseError:
+            log.exception("unknown error logging in: %s", user_name)
+            return False
+
+
+def search_ldap_user(user_name: str, user_password: str, context: PeeweeContext):
+    server = Server(config.Ldap.url, port=3389, get_info=ALL)
+    connection = Connection(
+        server, f'uid={user_name},ou=People,dc=example,dc=com', user_password)
+    result = connection.bind()
+    log.info(connection)
+    if result:
+        # creates a user if not existing yet, in order to track coupon numbers per ldap user
+        return get_or_create_auto_user(context, UserRoles.LDAP, f'ldap-{user_name}')
+    log.warning(f"Didn't find an ldap user for uid {user_name}")
+    return False
 
 
 def get_or_create_anon_user(context: PeeweeContext):
     name = "unregistered_user"
+    return get_or_create_auto_user(context, UserRoles.LDAP, name)
+
+
+def get_or_create_auto_user(context: PeeweeContext, role: str, name: str):
+    coupons = 4 if (
+        role == UserRoles.ANON) else config.Ldap.user_coupon_number if role == UserRoles.LDAP else 1
     with context.db.atomic():
         try:
             user = User.get(User.user_name == name)
             return user
         except DoesNotExist:
-            user = User.create(user_name=name, role=UserRoles.ANON,
-                               salt="", password="", coupons=4)
+            user = User.create(user_name=name, role=role,
+                               salt="", password="", coupons=coupons)
             user.save()
             return user
 
