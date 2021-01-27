@@ -10,6 +10,8 @@ services:
     environment:
       - POSTGRES_PASSWORD=termine_pw!
       - POSTGRES_DB=termine
+    ports:
+      - 54321:5432
   termine:
     build:
       context: .
