@@ -25,20 +25,25 @@ class Db:
         db_database = os.environ.get('DB_DATABASE', 'termine')
         url = f"postgresql://{db_username}:{db_password}@{db_host}:{db_port}/{db_database}"
     else:
-        url = os.environ.get("DB_URL", 'postgresql://postgres:example@localhost:5432/termine')
+        url = os.environ.get(
+            "DB_URL", 'postgresql://postgres:example@localhost:5432/termine')
 
 
 class Settings:
     claim_timeout_min = int(os.environ.get("CLAIM_TIMEOUT_MIN", 5))
     num_display_slots = int(os.environ.get("DISPLAY_SLOTS_COUNT", 150))
     tz = pytz.timezone(os.environ.get("TERMINE_TIME_ZONE", 'Europe/Berlin'))
-    disable_auth_for_booking = _bool_convert(os.environ.get("DISABLE_AUTH", False))
+    disable_auth_for_booking = _bool_convert(
+        os.environ.get("DISABLE_AUTH", False))
     use_ldap = _bool_convert(os.environ.get("USE_LDAP", False))
+
 
 class Ldap:
     url = os.environ.get("LDAP_URL", "")
     user_dn = os.environ.get("LDAP_USER_DN", "")
     user_pw = os.environ.get("LDAP_USER_PW", "")
+    user_coupon_number = int(os.environ.get("LDAP_USER_COUPONS", 3))
+
 
 class FrontendSettings:
     _inst = None
