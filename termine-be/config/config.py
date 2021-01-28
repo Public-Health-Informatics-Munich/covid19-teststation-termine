@@ -46,6 +46,7 @@ class Ldap:
     search_base = os.environ.get("LDAP_SEARCH_BASE", "")
     search_filter = os.environ.get("LDAP_SEARCH_FILTER", "")
     search_attribute = os.environ.get("LDAP_ATTRIBUTE", "")
+    use_tls = os.environ.get("LDAP_USE_TLS", False)
     port = int(os.environ.get("LDAP_PORT", 389))
     tls_port = int(os.environ.get("LDAP_TLS_PORT", 636))
 

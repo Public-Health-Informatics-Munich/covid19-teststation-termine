@@ -35,6 +35,7 @@ services:
       - LDAP_SEARCH_BASE=ou=People,dc=example,dc=com
       - LDAP_SEARCH_FILTER=(&(objectclass=Person)(uid={}))
       - LDAP_ATTRIBUTE=dn
+      - LDAP_USE_TLS=True
       # only needs to be set if non-default
       - LDAP_PORT=3389
       - LDAP_TLS_PORT=3636

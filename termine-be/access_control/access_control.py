@@ -65,7 +65,10 @@ def search_ldap_user(user_name: str, user_password: str, context: PeeweeContext)
             "ENV variables for LDAP not set. You'll need to define LDAP_URL, LDAP_SYSTEM_DN, LDAP_SYSTEM_USER_PW, LDAP_SEARCH_BASE, LDAP_SEARCH_FILTER, LDAP_ATTRIBUTE")
         return False
 
-    server = Server(url, port=config.Ldap.port, get_info=ALL)
+    with_tls = config.Ldap.use_tls
+    port = config.Ldap.tls_port if with_tls else config.Ldap.port
+
+    server = Server(url, port=port, use_ssl=with_tls, get_info=ALL)
     # Connects the system user
     connection = Connection(
         server, sys_user, sys_pw)
