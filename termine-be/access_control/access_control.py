@@ -3,8 +3,7 @@ import logging
 import hug
 import base64
 import binascii
-from ldap3 import Server, Connection, ALL, NTLM
-import ldap3
+from ldap3 import Server, Connection, ALL
 from peewee import Context, DoesNotExist, DatabaseError
 from falcon import HTTPUnauthorized
 
@@ -55,14 +54,35 @@ def verify_user(user_name, user_password, context: PeeweeContext):
 
 
 def search_ldap_user(user_name: str, user_password: str, context: PeeweeContext):
-    server = Server(config.Ldap.url, port=3389, get_info=ALL)
+    url = config.Ldap.url
+    sys_user = config.Ldap.user_dn
+    sys_pw = config.Ldap.user_pw
+    base = config.Ldap.search_base
+    filter = config.Ldap.search_filter
+    attribute = config.Ldap.search_attribute
+    if "" in [url, sys_user, sys_pw, base, filter, attribute]:
+        log.error(
+            "ENV variables for LDAP not set. You'll need to define LDAP_URL, LDAP_SYSTEM_DN, LDAP_SYSTEM_USER_PW, LDAP_SEARCH_BASE, LDAP_SEARCH_FILTER, LDAP_ATTRIBUTE")
+        return False
+
+    server = Server(url, port=config.Ldap.port, get_info=ALL)
+    # Connects the system user
     connection = Connection(
-        server, config.Ldap.user_dn.format(uid=user_name), user_password)
+        server, sys_user, sys_pw)
     result = connection.bind()
     log.info(connection)
     if result:
-        # creates a user if not existing yet, in order to track coupon numbers per ldap user
-        return get_or_create_auto_user(context, UserRoles.USER, f'ldap-{user_name}')
+        # searches for the user about to log in in the ldap server
+        connection.search(base, filter.format(
+            user_name), attributes=[attribute])
+        log.info(connection.entries)
+        # if exactly one was found, tries to log this one in
+        if len(connection.entries) == 1:
+            test = Connection(
+                server, connection.entries[0][attribute], user_password)
+            if test:
+                # creates a user if not existing yet, in order to track coupon numbers per ldap user
+                return get_or_create_auto_user(context, UserRoles.USER, f'ldap-{user_name}')
     log.warning(f"Didn't find an ldap user for uid {user_name}")
     return False
 

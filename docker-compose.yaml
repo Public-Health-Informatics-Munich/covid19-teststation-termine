@@ -30,6 +30,13 @@ services:
       - FRONTEND_CONF_JSON=config/by_env/staging.json
       - USE_LDAP=True
       - LDAP_URL=ldap
-      - LDAP_DN=uid={uid},ou=People,dc=example,dc=com
+      - LDAP_SYSTEM_DN=uid=termine,ou=Application,dc=example,dc=com
+      - LDAP_SYSTEM_USER_PW=appsecret
+      - LDAP_SEARCH_BASE=ou=People,dc=example,dc=com
+      - LDAP_SEARCH_FILTER=(&(objectclass=Person)(uid={}))
+      - LDAP_ATTRIBUTE=dn
+      # only needs to be set if non-default
+      - LDAP_PORT=3389
+      - LDAP_TLS_PORT=3636
     ports:
       - 8000:8000

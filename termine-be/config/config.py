@@ -40,8 +40,14 @@ class Settings:
 
 class Ldap:
     url = os.environ.get("LDAP_URL", "")
-    user_dn = os.environ.get("LDAP_DN", "")
+    user_dn = os.environ.get("LDAP_SYSTEM_DN", "")
+    user_pw = os.environ.get("LDAP_SYSTEM_USER_PW", "")
     user_coupon_number = int(os.environ.get("LDAP_USER_COUPONS", 3))
+    search_base = os.environ.get("LDAP_SEARCH_BASE", "")
+    search_filter = os.environ.get("LDAP_SEARCH_FILTER", "")
+    search_attribute = os.environ.get("LDAP_ATTRIBUTE", "")
+    port = int(os.environ.get("LDAP_PORT", 389))
+    tls_port = int(os.environ.get("LDAP_TLS_PORT", 636))
 
 
 class FrontendSettings:
