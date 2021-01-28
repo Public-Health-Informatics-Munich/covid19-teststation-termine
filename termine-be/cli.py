@@ -3,7 +3,7 @@ import io
 import json
 import logging
 import sys
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 
 import hug
 from peewee import DatabaseError
@@ -31,7 +31,7 @@ def create_appointments(
         db: directives.PeeweeSession,
         day: hug.types.number,
         month: hug.types.number,
-        year: hug.types.number = 2020,
+        year: hug.types.number = date.today().year,
         start_hour: hug.types.number = 8,
         start_min: hug.types.number = 30,
         num_slots: hug.types.number = 13,
