@@ -92,7 +92,7 @@ def search_ldap_user(user_name: str, user_password: str, context: PeeweeContext)
 
 def get_or_create_anon_user(context: PeeweeContext):
     name = "unregistered_user"
-    return get_or_create_auto_user(context, UserRoles.USER, name)
+    return get_or_create_auto_user(context, UserRoles.ANON, name)
 
 
 def get_or_create_auto_user(context: PeeweeContext, role: str, name: str):
