@@ -1,6 +1,37 @@
 import axios from "axios";
 import config from "./config";
 
+export const API_TOKEN = "token";
+
+axios.interceptors.response.use(
+  function (response) {
+    return response;
+  },
+  function (error) {
+    if (401 === error.response.status) {
+      window.location = "/#/login";
+    } else {
+      return Promise.reject(error);
+    }
+  }
+);
+
+axios.interceptors.request.use(function (config) {
+  const token = window.localStorage.getItem(API_TOKEN);
+  if (token !== null) {
+    config.headers["Authorization"] = token;
+  }
+
+  return config;
+});
+
+export const login = (username, password) => {
+  return axios.post("/token_generation", {
+    username: username,
+    password: password,
+  });
+};
+
 export const fetchSlots = () => {
   return axios.get(config.API_BASE_URL + "/next_free_slots");
 };

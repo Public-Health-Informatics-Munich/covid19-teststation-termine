@@ -17,6 +17,7 @@ psycopg2-binary = "*"
 pytz = "*"
 xlsxwriter = "*"
 ldap3 = "*"
+pyjwt = "*"
 
 [requires]
 python_version = "3.7"

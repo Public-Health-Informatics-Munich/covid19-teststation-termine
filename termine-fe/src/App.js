@@ -9,6 +9,7 @@ import * as Api from "./Api";
 import BookView from "./Views/BookView";
 import BookingHistoryView from "./Views/BookingHistoryView";
 import SettingsView from "./Views/SettingsView";
+import { LoginView } from "./Views/LoginView";
 
 function App({ i18n }) {
   const useFocus = () => {
@@ -268,6 +269,9 @@ function App({ i18n }) {
       <Switch>
         <Route exact path="/">
           <Redirect to={TAB.BOOK} />
+        </Route>
+        <Route path="/login">
+          <LoginView />
         </Route>
         <Route path={TAB.BOOK}>
           <BookView

@@ -36,6 +36,7 @@ class Settings:
     disable_auth_for_booking = _bool_convert(
         os.environ.get("DISABLE_AUTH", False))
     use_ldap = _bool_convert(os.environ.get("USE_LDAP", False))
+    jwt_key = os.environ.get("JWT_SECRET_KEY", "")
 
 
 class Ldap:

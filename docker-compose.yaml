@@ -28,6 +28,7 @@ services:
       - DB_PASSWORD=termine_pw!
       - DB_HOST=postgres
       - FRONTEND_CONF_JSON=config/by_env/staging.json
+      - JWT_SECRET_KEY=blablablabla
       - USE_LDAP=True
       - LDAP_URL=ldap
       - LDAP_SYSTEM_DN=uid=termine,ou=Application,dc=example,dc=com

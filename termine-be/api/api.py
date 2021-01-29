@@ -2,12 +2,11 @@ import csv
 import io
 import logging
 from datetime import datetime, timedelta, date
-
 import hug
 import xlsxwriter
 from peewee import fn, DoesNotExist, IntegrityError
 
-from access_control.access_control import authentication, UserRoles, switchable_authentication
+from access_control.access_control import UserRoles, token_key_authentication
 from config import config
 from db.directives import PeeweeSession
 from db.model import TimeSlot, Appointment, Booking, SlotCode, User
@@ -21,7 +20,7 @@ def format_as_csv(data, request=None, response=None):
     return data
 
 
-@hug.get("/next_free_slots", requires=switchable_authentication)
+@hug.get("/next_free_slots", requires=token_key_authentication)
 def next_free_slots(db: PeeweeSession, user: hug.directives.user):
     """
     SELECT t.start_date_time, count(a.time_slot_id)
@@ -41,12 +40,12 @@ ORDER BY t.start_date_time
                     fn.count(Appointment.time_slot).alias("free_appointments")) \
             .join(Appointment) \
             .where(
-            (TimeSlot.start_date_time > now) &
-            (Appointment.claim_token.is_null() | (Appointment.claimed_at +
-                                                  timedelta(
-                                                      minutes=config.Settings.claim_timeout_min) < now)) &
-            (Appointment.booked == False)
-        ) \
+                (TimeSlot.start_date_time > now) &
+                (Appointment.claim_token.is_null() | (Appointment.claimed_at +
+                                                      timedelta(
+                                                          minutes=config.Settings.claim_timeout_min) < now)) &
+                (Appointment.booked == False)
+            ) \
             .group_by(TimeSlot.start_date_time, TimeSlot.length_min) \
             .order_by(TimeSlot.start_date_time) \
             .limit(config.Settings.num_display_slots)
@@ -62,7 +61,7 @@ ORDER BY t.start_date_time
         }
 
 
-@hug.get("/claim_appointment", requires=switchable_authentication)
+@hug.get("/claim_appointment", requires=token_key_authentication)
 def claim_appointment(db: PeeweeSession, start_date_time: hug.types.text, user: hug.directives.user):
     """
     UPDATE appointment app
@@ -86,7 +85,8 @@ def claim_appointment(db: PeeweeSession, start_date_time: hug.types.text, user: 
             now = datetime.now(tz=config.Settings.tz).replace(tzinfo=None)
             if start_date_time_object < now:
                 raise ValueError("Can't claim an appointment in the past")
-            time_slot = TimeSlot.get(TimeSlot.start_date_time == start_date_time_object)
+            time_slot = TimeSlot.get(
+                TimeSlot.start_date_time == start_date_time_object)
             appointment = Appointment.select() \
                 .where(
                 (Appointment.time_slot == time_slot) &
@@ -109,18 +109,20 @@ def claim_appointment(db: PeeweeSession, start_date_time: hug.types.text, user: 
             raise hug.HTTPBadRequest
 
 
-@hug.post("/book_appointment", requires=switchable_authentication)
+@hug.post("/book_appointment", requires=token_key_authentication)
 def book_appointment(db: PeeweeSession, body: hug.types.json, user: hug.directives.user):
     with db.atomic():
         try:
             if all(key in body for key in ('claim_token', 'start_date_time', 'first_name', 'name', 'phone', 'office')):
                 claim_token = body['claim_token']
                 start_date_time = body['start_date_time']
-                start_date_time_object = datetime.fromisoformat(start_date_time)
+                start_date_time_object = datetime.fromisoformat(
+                    start_date_time)
                 now = datetime.now(tz=config.Settings.tz).replace(tzinfo=None)
                 if start_date_time_object < now:
                     raise ValueError("Can't claim an appointment in the past")
-                time_slot = TimeSlot.get(TimeSlot.start_date_time == start_date_time_object)
+                time_slot = TimeSlot.get(
+                    TimeSlot.start_date_time == start_date_time_object)
                 appointment = Appointment.get(
                     (Appointment.time_slot == time_slot) &
                     (Appointment.booked == False) &
@@ -141,7 +143,8 @@ def book_appointment(db: PeeweeSession, body: hug.types.json, user: hug.directiv
                     while not success:
                         secret = get_secret_token(6)
                         try:
-                            SlotCode.create(date=time_slot.start_date_time.date(), secret=secret)
+                            SlotCode.create(
+                                date=time_slot.start_date_time.date(), secret=secret)
                             success = True
                         except IntegrityError as e:  # in the offchance that we had a collision with secret codes, retry
                             pass
@@ -168,7 +171,7 @@ def book_appointment(db: PeeweeSession, body: hug.types.json, user: hug.directiv
             raise hug.HTTPBadRequest
 
 
-@hug.delete("/claim_token", requires=switchable_authentication)
+@hug.delete("/claim_token", requires=token_key_authentication)
 def delete_claim_token(db: PeeweeSession, claim_token: hug.types.text):
     with db.atomic():
         try:
@@ -185,7 +188,7 @@ def delete_claim_token(db: PeeweeSession, claim_token: hug.types.text):
             pass
 
 
-@hug.get("/list_for_day.csv", output=format_as_csv, requires=authentication)
+@hug.get("/list_for_day.csv", output=format_as_csv, requires=token_key_authentication)
 def list_for_day(db: PeeweeSession, user: hug.directives.user,
                  date_of_day: hug.types.text = None):
     if not date_of_day:
@@ -206,7 +209,8 @@ def list_for_day(db: PeeweeSession, user: hug.directives.user,
                 for appointment in Appointment.select().where(
                         (Appointment.time_slot == timeslot) & (Appointment.booked == True)):
                     try:
-                        booking = Booking.get(Booking.appointment == appointment)
+                        booking = Booking.get(
+                            Booking.appointment == appointment)
                         if user_role != UserRoles.ADMIN:
                             booking = Booking.select().where((Booking.appointment == appointment) &
                                                              (Booking.booked_by == user_name)).get()
@@ -228,7 +232,7 @@ def format_as_xlsx(data, request=None, response=None):
     return data
 
 
-@hug.get("/booking_list.xlsx", output=format_as_xlsx, requires=authentication)
+@hug.get("/booking_list.xlsx", output=format_as_xlsx, requires=token_key_authentication)
 def list_for_day(db: PeeweeSession,
                  user: hug.directives.user,
                  start_date: hug.types.text,
@@ -278,35 +282,47 @@ def list_for_day(db: PeeweeSession,
             row = 1
             col = 0
             for timeslot in TimeSlot.select().where(
-                    (TimeSlot.start_date_time >= start_day_object) &
-                    (TimeSlot.start_date_time < end_day_object + timedelta(days=1))).order_by(
-                TimeSlot.start_date_time.desc()):
+                (TimeSlot.start_date_time >= start_day_object) &
+                (TimeSlot.start_date_time < end_day_object + timedelta(days=1))).order_by(
+                    TimeSlot.start_date_time.desc()):
                 for appointment in Appointment.select().where(
                         (Appointment.time_slot == timeslot) & (Appointment.booked == True)):
                     try:
-                        booking = Booking.get(Booking.appointment == appointment)
+                        booking = Booking.get(
+                            Booking.appointment == appointment)
                         if user_role != UserRoles.ADMIN:
                             booking = Booking.select().where((Booking.appointment == appointment) &
                                                              (Booking.booked_by == user_name)).get()
 
-                        worksheet.write_datetime(row, col, timeslot.start_date_time, date_format)
-                        worksheet.write_datetime(row, col + 1, timeslot.start_date_time, time_format)
-                        worksheet.write_string(row, col + 2, booking.first_name)
+                        worksheet.write_datetime(
+                            row, col, timeslot.start_date_time, date_format)
+                        worksheet.write_datetime(
+                            row, col + 1, timeslot.start_date_time, time_format)
+                        worksheet.write_string(
+                            row, col + 2, booking.first_name)
                         worksheet.write_string(row, col + 3, booking.surname)
                         worksheet.write_string(row, col + 4, booking.phone)
-                        worksheet.write_string(row, col + 5, booking.street if booking.street is not None else "")
-                        worksheet.write_string(row, col + 6, booking.street_number if booking.street_number is not None else "")
-                        worksheet.write_string(row, col + 7, booking.post_code if booking.post_code is not None else "")
-                        worksheet.write_string(row, col + 8, booking.city if booking.city is not None else "")
+                        worksheet.write_string(
+                            row, col + 5, booking.street if booking.street is not None else "")
+                        worksheet.write_string(
+                            row, col + 6, booking.street_number if booking.street_number is not None else "")
+                        worksheet.write_string(
+                            row, col + 7, booking.post_code if booking.post_code is not None else "")
+                        worksheet.write_string(
+                            row, col + 8, booking.city if booking.city is not None else "")
                         if booking.birthday is None:
                             worksheet.write_string(row, col + 9, "")
                         else:
-                            worksheet.write_datetime(row, col + 9, booking.birthday, date_format)
-                        worksheet.write_string(row, col + 10, booking.reason if booking.reason is not None else "")
+                            worksheet.write_datetime(
+                                row, col + 9, booking.birthday, date_format)
+                        worksheet.write_string(
+                            row, col + 10, booking.reason if booking.reason is not None else "")
                         worksheet.write_string(row, col + 11, booking.secret)
                         worksheet.write_string(row, col + 12, booking.office)
-                        worksheet.write_string(row, col + 13, booking.booked_by)
-                        worksheet.write_datetime(row, col + 14, booking.booked_at, date_format)
+                        worksheet.write_string(
+                            row, col + 13, booking.booked_by)
+                        worksheet.write_datetime(
+                            row, col + 14, booking.booked_at, date_format)
                         row += 1
                     except DoesNotExist as e:
                         pass
@@ -319,7 +335,7 @@ def list_for_day(db: PeeweeSession,
             raise hug.HTTPBadRequest
 
 
-@hug.get("/booked", requires=authentication)
+@hug.get("/booked", requires=token_key_authentication)
 def booked(db: PeeweeSession, user: hug.directives.user, start_date: hug.types.text,
            end_date: hug.types.text):
     user_name = user.user_name
@@ -335,7 +351,8 @@ def booked(db: PeeweeSession, user: hug.directives.user, start_date: hug.types.t
                 for appointment in Appointment.select().where(
                         (Appointment.time_slot == timeslot) & (Appointment.booked == True)):
                     try:
-                        booking = Booking.get(Booking.appointment == appointment)
+                        booking = Booking.get(
+                            Booking.appointment == appointment)
                         if user_role != UserRoles.ADMIN:
                             booking = Booking.select().where((Booking.appointment == appointment) &
                                                              (Booking.booked_by == user_name)).get()
@@ -352,7 +369,7 @@ def booked(db: PeeweeSession, user: hug.directives.user, start_date: hug.types.t
             raise hug.HTTPBadRequest
 
 
-@hug.delete("/booking", requires=authentication)
+@hug.delete("/booking", requires=token_key_authentication)
 def delete_booking(db: PeeweeSession, user: hug.directives.user, booking_id: hug.types.text):
     if user.role != UserRoles.ANON:
         with db.atomic():
@@ -371,7 +388,7 @@ def delete_booking(db: PeeweeSession, user: hug.directives.user, booking_id: hug
         raise hug.HTTP_METHOD_NOT_ALLOWED
 
 
-@hug.patch("/user", requires=authentication)
+@hug.patch("/user", requires=token_key_authentication)
 def patch_user(db: PeeweeSession,
                body: hug.types.json,
                user: hug.directives.user):

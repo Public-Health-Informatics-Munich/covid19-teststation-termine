@@ -1,5 +1,5 @@
 import logging
-
+import jwt
 import hug
 import base64
 import binascii
@@ -15,6 +15,19 @@ from secret_token.secret_token import hash_pw
 log = logging.getLogger('auth')
 
 
+def token_verify(token, context: PeeweeContext):
+    secret = config.Settings.jwt_key
+    try:
+        user_object = jwt.decode(token, secret, algorithms=["HS256"])
+        return get_user(user_object['user'], context)
+    except jwt.DecodeError as error:
+        log.warning("decodeError {}".format(error))
+        return False
+
+
+token_key_authentication = hug.authentication.token(token_verify)
+
+
 class UserRoles:
     ADMIN = 'admin'
     USER = 'doctor'
@@ -27,6 +40,18 @@ class UserRoles:
 
 def normalize_user(user_name):
     return user_name.lower()
+
+
+def get_user(user_name: str, context: PeeweeContext):
+    with context.db.atomic():
+        try:
+            return User.get(User.user_name == user_name)
+        except DoesNotExist:
+            log.warning("user not found: %s", user_name)
+            return False
+        except DatabaseError:
+            log.exception("unknown error logging in: %s", user_name)
+            return False
 
 
 def verify_user(user_name, user_password, context: PeeweeContext):
@@ -67,12 +92,17 @@ def search_ldap_user(user_name: str, user_password: str, context: PeeweeContext)
 
     with_tls = config.Ldap.use_tls
     port = config.Ldap.tls_port if with_tls else config.Ldap.port
+    log.info("Authing ldap with {}".format(with_tls))
+    server = Server(url, port=port, use_ssl=with_tls,
+                    get_info=ALL)
 
-    server = Server(url, port=port, use_ssl=with_tls, get_info=ALL)
+    log.info(server)
     # Connects the system user
     connection = Connection(
         server, sys_user, sys_pw)
     result = connection.bind()
+    if with_tls:
+        connection.start_tls()
     log.info(connection)
     if result:
         # searches for the user about to log in in the ldap server
