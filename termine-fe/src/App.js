@@ -1,10 +1,4 @@
-import React, {
-  useEffect,
-  useCallback,
-  useRef,
-  useState,
-  useReducer,
-} from "react";
+import React, { useEffect, useCallback, useRef, useReducer } from "react";
 import { trackPromise, usePromiseTracker } from "react-promise-tracker";
 import {
   Switch,
@@ -420,7 +414,6 @@ function App({ i18n }) {
         </Route>
         <Route path={TAB.BOOK}>
           <BookView
-            i18n={i18n}
             i18n={i18n}
             focusOnList={focusOnList}
             freeSlotList={freeSlotList}
