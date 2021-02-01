@@ -156,6 +156,9 @@ def book_appointment(db: PeeweeSession, body: hug.types.json, user: hug.directiv
                                          reason=reason, office=body['office'], secret=secret,
                                          booked_by=user.user_name)
                 booking.save()
+                if user.role != UserRoles.ANON:
+                    user.coupons -= 1
+                    user.save()
                 return {
                     "secret": booking.secret,
                     "time_slot": time_slot.start_date_time,
