@@ -3,7 +3,7 @@ import jwt
 import hug
 import base64
 import binascii
-from ldap3 import Server, Connection, ALL
+from ldap3 import SIMPLE, Server, Connection, ALL
 from peewee import Context, DoesNotExist, DatabaseError
 from falcon import HTTPUnauthorized
 
@@ -111,9 +111,12 @@ def search_ldap_user(user_name: str, user_password: str, context: PeeweeContext)
         log.info(connection.entries)
         # if exactly one was found, tries to log this one in
         if len(connection.entries) == 1:
-            test = Connection(
-                server, connection.entries[0][attribute], user_password)
-            if test:
+            userConnection = Connection(
+                server, user=connection.entries[0].entry_dn, password=user_password, authentication=SIMPLE)
+            isValid = userConnection.bind()
+            log.info(userConnection)
+            log.info(isValid)
+            if isValid:
                 # creates a user if not existing yet, in order to track coupon numbers per ldap user
                 return get_or_create_auto_user(context, UserRoles.USER, f'ldap-{user_name}')
     log.warning(f"Didn't find an ldap user for uid {user_name}")
@@ -139,7 +142,7 @@ def get_or_create_auto_user(context: PeeweeContext, role: str, name: str):
             return user
 
 
-@hug.authentication.authenticator
+@ hug.authentication.authenticator
 def basic(request, response, own_verify_user, realm="simple", context=None, **kwargs):
     """Basic HTTP Authentication"""
     http_auth = request.auth
@@ -180,12 +183,12 @@ def basic(request, response, own_verify_user, realm="simple", context=None, **kw
     return False
 
 
-@basic
+@ basic
 def switchable_authentication(user_name, user_password, context: PeeweeContext):
     return verify_user(user_name, user_password, context)
 
 
-@hug.authentication.basic
+@ hug.authentication.basic
 def authentication(user_name, user_password, context: PeeweeContext):
     user = verify_user(user_name, user_password, context)
     if user and user.role == UserRoles.ANON:
@@ -193,7 +196,7 @@ def authentication(user_name, user_password, context: PeeweeContext):
     return user
 
 
-@hug.authentication.basic
+@ hug.authentication.basic
 def admin_authentication(user_name, user_password, context: PeeweeContext):
     user = verify_user(user_name, user_password, context)
     if user and user.role == UserRoles.ADMIN:
