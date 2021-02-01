@@ -383,7 +383,7 @@ function App({ i18n }) {
           <h3 style={{ paddingLeft: "var(--universal-padding)" }}>
             {window.config.longInstanceName}
           </h3>
-          {Api.loggedIn() && (
+          {loggedIn && (
             <>
               <Link className="button" to={TAB.BOOK}>
                 <Trans>Book appointments</Trans>
@@ -407,7 +407,7 @@ function App({ i18n }) {
       </header>
       <Switch>
         <Route exact path="/">
-          <Redirect to={TAB.BOOK} />
+          <Redirect to={loggedIn ? TAB.BOOK : "/login"} />
         </Route>
         <Route path="/login">
           <LoginView login={login} />
