@@ -1,4 +1,10 @@
-import React, { useEffect, useCallback, useRef, useState } from "react";
+import React, {
+  useEffect,
+  useCallback,
+  useRef,
+  useState,
+  useReducer,
+} from "react";
 import { trackPromise, usePromiseTracker } from "react-promise-tracker";
 import {
   Switch,
@@ -17,9 +23,112 @@ import BookView from "./Views/BookView";
 import BookingHistoryView from "./Views/BookingHistoryView";
 import SettingsView from "./Views/SettingsView";
 import { LoginView } from "./Views/LoginView";
+import { ACTION_TYPES } from "./state/Actions";
+
+const reducer = (state, action) => {
+  switch (action.type) {
+    case ACTION_TYPES.reset:
+    case ACTION_TYPES.setLoggedOut:
+      return initialState;
+    case ACTION_TYPES.setLoggedIn:
+      return { ...state, loggedIn: true };
+    case ACTION_TYPES.setTriggerRefresh:
+      return { ...state, triggerRefresh: action.value };
+    case ACTION_TYPES.setSelectedAppointment:
+      return { ...state, selectedAppointment: action.value };
+    case ACTION_TYPES.setBookedAppointment:
+      return { ...state, bookedAppointment: action.value };
+    case ACTION_TYPES.setShowSpinner:
+      return { ...state, showSpinner: action.value };
+    case ACTION_TYPES.setFreeSlotList:
+      return { ...state, freeSlotList: action.value };
+    case ACTION_TYPES.setCoupons:
+      return { ...state, coupons: action.value };
+    case ACTION_TYPES.resetClaimToken:
+      return { ...state, claimToken: initialState.claimToken };
+    case ACTION_TYPES.setClaimToken:
+      return { ...state, claimToken: action.value };
+    case ACTION_TYPES.resetStartDateTime:
+      return { ...state, startDateTime: initialState.startDateTime };
+    case ACTION_TYPES.setStartDateTime:
+      return { ...state, startDateTime: action.value };
+    case ACTION_TYPES.setFocusOnList:
+      return { ...state, focusOnList: action.value };
+    case ACTION_TYPES.resetInfoboxState:
+      return { ...state, infoboxState: initialState.infoboxState };
+    case ACTION_TYPES.setInfoboxState:
+      return { ...state, infoboxState: action.value };
+    case ACTION_TYPES.setBookedList:
+      return { ...state, bookedList: action.value };
+    case ACTION_TYPES.setStartDate:
+      return { ...state, startDate: action.value };
+    case ACTION_TYPES.setEndDate:
+      return { ...state, endDate: action.value };
+    case ACTION_TYPES.setBookingHistoryErrorMessage:
+      return { ...state, bookingHistoryErrorMessage: action.value };
+    default:
+      console.error(`unknown action: ${action}`);
+  }
+};
+
+const initialState = {
+  loggedIn: false,
+  triggerRefresh: true,
+  selectedAppointment: {
+    startDateTime: "",
+    lengthMin: 0,
+  },
+  bookedAppointment: {
+    startDateTime: "",
+    lengthMin: 0,
+  },
+  showSpinner: false,
+  freeSlotList: null,
+  coupons: null,
+  claimToken: "",
+  startDateTime: "",
+  focusOnList: true,
+  infoboxState: {
+    state: INFOBOX_STATES.INITIAL,
+    msg: "",
+  },
+  bookedList: [],
+  startDate: new Date(),
+  endDate: new Date(),
+  bookingHistoryErrorMessage: "",
+};
 
 function App({ i18n }) {
-  const [loggedIn, setLoggedIn] = useState(false);
+  const [state, dispatch] = useReducer(reducer, initialState);
+  const {
+    loggedIn,
+    triggerRefresh,
+    selectedAppointment,
+    bookedAppointment,
+    showSpinner,
+    freeSlotList,
+    coupons,
+    claimToken,
+    startDateTime,
+    focusOnList,
+    infoboxState,
+    bookedList,
+    startDate,
+    endDate,
+    bookingHistoryErrorMessage,
+  } = state;
+
+  const setSelectedAppointment = (appointment) => {
+    dispatch({ type: ACTION_TYPES.setSelectedAppointment, value: appointment });
+  };
+
+  const setStartDate = (date) => {
+    dispatch({ type: ACTION_TYPES.setStartDate, value: date });
+  };
+  const setEndDate = (date) => {
+    dispatch({ type: ACTION_TYPES.setEndDate, value: date });
+  };
+
   const useFocus = () => {
     const htmlElRef = useRef(null);
     const setFocus = useCallback(() => {
@@ -39,42 +148,22 @@ function App({ i18n }) {
   const { promiseInProgress } = usePromiseTracker();
 
   const [inputRef, setInputFocus] = useFocus();
-  const [triggerRefresh, setTriggerRefresh] = useState(true);
-  const [selectedAppointment, setSelectedAppointment] = useState({
-    startDateTime: "",
-    lengthMin: 0,
-  });
-  const [bookedAppointment, setBookedAppointment] = useState({
-    startDateTime: "",
-    lengthMin: 0,
-  });
-  const [showSpinner, setShowSpinner] = useState(promiseInProgress);
-  const [freeSlotList, setFreeSlotList] = useState(null);
-  const [coupons, setCoupons] = useState(null);
-  const [claimToken, setClaimToken] = useState("");
-  const [startDateTime, setStartDateTime] = useState("");
-  const [focusOnList, setFocusOnList] = useState(true);
-  const [infoboxState, setInfoboxState] = useState({
-    state: INFOBOX_STATES.INITIAL,
-    msg: "",
-  });
 
   const form = useForm();
-
-  const [bookedList, setBookedList] = useState([]);
-  const [startDate, setStartDate] = useState(new Date());
-  const [endDate, setEndDate] = useState(new Date());
-  const [bookingHistoryErrorMessage, setBookingHistoryErrorMessage] = useState(
-    ""
-  );
 
   const history = useHistory();
   const getSlotListData = useCallback(() => {
     return Api.fetchSlots()
       .then((response) => {
         if (response.status === 200) {
-          setFreeSlotList(response.data.slots);
-          setCoupons(response.data.coupons);
+          dispatch({
+            type: ACTION_TYPES.setFreeSlotList,
+            value: response.data.slots,
+          });
+          dispatch({
+            type: ACTION_TYPES.setCoupons,
+            value: response.data.coupons,
+          });
         }
       })
       .catch(() => {
@@ -89,7 +178,7 @@ function App({ i18n }) {
     )
       .then((response) => {
         if (response.status === 200) {
-          setBookedList(response.data);
+          dispatch({ type: ACTION_TYPES.setBookedList, value: response.data });
         }
       })
       .catch(() => {
@@ -97,7 +186,8 @@ function App({ i18n }) {
       });
   }, [startDate, endDate]);
 
-  const refreshList = () => setTriggerRefresh(true);
+  const refreshList = () =>
+    dispatch({ type: ACTION_TYPES.setTriggerRefresh, value: true });
 
   // use focusOnList as switch between slots table and form
   useEffect(() => {
@@ -114,16 +204,18 @@ function App({ i18n }) {
 
   // refresh once on triggerRefresh, then every 60 sec
   useEffect(() => {
-    let interval = null;
+    if (loggedIn) {
+      let interval = null;
 
-    if (triggerRefresh) trackPromise(getSlotListData());
-    setTriggerRefresh(false);
+      if (triggerRefresh) trackPromise(getSlotListData());
+      dispatch({ type: ACTION_TYPES.setTriggerRefresh, value: false });
 
-    interval = setInterval(() => {
-      trackPromise(getSlotListData());
-    }, 60000);
+      interval = setInterval(() => {
+        trackPromise(getSlotListData());
+      }, 60000);
 
-    return () => clearInterval(interval);
+      return () => clearInterval(interval);
+    }
   }, [triggerRefresh, getSlotListData, loggedIn]);
 
   // let the spinner animation run for 1.25 secs
@@ -131,9 +223,12 @@ function App({ i18n }) {
     let timeout = null;
 
     if (promiseInProgress) {
-      setShowSpinner(true);
+      dispatch({ type: ACTION_TYPES.setShowSpinner, value: true });
     } else if (showSpinner) {
-      setTimeout(() => setShowSpinner(false), 1250);
+      setTimeout(
+        () => dispatch({ type: ACTION_TYPES.setShowSpinner, value: false }),
+        1250
+      );
     }
 
     return () => clearTimeout(timeout);
@@ -147,32 +242,38 @@ function App({ i18n }) {
     }
     return Api.claimSlot(startDateTime)
       .then((response) => {
-        setInfoboxState({
-          state: INFOBOX_STATES.FORM_INPUT,
-          msg: "",
+        dispatch({
+          type: ACTION_TYPES.setInfoboxState,
+          value: {
+            state: INFOBOX_STATES.FORM_INPUT,
+            msg: "",
+          },
         });
-        setStartDateTime(startDateTime);
+        dispatch({ type: ACTION_TYPES.setStartDateTime, value: startDateTime });
         setSelectedAppointment({
           startDateTime: startDateTime,
           lengthMin: slotLengthMin,
         });
-        setClaimToken(response.data);
+        dispatch({ type: ACTION_TYPES.setClaimToken, value: response.data });
         form.reset();
-        setFocusOnList(false);
+        dispatch({ type: ACTION_TYPES.setFocusOnList, value: false });
       })
       .catch((error) => {
-        setInfoboxState({
-          state: INFOBOX_STATES.ERROR,
-          msg:
-            error.response?.status === 410
-              ? i18n._(
-                  t`The appointment is no longer available, please select another free appointment.`
-                )
-              : i18n._(t`An unknown error occurred, please reload the page.`),
+        dispatch({
+          type: ACTION_TYPES.setInfoboxState,
+          value: {
+            state: INFOBOX_STATES.ERROR,
+            msg:
+              error.response?.status === 410
+                ? i18n._(
+                    t`The appointment is no longer available, please select another free appointment.`
+                  )
+                : i18n._(t`An unknown error occurred, please reload the page.`),
+          },
         });
-        setStartDateTime("");
-        setClaimToken("");
-        setFocusOnList(true);
+        dispatch({ type: ACTION_TYPES.resetStartDateTime });
+        dispatch({ type: ACTION_TYPES.resetClaimToken });
+        dispatch({ type: ACTION_TYPES.setFocusOnList, value: true });
       });
   };
 
@@ -186,44 +287,53 @@ function App({ i18n }) {
 
     Api.book(data)
       .then((response) => {
-        setInfoboxState({
-          state: INFOBOX_STATES.APPOINTMENT_SUCCESS,
-          msg: response.data.secret,
+        dispatch({
+          type: ACTION_TYPES.setInfoboxState,
+          value: {
+            state: INFOBOX_STATES.APPOINTMENT_SUCCESS,
+            msg: response.data.secret,
+          },
         });
-        setStartDateTime(response.data.time_slot);
-        setBookedAppointment({
-          startDateTime: response.data.time_slot,
-          lengthMin: response.data.slot_length_min,
+        dispatch({
+          type: ACTION_TYPES.setStartDateTime,
+          value: response.data.time_slot,
         });
-        setClaimToken("");
-        setFocusOnList(true);
+        dispatch({
+          type: ACTION_TYPES.setBookedAppointment,
+          value: {
+            startDateTime: response.data.time_slot,
+            lengthMin: response.data.slot_length_min,
+          },
+        });
+        dispatch({ type: ACTION_TYPES.resetClaimToken });
+        dispatch({ type: ACTION_TYPES.setFocusOnList, value: true });
       })
       .catch((error) => {
-        setInfoboxState({
-          state: INFOBOX_STATES.ERROR,
-          msg:
-            error.response.status === 410
-              ? i18n._(
-                  t`The appointment is no longer available, please select another free appointment.`
-                )
-              : i18n._(t`An unknown error occurred, please reload the page.`),
+        dispatch({
+          type: ACTION_TYPES.setInfoboxState,
+          value: {
+            state: INFOBOX_STATES.ERROR,
+            msg:
+              error.response.status === 410
+                ? i18n._(
+                    t`The appointment is no longer available, please select another free appointment.`
+                  )
+                : i18n._(t`An unknown error occurred, please reload the page.`),
+          },
         });
-        setStartDateTime("");
-        setClaimToken("");
-        setFocusOnList(true);
+        dispatch({ type: ACTION_TYPES.resetStartDateTime });
+        dispatch({ type: ACTION_TYPES.resetClaimToken });
+        dispatch({ type: ACTION_TYPES.setFocusOnList, value: true });
       });
   };
 
   const onCancelBooking = () => {
     Api.unClaimSlot(claimToken)
       .then(() => {
-        setInfoboxState({
-          state: INFOBOX_STATES.INITIAL,
-          msg: "",
-        });
-        setStartDateTime("");
-        setClaimToken("");
-        setFocusOnList(true);
+        dispatch({ type: ACTION_TYPES.resetInfoboxState });
+        dispatch({ type: ACTION_TYPES.resetStartDateTime });
+        dispatch({ type: ACTION_TYPES.resetClaimToken });
+        dispatch({ type: ACTION_TYPES.setFocusOnList, value: true });
         form.reset();
       })
       .catch((error) => {
@@ -238,15 +348,19 @@ function App({ i18n }) {
         console.log(response.statusText);
         if (response.status === 200) {
           getBookedListData();
-          setBookingHistoryErrorMessage("");
+          dispatch({
+            type: ACTION_TYPES.setBookingHistoryErrorMessage,
+            value: "",
+          });
         }
       })
       .catch((error) => {
-        setBookingHistoryErrorMessage(
-          i18n._(
+        dispatch({
+          type: ACTION_TYPES.setBookingHistoryErrorMessage,
+          value: i18n._(
             t`Deleting the appointment did not work. Please contact your administrator.`
-          )
-        );
+          ),
+        });
       });
   };
 
@@ -255,7 +369,7 @@ function App({ i18n }) {
       if (response.status === 200) {
         console.log(`JWT TOKEN: ${response.data}`);
         window.localStorage.setItem(Api.API_TOKEN, response.data.token);
-        setLoggedIn(true);
+        dispatch({ type: ACTION_TYPES.setLoggedIn });
         history.push("/");
       }
     });
@@ -263,7 +377,7 @@ function App({ i18n }) {
 
   const logout = () => {
     Api.logout();
-    setLoggedIn(false);
+    dispatch({ type: ACTION_TYPES.setLoggedOut });
     console.log("Log out");
     history.push("/login");
   };
