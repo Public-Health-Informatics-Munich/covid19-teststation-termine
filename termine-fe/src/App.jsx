@@ -26,6 +26,8 @@ const reducer = (state, action) => {
       return initialState;
     case ACTION_TYPES.setLoggedIn:
       return { ...state, loggedIn: true };
+    case ACTION_TYPES.setLogInError:
+      return { ...state, logInError: action.value };
     case ACTION_TYPES.setTriggerRefresh:
       return { ...state, triggerRefresh: action.value };
     case ACTION_TYPES.setSelectedAppointment:
@@ -359,14 +361,22 @@ function App({ i18n }) {
   };
 
   const login = ({ username, password }) => {
-    Api.login(username, password).then((response) => {
-      if (response.status === 200) {
-        console.log(`JWT TOKEN: ${response.data}`);
-        window.localStorage.setItem(Api.API_TOKEN, response.data.token);
-        dispatch({ type: ACTION_TYPES.setLoggedIn });
-        history.push("/");
-      }
-    });
+    Api.login(username, password)
+      .then((response) => {
+        if (response.status === 200) {
+          console.log(`JWT TOKEN: ${response.data}`);
+          window.localStorage.setItem(Api.API_TOKEN, response.data.token);
+          dispatch({ type: ACTION_TYPES.setLoggedIn });
+          history.push("/");
+        }
+      })
+      .catch((error) => {
+        if (error.response) {
+          dispatch({ type: ACTION_TYPES.setLogInError, value: error.response });
+        } else {
+          dispatch({ type: ACTION_TYPES.setLogInError, value: error });
+        }
+      });
   };
 
   const logout = () => {
@@ -410,7 +420,7 @@ function App({ i18n }) {
           <Redirect to={loggedIn ? TAB.BOOK : "/login"} />
         </Route>
         <Route path="/login">
-          <LoginView login={login} />
+          <LoginView login={login} error={state.logInError} />
         </Route>
         <Route path={TAB.BOOK}>
           <BookView

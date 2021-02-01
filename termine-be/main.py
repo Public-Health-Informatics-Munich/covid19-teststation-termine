@@ -30,7 +30,11 @@ def token_gen_call(db: PeeweeSession, body: hug.types.json):
         return {
             "token": jwt.encode({"user": user.user_name}, secret_key, algorithm="HS256")
         }
-    return "Invalid username and/or password for user: {0}".format(body['username'])
+    raise hug.HTTPBadRequest(
+        "Authentication Error",
+        "Invalid username and/or password for user: {0}".format(
+            body['username'])
+    )
 
 
 @hug.extend_api("/api", requires=token_key_authentication)

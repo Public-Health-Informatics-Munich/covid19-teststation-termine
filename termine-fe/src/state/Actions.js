@@ -2,6 +2,7 @@ export const ACTION_TYPES = {
   reset: "RESET",
   setLoggedOut: "SET_LOGGED_OUT",
   setLoggedIn: "SET_LOGGED_IN",
+  setLogInError: "SET_LOGIN_ERROR",
   setTriggerRefresh: "SET_TRIGGER_REFRESH",
   setSelectedAppointment: "SET_SELECTED_APPOINTMENT",
   setBookedAppointment: "SET_BOOKED_APPOINTMENT",
