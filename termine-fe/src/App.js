@@ -1,6 +1,13 @@
 import React, { useEffect, useCallback, useRef, useState } from "react";
 import { trackPromise, usePromiseTracker } from "react-promise-tracker";
-import { Switch, Route, Link, Redirect, useLocation } from "react-router-dom";
+import {
+  Switch,
+  Route,
+  Link,
+  Redirect,
+  useLocation,
+  useHistory,
+} from "react-router-dom";
 import { Trans, t } from "@lingui/macro";
 import { useForm } from "react-hook-form";
 import { format } from "date-fns";
@@ -12,6 +19,7 @@ import SettingsView from "./Views/SettingsView";
 import { LoginView } from "./Views/LoginView";
 
 function App({ i18n }) {
+  const [loggedIn, setLoggedIn] = useState(false);
   const useFocus = () => {
     const htmlElRef = useRef(null);
     const setFocus = useCallback(() => {
@@ -60,6 +68,7 @@ function App({ i18n }) {
     ""
   );
 
+  const history = useHistory();
   const getSlotListData = useCallback(() => {
     return Api.fetchSlots()
       .then((response) => {
@@ -115,7 +124,7 @@ function App({ i18n }) {
     }, 60000);
 
     return () => clearInterval(interval);
-  }, [triggerRefresh, getSlotListData]);
+  }, [triggerRefresh, getSlotListData, loggedIn]);
 
   // let the spinner animation run for 1.25 secs
   useEffect(() => {
@@ -155,7 +164,7 @@ function App({ i18n }) {
         setInfoboxState({
           state: INFOBOX_STATES.ERROR,
           msg:
-            error.response.status === 410
+            error.response?.status === 410
               ? i18n._(
                   t`The appointment is no longer available, please select another free appointment.`
                 )
@@ -241,8 +250,22 @@ function App({ i18n }) {
       });
   };
 
+  const login = ({ username, password }) => {
+    Api.login(username, password).then((response) => {
+      if (response.status === 200) {
+        console.log(`JWT TOKEN: ${response.data}`);
+        window.localStorage.setItem(Api.API_TOKEN, response.data.token);
+        setLoggedIn(true);
+        history.push("/");
+      }
+    });
+  };
+
   const logout = () => {
     Api.logout();
+    setLoggedIn(false);
+    console.log("Log out");
+    history.push("/login");
   };
 
   return (
@@ -252,18 +275,26 @@ function App({ i18n }) {
           <h3 style={{ paddingLeft: "var(--universal-padding)" }}>
             {window.config.longInstanceName}
           </h3>
-          <Link className="button" to={TAB.BOOK}>
-            <Trans>Book appointments</Trans>
-          </Link>
-          <Link className="button" to={TAB.BOOKED}>
-            <Trans>My appointments</Trans>
-          </Link>
-          <Link className="button" to={TAB.SETTINGS}>
-            <Trans>Settings</Trans>
-          </Link>
-          <div className="flexAlignRight">
-            <input type="button" value={i18n._(t`Logout`)} onClick={logout} />
-          </div>
+          {Api.loggedIn() && (
+            <>
+              <Link className="button" to={TAB.BOOK}>
+                <Trans>Book appointments</Trans>
+              </Link>
+              <Link className="button" to={TAB.BOOKED}>
+                <Trans>My appointments</Trans>
+              </Link>
+              <Link className="button" to={TAB.SETTINGS}>
+                <Trans>Settings</Trans>
+              </Link>
+              <div className="flexAlignRight">
+                <input
+                  type="button"
+                  value={i18n._(t`Logout`)}
+                  onClick={logout}
+                />
+              </div>
+            </>
+          )}
         </div>
       </header>
       <Switch>
@@ -271,10 +302,11 @@ function App({ i18n }) {
           <Redirect to={TAB.BOOK} />
         </Route>
         <Route path="/login">
-          <LoginView />
+          <LoginView login={login} />
         </Route>
         <Route path={TAB.BOOK}>
           <BookView
+            i18n={i18n}
             i18n={i18n}
             focusOnList={focusOnList}
             freeSlotList={freeSlotList}

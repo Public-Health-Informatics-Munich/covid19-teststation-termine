@@ -32,6 +32,10 @@ export const login = (username, password) => {
   });
 };
 
+export const loggedIn = () => {
+  return window.localStorage[API_TOKEN] !== null;
+};
+
 export const fetchSlots = () => {
   return axios.get(config.API_BASE_URL + "/next_free_slots");
 };
@@ -78,39 +82,7 @@ export const deleteBooking = (id) => {
 };
 
 export const logout = () => {
-  // credits go to https://stackoverflow.com/a/12866277
-  const redirect = "/";
-  const logout_success = "/logout_success";
-  const username = "logout";
-  const password = "logoutPasswordThatWillNeverExistsForReal";
-  let xmlhttp = null;
-
-  if (window["XMLHttpRequest"]) {
-    xmlhttp = new window["XMLHttpRequest"]();
-  }
-  // code for IE
-  else if (window["ActiveXObject"]) {
-    xmlhttp = new window["ActiveXObject"]("Microsoft.XMLHTTP");
-  }
-
-  if (
-    document.queryCommandSupported("ClearAuthenticationCache") &&
-    document.queryCommandEnabled("ClearAuthenticationCache")
-  ) {
-    // IE clear HTTP Authentication
-    document.execCommand("ClearAuthenticationCache");
-    window.location.href = redirect;
-  } else {
-    xmlhttp.open("GET", logout_success, true, username, password);
-    xmlhttp.send("");
-    xmlhttp.onreadystatechange = function () {
-      if (xmlhttp.readyState === 4) {
-        window.location.href = redirect;
-      }
-    };
-  }
-
-  return false;
+  window.localStorage.removeItem(API_TOKEN);
 };
 
 export const fetchBooked = (startDate, endDate) => {
