@@ -26,7 +26,7 @@ axios.interceptors.request.use(function (config) {
 });
 
 export const login = (username, password) => {
-  return axios.post("/token_generation", {
+  return axios.post("/login", {
     username: username,
     password: password,
   });
