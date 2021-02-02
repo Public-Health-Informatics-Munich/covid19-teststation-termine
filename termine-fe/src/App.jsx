@@ -263,8 +263,8 @@ function App({ i18n }) {
             msg:
               error.response?.status === 410
                 ? i18n._(
-                  t`The appointment is no longer available, please select another free appointment.`
-                )
+                    t`The appointment is no longer available, please select another free appointment.`
+                  )
                 : i18n._(t`An unknown error occurred, please reload the page.`),
           },
         });
@@ -313,8 +313,8 @@ function App({ i18n }) {
             msg:
               error.response.status === 410
                 ? i18n._(
-                  t`The appointment is no longer available, please select another free appointment.`
-                )
+                    t`The appointment is no longer available, please select another free appointment.`
+                  )
                 : i18n._(t`An unknown error occurred, please reload the page.`),
           },
         });
@@ -424,40 +424,52 @@ function App({ i18n }) {
           <LoginView login={login} error={state.logInError} />
         </Route>
         <Route path={TAB.BOOK}>
-          {loggedIn ? <BookView
-            i18n={i18n}
-            focusOnList={focusOnList}
-            freeSlotList={freeSlotList}
-            coupons={coupons}
-            claimAppointment={claimAppointment}
-            setSelectedAppointment={setSelectedAppointment}
-            selectedAppointment={selectedAppointment}
-            showSpinner={showSpinner}
-            refreshList={refreshList}
-            infoboxState={infoboxState}
-            bookedAppointment={bookedAppointment}
-            onBook={onBook}
-            onCancelBooking={onCancelBooking}
-            claimToken={claimToken}
-            startDateTime={startDateTime}
-            form={form}
-            inputRef={inputRef}
-          /> : <Redirect to={TAB.LOGIN} />}
+          {loggedIn ? (
+            <BookView
+              i18n={i18n}
+              focusOnList={focusOnList}
+              freeSlotList={freeSlotList}
+              coupons={coupons}
+              claimAppointment={claimAppointment}
+              setSelectedAppointment={setSelectedAppointment}
+              selectedAppointment={selectedAppointment}
+              showSpinner={showSpinner}
+              refreshList={refreshList}
+              infoboxState={infoboxState}
+              bookedAppointment={bookedAppointment}
+              onBook={onBook}
+              onCancelBooking={onCancelBooking}
+              claimToken={claimToken}
+              startDateTime={startDateTime}
+              form={form}
+              inputRef={inputRef}
+            />
+          ) : (
+            <Redirect to={TAB.LOGIN} />
+          )}
         </Route>
         <Route path={TAB.BOOKED}>
-          {loggedIn ? <BookingHistoryView
-            i18n={i18n}
-            bookedList={bookedList}
-            startDate={startDate}
-            setStartDate={setStartDate}
-            endDate={endDate}
-            errorMessage={bookingHistoryErrorMessage}
-            setEndDate={setEndDate}
-            onDeleteBooking={onDeleteBooking}
-          /> : <Redirect to={TAB.LOGIN} />}
+          {loggedIn ? (
+            <BookingHistoryView
+              i18n={i18n}
+              bookedList={bookedList}
+              startDate={startDate}
+              setStartDate={setStartDate}
+              endDate={endDate}
+              errorMessage={bookingHistoryErrorMessage}
+              setEndDate={setEndDate}
+              onDeleteBooking={onDeleteBooking}
+            />
+          ) : (
+            <Redirect to={TAB.LOGIN} />
+          )}
         </Route>
         <Route path={TAB.SETTINGS}>
-          {loggedIn ? <SettingsView onSuccess={logout} /> : <Redirect to={TAB.LOGIN} />}
+          {loggedIn ? (
+            <SettingsView onSuccess={logout} />
+          ) : (
+            <Redirect to={TAB.LOGIN} />
+          )}
         </Route>
       </Switch>
     </div>
