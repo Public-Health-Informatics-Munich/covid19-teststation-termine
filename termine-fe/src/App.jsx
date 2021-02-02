@@ -262,8 +262,8 @@ function App({ i18n }) {
             msg:
               error.response?.status === 410
                 ? i18n._(
-                    t`The appointment is no longer available, please select another free appointment.`
-                  )
+                  t`The appointment is no longer available, please select another free appointment.`
+                )
                 : i18n._(t`An unknown error occurred, please reload the page.`),
           },
         });
@@ -312,8 +312,8 @@ function App({ i18n }) {
             msg:
               error.response.status === 410
                 ? i18n._(
-                    t`The appointment is no longer available, please select another free appointment.`
-                  )
+                  t`The appointment is no longer available, please select another free appointment.`
+                )
                 : i18n._(t`An unknown error occurred, please reload the page.`),
           },
         });
