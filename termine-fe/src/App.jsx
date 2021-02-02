@@ -137,6 +137,7 @@ function App({ i18n }) {
     BOOK: "/book",
     BOOKED: "/booked",
     SETTINGS: "/settings",
+    LOGIN: "/login",
   };
 
   let location = useLocation();
@@ -417,13 +418,13 @@ function App({ i18n }) {
       </header>
       <Switch>
         <Route exact path="/">
-          <Redirect to={loggedIn ? TAB.BOOK : "/login"} />
+          <Redirect to={loggedIn ? TAB.BOOK : TAB.LOGIN} />
         </Route>
-        <Route path="/login">
+        <Route path={TAB.LOGIN}>
           <LoginView login={login} error={state.logInError} />
         </Route>
         <Route path={TAB.BOOK}>
-          <BookView
+          {loggedIn ? <BookView
             i18n={i18n}
             focusOnList={focusOnList}
             freeSlotList={freeSlotList}
@@ -441,10 +442,10 @@ function App({ i18n }) {
             startDateTime={startDateTime}
             form={form}
             inputRef={inputRef}
-          />
+          /> : <Redirect to={TAB.LOGIN} />}
         </Route>
         <Route path={TAB.BOOKED}>
-          <BookingHistoryView
+          {loggedIn ? <BookingHistoryView
             i18n={i18n}
             bookedList={bookedList}
             startDate={startDate}
@@ -453,10 +454,10 @@ function App({ i18n }) {
             errorMessage={bookingHistoryErrorMessage}
             setEndDate={setEndDate}
             onDeleteBooking={onDeleteBooking}
-          />
+          /> : <Redirect to={TAB.LOGIN} />}
         </Route>
         <Route path={TAB.SETTINGS}>
-          <SettingsView onSuccess={logout} />
+          {loggedIn ? <SettingsView onSuccess={logout} /> : <Redirect to={TAB.LOGIN} />}
         </Route>
       </Switch>
     </div>
