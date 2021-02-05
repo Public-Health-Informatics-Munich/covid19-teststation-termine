@@ -14,8 +14,6 @@ from db.migration import migrate_db, init_database
 from db.model import TimeSlot, Appointment, User, Booking, Migration, FrontendConfig
 from secret_token.secret_token import get_random_string, hash_pw
 
-from utils import JSONExtendedEncoder
-
 log = logging.getLogger('cli')
 
 
@@ -299,7 +297,7 @@ def load_frontend_config(db: directives.PeeweeSession, frontend_config_file: hug
                 config.save()
                 print("Done.")
 
-@hug.cli()
+@hug.cli(output=hug.output_format.pretty_json)
 def get_booking_created_at(db: directives.PeeweeSession, booked_at: hug.types.text):
     with db.atomic():
         booked_start_of_day = datetime.fromisoformat(booked_at).replace(tzinfo=None)
@@ -319,4 +317,5 @@ def get_booking_created_at(db: directives.PeeweeSession, booked_at: hug.types.te
             del booking["appointment"]
             result.append({**booking})
 
-        print(json.dumps(result, cls=JSONExtendedEncoder, indent=2))
+        return result
+
