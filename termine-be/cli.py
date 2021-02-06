@@ -298,20 +298,26 @@ def load_frontend_config(db: directives.PeeweeSession, frontend_config_file: hug
                 print("Done.")
 
 @hug.cli(output=hug.output_format.pretty_json)
-def get_booking_created_at(db: directives.PeeweeSession, booked_at: hug.types.text):
+def get_bookings_created_at(db: directives.PeeweeSession, booked_at: hug.types.text):
+    """
+    Get bookings for a day with yyyy-mm-dd or one specific booking at yyyy-mm-ddThh:mm:ss.mmmmmm
+    """
     with db.atomic():
-        booked_start_of_day = datetime.fromisoformat(booked_at).replace(tzinfo=None)
-        booked_end_of_day = booked_start_of_day + timedelta(days=1,microseconds=-1)
-        
-        bookings = Booking.select(
+        query = Booking.select(
             Booking,
-            Appointment.time_slot.start_date_time.alias(
-                "appointment__time_slot__start_date_time"
-            )
-        ).join(Appointment).join(TimeSlot).where(
-            (Booking.booked_at >= booked_start_of_day)
-            | (Booking.booked_at <= booked_end_of_day)
-        )
+            Appointment.time_slot.start_date_time.alias("start_date_time")
+        ).join(Appointment).join(TimeSlot)
+
+        booked_start = datetime.fromisoformat(booked_at).replace(tzinfo=None)
+
+        if str(booked_start.date()) == booked_at:
+            # booked_at is yyyy-mm-dd
+            booked_end = booked_start.date() + timedelta(days=1)
+            bookings = query.where(Booking.booked_at.between(booked_start, booked_end))
+        else:
+            # booked_at is yyyy-mm-ddThh:mm:ss.mmmmmm
+            bookings = query.where(Booking.booked_at == booked_start)
+
         result = []
         for booking in bookings.dicts().iterator():
             del booking["appointment"]
