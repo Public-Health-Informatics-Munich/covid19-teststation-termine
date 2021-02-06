@@ -358,3 +358,11 @@ def claim_appointment(db: directives.PeeweeSession, start_date_time: hug.types.t
 
     return api_claim_appointment
 
+
+@hug.cli(output=hug.output_format.pretty_json)
+def has_booked_appointment(db: directives.PeeweeSession, user: hug.types.text):
+    """
+    args: USER_NAME
+    """
+    return Booking.select(Booking).where(Booking.booked_by == user).count() > 0
+
