@@ -343,3 +343,18 @@ def free_slots_at(db: directives.PeeweeSession, user: hug.types.text, at_datetim
 
     return slots
 
+
+@hug.cli(output=hug.output_format.pretty_json)
+def claim_appointment(db: directives.PeeweeSession, start_date_time: hug.types.text, user: hug.types.text):
+    """
+    args: (ISO_DATE | ISO_DATETIME) USER_NAME
+    """
+    try:
+        api_claim_appointment = api.claim_appointment(
+            db, start_date_time, User.get(User.user_name == user)
+        )
+    except hug.HTTPGone as e:
+        return None
+
+    return api_claim_appointment
+
