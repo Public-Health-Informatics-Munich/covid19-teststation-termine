@@ -8,6 +8,7 @@ from datetime import datetime, timedelta
 import hug
 from peewee import DatabaseError
 
+from api import api
 from access_control.access_control import UserRoles
 from db import directives
 from db.migration import migrate_db, init_database
@@ -324,4 +325,21 @@ def get_bookings_created_at(db: directives.PeeweeSession, booked_at: hug.types.t
             result.append({**booking})
 
         return result
+
+
+@hug.cli(output=hug.output_format.pretty_json)
+def free_slots_at(db: directives.PeeweeSession, user: hug.types.text, at_datetime: hug.types.text = None):
+    """
+    args: USER_NAME [--at_datetime ISO_DATETIME]
+    """
+    free_slots = api.next_free_slots(db, User.get(User.user_name == user), at_datetime)
+    start_date = datetime.fromisoformat(at_datetime).replace(tzinfo=None)
+
+    slots = []
+    for slot in free_slots["slots"]:
+        if slot["startDateTime"].date() == start_date.date():
+            slot["startDateTime"] = str(slot["startDateTime"])
+            slots.append(slot)
+
+    return slots
 
