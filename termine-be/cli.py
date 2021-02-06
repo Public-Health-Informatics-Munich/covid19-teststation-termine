@@ -405,3 +405,16 @@ def book_followup(db: directives.PeeweeSession, booking: hug.types.json):
 
     return booked
 
+
+@hug.cli()
+def batch_book_followup(db: directives.PeeweeSession):
+    """
+    Expects result from get_bookings_created_at piped into stdin
+    """
+    bookings = json.load(sys.stdin)
+
+    for booking in bookings:
+        booked = book_followup(db, booking)
+        if booked is not None:
+            booked["time_slot"] = str(booked["time_slot"])
+        print(f"Booked appointment {booked}")
