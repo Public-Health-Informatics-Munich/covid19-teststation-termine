@@ -31,6 +31,7 @@
     "Book Appointment": "Book Appointment",
     "Book appointments": "Book appointments",
     "Booked at": "Booked at",
+    BookingInfos: "Booking Infos",
     Booking: "Booking",
     Cancel: "Cancel",
     "Change password:": "Change password:",
