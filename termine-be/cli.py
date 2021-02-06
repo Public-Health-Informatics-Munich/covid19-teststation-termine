@@ -366,3 +366,42 @@ def has_booked_appointment(db: directives.PeeweeSession, user: hug.types.text):
     """
     return Booking.select(Booking).where(Booking.booked_by == user).count() > 0
 
+
+@hug.cli(output=hug.output_format.pretty_json)
+def book_followup(db: directives.PeeweeSession, booking: hug.types.json):
+    """
+    args: BOOKING_JSON
+    """
+    if has_booked_appointment(db, booking["booked_by"]):
+        print(f"User {booking['booked_by']} already booked at least one appointment.")
+        #return None
+
+    start_date = datetime.fromisoformat(booking["start_date_time"]).replace(tzinfo=None)
+    followup_date = start_date + timedelta(days=21)
+
+    slots = free_slots_at(db, booking["booked_by"], str(followup_date))
+
+    slot_count = len(slots)
+    if slot_count == 0:
+        print(f"No free slots available for booking: {booking} at '{followup_date}'")
+        return None
+
+    tries = -1
+    claim_token = None
+    while claim_token is None and tries < slot_count:
+      tries += 1
+      claim_token = claim_appointment(db, slots[tries]["startDateTime"], booking["booked_by"])
+
+    if claim_token is None:
+        print(f"Failed to claim slot for booking: {booking} at '{followup_date}'")
+        return None
+
+    booking["name"] = booking["surname"]
+    booking["claim_token"] = claim_token
+    booking["start_date_time"] = slots[tries]["startDateTime"]
+
+    print(f"Book appointment with data {booking}")
+    booked = api.book_appointment(db, booking, User.get(User.user_name == booking["booked_by"]))
+
+    return booked
+
