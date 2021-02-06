@@ -360,7 +360,7 @@ def claim_appointment(db: directives.PeeweeSession, start_date_time: hug.types.t
 
 
 @hug.cli(output=hug.output_format.pretty_json)
-def has_booked_appointment(db: directives.PeeweeSession, user: hug.types.text):
+def has_booked_by(db: directives.PeeweeSession, user: hug.types.text):
     """
     args: USER_NAME
     """
@@ -368,13 +368,36 @@ def has_booked_appointment(db: directives.PeeweeSession, user: hug.types.text):
 
 
 @hug.cli(output=hug.output_format.pretty_json)
+def has_booking(db: directives.PeeweeSession, booking: hug.types.json):
+    """
+    check if a booking exists for that person
+    """
+    try:
+        return Booking.select(Booking).where(
+            (Booking.surname == booking["surname"])
+            & (Booking.first_name == booking["first_name"])
+            & (Booking.birthday == booking["birthday"])
+            & (Booking.phone == booking["phone"])
+            & (Booking.street == booking["street"])
+            & (Booking.street_number == booking["street_number"])
+            & (Booking.post_code == booking["post_code"])
+            & (Booking.city == booking["city"])
+        ).count() > 0
+    except KeyError as e:
+        print(f"Key {e} is missing in booking.")
+        return None
+
+@hug.cli(output=hug.output_format.pretty_json)
 def book_followup(db: directives.PeeweeSession, booking: hug.types.json):
     """
     args: BOOKING_JSON
     """
-    if has_booked_appointment(db, booking["booked_by"]):
-        print(f"User {booking['booked_by']} already booked at least one appointment.")
-        #return None
+    #if has_booked_by(db, booking["booked_by"]):
+    #    print(f"User {booking['booked_by']} already booked at least one appointment.")
+    #    return None
+    if has_booking(db, booking):
+        print(f"A booking for person from {booking} already exists.")
+        return None
 
     start_date = datetime.fromisoformat(booking["start_date_time"]).replace(tzinfo=None)
     followup_date = start_date + timedelta(days=21)
