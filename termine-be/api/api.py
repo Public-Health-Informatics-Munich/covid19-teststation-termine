@@ -6,7 +6,7 @@ import hug
 import xlsxwriter
 from peewee import fn, DoesNotExist, IntegrityError
 
-from access_control.access_control import UserRoles, token_key_authentication, switchable_authentication
+from access_control.access_control import UserRoles, token_key_authentication
 from config import config
 from db.directives import PeeweeSession
 from db.model import TimeSlot, Appointment, Booking, SlotCode, User
@@ -20,7 +20,7 @@ def format_as_csv(data, request=None, response=None):
     return data
 
 
-@hug.get("/next_free_slots", requires=switchable_authentication)
+@hug.get("/next_free_slots", requires=token_key_authentication)
 def next_free_slots(db: PeeweeSession, user: hug.directives.user, at_datetime: hug.types.text = None):
     """
     SELECT t.start_date_time, count(a.time_slot_id)
