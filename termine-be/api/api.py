@@ -20,8 +20,8 @@ def format_as_csv(data, request=None, response=None):
     return data
 
 
-@hug.get("/next_free_slots", requires=token_key_authentication)
-def next_free_slots(db: PeeweeSession, user: hug.directives.user):
+@hug.get("/next_free_slots", requires=switchable_authentication)
+def next_free_slots(db: PeeweeSession, user: hug.directives.user, at_datetime: hug.types.text = None):
     """
     SELECT t.start_date_time, count(a.time_slot_id)
 FROM appointment a
@@ -34,7 +34,10 @@ ORDER BY t.start_date_time
     """
     with db.atomic():
         # @formatter:off
-        now = datetime.now(tz=config.Settings.tz).replace(tzinfo=None)
+        if at_datetime is not None:
+            now = datetime.fromisoformat(at_datetime).replace(tzinfo=None)
+        else:
+            now = datetime.now(tz=config.Settings.tz).replace(tzinfo=None)
         slots = TimeSlot \
             .select(TimeSlot.start_date_time, TimeSlot.length_min,
                     fn.count(Appointment.time_slot).alias("free_appointments")) \

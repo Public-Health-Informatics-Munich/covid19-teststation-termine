@@ -65,6 +65,7 @@ export default function BookView({
               disable={focusOnList}
               form={form}
               inputRef={inputRef}
+              infoboxState={infoboxState.state}
             />
           </div>
         </FocusLock>

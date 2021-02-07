@@ -21,6 +21,7 @@
     "Book Appointment": "Termin Buchen",
     "Book appointments": "Termine Buchen",
     "Booked at": "Gebucht am",
+    BookingInfos: "Buchungsdaten",
     Booking: "Terminbuchung",
     Cancel: "Abbrechen",
     "Change password:": "Passwort \xE4ndern:",

@@ -8,6 +8,7 @@ from datetime import date, datetime, timedelta
 import hug
 from peewee import DatabaseError
 
+from api import api
 from access_control.access_control import UserRoles
 from db import directives
 from db.migration import migrate_db, init_database
@@ -308,3 +309,147 @@ def load_frontend_config(db: directives.PeeweeSession, frontend_config_file: hug
 
                 config.save()
                 print("Done.")
+
+@hug.cli(output=hug.output_format.pretty_json)
+def get_bookings_created_at(db: directives.PeeweeSession, booked_at: hug.types.text):
+    """
+    Get bookings for a day with yyyy-mm-dd or one specific booking at yyyy-mm-ddThh:mm:ss.mmmmmm
+    """
+    with db.atomic():
+        query = Booking.select(
+            Booking,
+            Appointment.time_slot.start_date_time.alias("start_date_time")
+        ).join(Appointment).join(TimeSlot)
+
+        booked_start = datetime.fromisoformat(booked_at).replace(tzinfo=None)
+
+        if str(booked_start.date()) == booked_at:
+            # booked_at is yyyy-mm-dd
+            booked_end = booked_start.date() + timedelta(days=1)
+            bookings = query.where(Booking.booked_at.between(booked_start, booked_end))
+        else:
+            # booked_at is yyyy-mm-ddThh:mm:ss.mmmmmm
+            bookings = query.where(Booking.booked_at == booked_start)
+
+        result = []
+        for booking in bookings.dicts().iterator():
+            del booking["appointment"]
+            result.append({**booking})
+
+        return result
+
+
+@hug.cli(output=hug.output_format.pretty_json)
+def free_slots_at(db: directives.PeeweeSession, user: hug.types.text, at_datetime: hug.types.text = None):
+    """
+    args: USER_NAME [--at_datetime ISO_DATETIME]
+    """
+    free_slots = api.next_free_slots(db, User.get(User.user_name == user), at_datetime)
+    start_date = datetime.fromisoformat(at_datetime).replace(tzinfo=None)
+
+    slots = []
+    for slot in free_slots["slots"]:
+        if slot["startDateTime"].date() == start_date.date():
+            slot["startDateTime"] = str(slot["startDateTime"])
+            slots.append(slot)
+
+    return slots
+
+
+@hug.cli(output=hug.output_format.pretty_json)
+def claim_appointment(db: directives.PeeweeSession, start_date_time: hug.types.text, user: hug.types.text):
+    """
+    args: (ISO_DATE | ISO_DATETIME) USER_NAME
+    """
+    try:
+        api_claim_appointment = api.claim_appointment(
+            db, start_date_time, User.get(User.user_name == user)
+        )
+    except hug.HTTPGone as e:
+        return None
+
+    return api_claim_appointment
+
+
+@hug.cli(output=hug.output_format.pretty_json)
+def has_booked_by(db: directives.PeeweeSession, user: hug.types.text):
+    """
+    args: USER_NAME
+    """
+    return Booking.select(Booking).where(Booking.booked_by == user).count() > 0
+
+
+@hug.cli(output=hug.output_format.pretty_json)
+def has_booking(db: directives.PeeweeSession, booking: hug.types.json):
+    """
+    check if a booking exists for that person
+    """
+    try:
+        return Booking.select(Booking).where(
+            (Booking.surname == booking["surname"])
+            & (Booking.first_name == booking["first_name"])
+            & (Booking.birthday == booking["birthday"])
+            & (Booking.phone == booking["phone"])
+            & (Booking.street == booking["street"])
+            & (Booking.street_number == booking["street_number"])
+            & (Booking.post_code == booking["post_code"])
+            & (Booking.city == booking["city"])
+        ).count() > 0
+    except KeyError as e:
+        print(f"Key {e} is missing in booking.")
+        return None
+
+@hug.cli(output=hug.output_format.pretty_json)
+def book_followup(db: directives.PeeweeSession, booking: hug.types.json):
+    """
+    args: BOOKING_JSON
+    """
+    if has_booked_by(db, booking["booked_by"]):
+        print(f"User {booking['booked_by']} already booked at least one appointment.")
+        return None
+    #if has_booking(db, booking):
+    #    print(f"A booking for person from {booking} already exists.")
+    #    return None
+
+    start_date = datetime.fromisoformat(booking["start_date_time"]).replace(tzinfo=None)
+    followup_date = start_date + timedelta(days=21)
+
+    slots = free_slots_at(db, booking["booked_by"], str(followup_date))
+
+    slot_count = len(slots)
+    if slot_count == 0:
+        print(f"No free slots available for booking: {booking} at '{followup_date}'")
+        return None
+
+    tries = -1
+    claim_token = None
+    while claim_token is None and tries < slot_count:
+      tries += 1
+      claim_token = claim_appointment(db, slots[tries]["startDateTime"], booking["booked_by"])
+
+    if claim_token is None:
+        print(f"Failed to claim slot for booking: {booking} at '{followup_date}'")
+        return None
+
+    booking["name"] = booking["surname"]
+    booking["claim_token"] = claim_token
+    booking["start_date_time"] = slots[tries]["startDateTime"]
+
+    print(f"Book appointment with data {booking}")
+    booked = api.book_appointment(db, booking, User.get(User.user_name == booking["booked_by"]))
+
+    return booked
+
+
+@hug.cli()
+def batch_book_followup(db: directives.PeeweeSession):
+    """
+    Expects result from get_bookings_created_at piped into stdin
+    """
+    bookings = json.load(sys.stdin)
+
+    for booking in bookings:
+        booked = book_followup(db, booking)
+        if booked is not None:
+            booked["time_slot"] = str(booked["time_slot"])
+        print(f"Booked appointment {booked}")
