@@ -347,6 +347,9 @@ def booked(db: PeeweeSession, user: hug.directives.user, start_date: hug.types.t
             user_role = user.role
             start_day_object = date.fromisoformat(start_date)
             end_day_object = date.fromisoformat(end_date)
+            if user_role != UserRoles.ADMIN:
+                start_day_object = date.fromisoformat('2021-01-01') #FIXME: hack to show users all their bookings
+                end_day_object = date.fromisoformat('2022-12-31') #FIXME: hack to show users all their bookings
             bookings = []
             for timeslot in TimeSlot.select().where((TimeSlot.start_date_time >= start_day_object) &
                                                     (TimeSlot.start_date_time < end_day_object + timedelta(days=1))) \
@@ -386,6 +389,8 @@ def delete_booking(db: PeeweeSession, user: hug.directives.user, booking_id: hug
                 booking.delete_instance()
             except DoesNotExist as e:
                 raise hug.HTTP_NOT_FOUND
+        user.coupons += 1
+        user.save()
         return {"booking_id": booking_id, "deleted": "successful"}
     else:
         raise hug.HTTP_METHOD_NOT_ALLOWED
