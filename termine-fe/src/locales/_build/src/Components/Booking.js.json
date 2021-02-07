@@ -1,29 +1,29 @@
 {
   "Booking": {
-    "origin": [["src/Components/Booking.js", 41]]
+    "origin": [["src/Components/Booking.js", 47]]
   },
   "Given Name": {
-    "origin": [["src/Components/Booking.js", 44]]
+    "origin": [["src/Components/Booking.js", 50]]
   },
   "Surname": {
-    "origin": [["src/Components/Booking.js", 53]]
+    "origin": [["src/Components/Booking.js", 59]]
   },
   "Mobile No.": {
-    "origin": [["src/Components/Booking.js", 63]]
+    "origin": [["src/Components/Booking.js", 69]]
   },
   "DayOfBirth": {
-    "origin": [["src/Components/Booking.js", 74]]
+    "origin": [["src/Components/Booking.js", 80]]
   },
   "Office": {
-    "origin": [["src/Components/Booking.js", 95]]
+    "origin": [["src/Components/Booking.js", 102]]
   },
   "Reason": {
-    "origin": [["src/Components/Booking.js", 106]]
+    "origin": [["src/Components/Booking.js", 113]]
   },
   "Book Appointment": {
-    "origin": [["src/Components/Booking.js", 121]]
+    "origin": [["src/Components/Booking.js", 128]]
   },
   "Cancel": {
-    "origin": [["src/Components/Booking.js", 129]]
+    "origin": [["src/Components/Booking.js", 136]]
   }
 }

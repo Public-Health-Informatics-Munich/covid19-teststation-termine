@@ -4,6 +4,7 @@ from base64 import b64encode
 
 import hug
 import pytest
+import jwt
 
 from access_control.access_control import UserRoles
 from db import model
@@ -18,7 +19,11 @@ logging.basicConfig(format=FORMAT, stream=sys.stdout, level=logging.INFO)
 log = logging.getLogger('conftest')
 
 
-def get_auth_header(user, pw):
+def get_valid_user_auth_header(user, pw):
+    return {"Authorization": jwt.encode({"user": user}, "", algorithm="HS256")}
+
+
+def get_admin_auth_header(user, pw):
     return {"Authorization": get_basic_auth(user, pw)}
 
 
@@ -27,15 +32,19 @@ def get_basic_auth(user, pw):
 
 
 def get_invalid_login():
-    return get_auth_header(INVALID, INVALID)
+    return {"Authorization": "invalid"}
 
 
 def get_user_login():
-    return get_auth_header(USER, USER)
+    return get_valid_user_auth_header(USER, USER)
 
 
 def get_admin_login():
-    return get_auth_header(ADMIN, ADMIN)
+    return get_admin_auth_header(ADMIN, ADMIN)
+
+
+def get_user_login_body(username=USER, password=USER):
+    return {"username": username, "password": password}
 
 
 def get_change_pw_mismatch():
@@ -61,8 +70,10 @@ def testing_db():
     if pwc.db.database == ':memory:':
         with pwc.db.atomic():
             hug.test.cli("init_db", for_real=True, module='main')
-            hug.test.cli("add_user", ADMIN, password=ADMIN, role=UserRoles.ADMIN, module='main')
-            hug.test.cli("add_user", USER, password=USER, role=UserRoles.USER, module='main')
+            hug.test.cli("add_user", ADMIN, password=ADMIN,
+                         role=UserRoles.ADMIN, module='main')
+            hug.test.cli("add_user", USER, password=USER,
+                         role=UserRoles.USER, module='main')
             hug.test.cli("set_frontend_config", instance_name="test", long_instance_name="test test test",
                          contact_info_bookings="test@example.org", contact_info_appointments='1234567', for_real=True,
                          module='main')
