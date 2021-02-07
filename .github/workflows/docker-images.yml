@@ -12,7 +12,7 @@ jobs:
 
   build_server:
     runs-on: ubuntu-latest
-    if: ${{ secrets.docker_hub_token }}
+    if: secrets.docker_hub_token != ''
     steps:
     - uses: actions/checkout@v2
     - name: Build the server Docker image
@@ -24,7 +24,7 @@ jobs:
 
   build_command:
     runs-on: ubuntu-latest
-    if: ${{ secrets.docker_hub_token }}
+    if: secrets.docker_hub_token != ''
     steps:
     - uses: actions/checkout@v2
     - name: Build the commands Docker image
