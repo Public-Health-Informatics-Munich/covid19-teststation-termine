@@ -3,8 +3,8 @@ FROM python:3.7-slim-buster as base
 FROM base as base_pipenv
 
 RUN pip install pipenv
-COPY termine-be/Pipfile .
-COPY termine-be/Pipfile.lock .
+COPY Pipfile .
+COPY Pipfile.lock .
 RUN pipenv lock --requirements > requirements.txt
 RUN pipenv lock --dev --requirements > dev_requirements.txt
 

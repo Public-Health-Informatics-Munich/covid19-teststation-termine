@@ -1,9 +1,10 @@
 import logging
-
+import jwt
 import hug
 import base64
 import binascii
-from peewee import DoesNotExist, DatabaseError
+from ldap3 import SIMPLE, Server, Connection, ALL
+from peewee import Context, DoesNotExist, DatabaseError
 from falcon import HTTPUnauthorized
 
 from db.directives import PeeweeContext
@@ -12,6 +13,19 @@ from config import config
 from secret_token.secret_token import hash_pw
 
 log = logging.getLogger('auth')
+
+
+def token_verify(token, context: PeeweeContext):
+    secret = config.Settings.jwt_key
+    try:
+        user_object = jwt.decode(token, secret, algorithms=["HS256"])
+        return get_user(user_object['user'], context)
+    except jwt.DecodeError as error:
+        log.warning("decodeError {}".format(error))
+        return False
+
+
+token_key_authentication = hug.authentication.token(token_verify)
 
 
 class UserRoles:
@@ -28,6 +42,18 @@ def normalize_user(user_name):
     return user_name.lower()
 
 
+def get_user(user_name: str, context: PeeweeContext):
+    with context.db.atomic():
+        try:
+            return User.get(User.user_name == user_name)
+        except DoesNotExist:
+            log.warning("user not found: %s", user_name)
+            return False
+        except DatabaseError:
+            log.exception("unknown error logging in: %s", user_name)
+            return False
+
+
 def verify_user(user_name, user_password, context: PeeweeContext):
     name = normalize_user(user_name)
     with context.db.atomic():
@@ -42,26 +68,81 @@ def verify_user(user_name, user_password, context: PeeweeContext):
             log.warning("invalid credentials for user: %s", user_name)
             return False
         except DoesNotExist:
-            log.warning("user not found: %s", user_name)
-            return False
+            if config.Settings.use_ldap:
+                return search_ldap_user(user_name, user_password, context)
+            else:
+                log.warning("user not found: %s", user_name)
+                return False
         except DatabaseError:
             log.exception("unknown error logging in: %s", user_name)
             return False
 
 
+def search_ldap_user(user_name: str, user_password: str, context: PeeweeContext):
+    url = config.Ldap.url
+    sys_user = config.Ldap.user_dn
+    sys_pw = config.Ldap.user_pw
+    base = config.Ldap.search_base
+    filter = config.Ldap.search_filter
+    attribute = config.Ldap.search_attribute
+    if "" in [url, sys_user, sys_pw, base, filter, attribute]:
+        log.error(
+            "ENV variables for LDAP not set. You'll need to define LDAP_URL, LDAP_SYSTEM_DN, LDAP_SYSTEM_USER_PW, LDAP_SEARCH_BASE, LDAP_SEARCH_FILTER, LDAP_ATTRIBUTE")
+        return False
+
+    with_tls = config.Ldap.use_tls
+    port = config.Ldap.tls_port if with_tls else config.Ldap.port
+    log.info("Authing ldap with {}".format(with_tls))
+    server = Server(url, port=port, use_ssl=with_tls,
+                    get_info=ALL)
+
+    log.info(server)
+    # Connects the system user
+    connection = Connection(
+        server, sys_user, sys_pw)
+    result = connection.bind()
+    if with_tls:
+        connection.start_tls()
+    log.info(connection)
+    if result:
+        # searches for the user about to log in in the ldap server
+        connection.search(base, filter.format(
+            user_name), attributes=[attribute])
+        log.info(connection.entries)
+        # if exactly one was found, tries to log this one in
+        if len(connection.entries) == 1:
+            userConnection = Connection(
+                server, user=connection.entries[0].entry_dn, password=user_password, authentication=SIMPLE)
+            isValid = userConnection.bind()
+            log.info(userConnection)
+            log.info(isValid)
+            if isValid:
+                # creates a user if not existing yet, in order to track coupon numbers per ldap user
+                return get_or_create_auto_user(context, UserRoles.USER, f'ldap-{user_name}')
+    log.warning(f"Didn't find an ldap user for uid {user_name}")
+    return False
+
+
 def get_or_create_anon_user(context: PeeweeContext):
     name = "unregistered_user"
+    return get_or_create_auto_user(context, UserRoles.ANON, name)
+
+
+def get_or_create_auto_user(context: PeeweeContext, role: str, name: str):
+    coupons = 4 if (
+        role == UserRoles.ANON) else config.Ldap.user_coupon_number if role == UserRoles.USER else 1
     with context.db.atomic():
         try:
             user = User.get(User.user_name == name)
             return user
         except DoesNotExist:
-            user = User.create(user_name=name, role=UserRoles.ANON, salt="", password="", coupons=4)
+            user = User.create(user_name=name, role=role,
+                               salt="", password="", coupons=coupons)
             user.save()
             return user
 
 
-@hug.authentication.authenticator
+@ hug.authentication.authenticator
 def basic(request, response, own_verify_user, realm="simple", context=None, **kwargs):
     """Basic HTTP Authentication"""
     http_auth = request.auth
@@ -86,7 +167,8 @@ def basic(request, response, own_verify_user, realm="simple", context=None, **kw
     if auth_type.lower() == "basic":
         try:
             user_id, key = (
-                base64.decodebytes(bytes(user_and_key.strip(), "utf8")).decode("utf8").split(":", 1)
+                base64.decodebytes(bytes(user_and_key.strip(), "utf8")).decode(
+                    "utf8").split(":", 1)
             )
             user = own_verify_user(user_id, key, context)
             if user:
@@ -101,12 +183,12 @@ def basic(request, response, own_verify_user, realm="simple", context=None, **kw
     return False
 
 
-@basic
+@ basic
 def switchable_authentication(user_name, user_password, context: PeeweeContext):
     return verify_user(user_name, user_password, context)
 
 
-@hug.authentication.basic
+@ hug.authentication.basic
 def authentication(user_name, user_password, context: PeeweeContext):
     user = verify_user(user_name, user_password, context)
     if user and user.role == UserRoles.ANON:
@@ -114,11 +196,10 @@ def authentication(user_name, user_password, context: PeeweeContext):
     return user
 
 
-@hug.authentication.basic
+@ hug.authentication.basic
 def admin_authentication(user_name, user_password, context: PeeweeContext):
     user = verify_user(user_name, user_password, context)
     if user and user.role == UserRoles.ADMIN:
         return user
     log.warning("missing admin role for: %s", user_name)
     return False
-

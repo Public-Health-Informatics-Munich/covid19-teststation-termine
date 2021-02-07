@@ -2,12 +2,13 @@ import json
 import logging
 import os
 import sys
-
+import jwt
 import hug
 
-from access_control.access_control import admin_authentication, switchable_authentication
+from access_control.access_control import admin_authentication, token_key_authentication, verify_user
 from db.directives import PeeweeContext, PeeweeSession
 from db.model import FrontendConfig
+from config import config
 
 FORMAT = '%(asctime)s - %(levelname)s\t%(name)s: %(message)s'
 logging.basicConfig(format=FORMAT, stream=sys.stdout, level=logging.INFO)
@@ -16,7 +17,27 @@ hug_api = hug.API('appointments')
 hug_api.http.add_middleware(hug.middleware.LogMiddleware())
 
 
-@hug.extend_api("/api", requires=switchable_authentication)
+@hug.post("/login")  # noqa
+def token_gen_call(db: PeeweeSession, body: hug.types.json):
+    """Authenticate and return a token"""
+    log.info(body)
+    secret_key = config.Settings.jwt_key
+
+    user = verify_user(body['username'], body['password'],
+                       context=create_context())
+
+    if user:
+        return {
+            "token": jwt.encode({"user": user.user_name}, secret_key, algorithm="HS256")
+        }
+    raise hug.HTTPBadRequest(
+        "Authentication Error",
+        "Invalid username and/or password for user: {0}".format(
+            body['username'])
+    )
+
+
+@hug.extend_api("/api", requires=token_key_authentication)
 def with_api():
     from api import api
     return [api]
@@ -28,7 +49,7 @@ def with_admin_api():
     return [admin_api]
 
 
-@hug.static("/", requires=switchable_authentication)
+@hug.static("/")
 def static_dirs():
     return os.getenv("FE_STATICS_DIR") or "../termine-fe/build/",
 
@@ -43,7 +64,7 @@ def format_as_js(data: str, request=None, response=None):
     return data.encode('utf8')
 
 
-@hug.get("/config.js", requires=switchable_authentication, output=format_as_js)
+@hug.get("/config.js", output=format_as_js)
 def instance_config(db: PeeweeSession):
     with db.atomic():
         return f"window.config = {json.dumps(FrontendConfig.get().config)};"

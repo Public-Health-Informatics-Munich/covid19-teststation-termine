@@ -1,15 +1,23 @@
 version: "3.3"
 services:
+  ldap:
+    image: 389ds/dirsrv:latest
+    ports:
+      - 389:3389
+      - 636:3636
   postgres:
     image: postgres:11
     environment:
       - POSTGRES_PASSWORD=termine_pw!
       - POSTGRES_DB=termine
+    ports:
+      - 54321:5432
   termine:
     build:
       context: .
     depends_on:
       - postgres
+      - ldap
     command: ["./wait-for-it.sh", "postgres:5432", "--", "./entrypoint.sh"]
     environment:
       - CLAIM_TIMEOUT_MIN=5
@@ -20,5 +28,17 @@ services:
       - DB_PASSWORD=termine_pw!
       - DB_HOST=postgres
       - FRONTEND_CONF_JSON=config/by_env/staging.json
+      - JWT_SECRET_KEY=blablablabla
+      - USE_LDAP=True
+      - LDAP_URL=ldap
+      - LDAP_SYSTEM_DN=uid=termine,ou=Application,dc=example,dc=com
+      - LDAP_SYSTEM_USER_PW=appsecret
+      - LDAP_SEARCH_BASE=ou=People,dc=example,dc=com
+      - LDAP_SEARCH_FILTER=(&(objectclass=Person)(uid={}))
+      - LDAP_ATTRIBUTE=dn
+      - LDAP_USE_TLS=True
+      # only needs to be set if non-default
+      - LDAP_PORT=3389
+      - LDAP_TLS_PORT=3636
     ports:
-    - 8000:8000
+      - 8000:8000

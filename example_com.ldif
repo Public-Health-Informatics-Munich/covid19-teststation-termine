@@ -1,0 +1,54 @@
+dn: dc=example,dc=com
+changetype: add
+objectClass: top
+objectClass: domain
+dc: example
+
+dn: ou=People,dc=example,dc=com
+objectClass: top
+objectClass: organizationalUnit
+ou: People
+aci: (targetattr != "userPassword")(target = "ldap:///ou=People,dc=example,dc=com") (version 3.0; acl "sm aci"; allow (all) (userdn = "ldap:///uid=termine,ou=Application,dc=example,dc=com") ;)
+
+dn: uid=a,ou=People,dc=example,dc=com
+uid: a
+givenName: Ann
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetorgperson
+sn: User
+cn: Ann User
+telephoneNumber: 123456789
+mail: a@example.com
+userPassword: aa
+
+dn: uid=b,ou=People,dc=example,dc=com
+uid: b
+givenName: Bob
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetorgperson
+sn: Otheruser
+cn: Bob Otheruser
+telephoneNumber: 123456780
+mail: b@example.com
+userPassword: bb
+
+dn: ou=Application,dc=example,dc=com
+objectClass: top
+objectClass: organizationalUnit
+ou: Application
+
+dn: uid=termine,ou=Application,dc=example,dc=com
+uid: termine
+givenName: Termin
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetorgperson
+sn: Anwendung
+cn: Termin Anwendung
+userPassword: appsecret
+

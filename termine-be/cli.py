@@ -3,7 +3,7 @@ import io
 import json
 import logging
 import sys
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 
 import hug
 from peewee import DatabaseError
@@ -32,7 +32,7 @@ def create_appointments(
         db: directives.PeeweeSession,
         day: hug.types.number,
         month: hug.types.number,
-        year: hug.types.number = 2020,
+        year: hug.types.number = date.today().year,
         start_hour: hug.types.number = 8,
         start_min: hug.types.number = 30,
         num_slots: hug.types.number = 13,
@@ -68,7 +68,8 @@ def delete_timeslots(
             (TimeSlot.start_date_time >= dto) & (TimeSlot.start_date_time < tomorrow)).order_by(
             TimeSlot.start_date_time).limit(num_slots)
         if not for_real:
-            log.info(f"I would delete the following time slots - run with --for_real if these are correct")
+            log.info(
+                f"I would delete the following time slots - run with --for_real if these are correct")
         else:
             log.info(f"Deleting the following time slots")
         tsids_to_delete = []
@@ -79,21 +80,26 @@ def delete_timeslots(
             log.error("No matching timeslots found! Exiting.")
             sys.exit(1)
         apts = Appointment.select().where(Appointment.time_slot.in_(tsids_to_delete))
-        log.info(f"this {'will' if for_real else 'would'} affect the following appointments")
+        log.info(
+            f"this {'will' if for_real else 'would'} affect the following appointments")
         apts_to_delete = []
         for apt in apts:
             apts_to_delete.append(apt)
-            log.info(f"ID: {apt.id} - {apt.time_slot.start_date_time}: {'booked!' if apt.booked else 'free'}")
+            log.info(
+                f"ID: {apt.id} - {apt.time_slot.start_date_time}: {'booked!' if apt.booked else 'free'}")
         if all(not apt.booked for apt in apts_to_delete):
-            log.info(f"none of these appointments are booked, so I {'will' if for_real else 'would'} delete them")
+            log.info(
+                f"none of these appointments are booked, so I {'will' if for_real else 'would'} delete them")
             if for_real:
-                aq = Appointment.delete().where(Appointment.id.in_([a.id for a in apts_to_delete]))
+                aq = Appointment.delete().where(
+                    Appointment.id.in_([a.id for a in apts_to_delete]))
                 tq = TimeSlot.delete().where(TimeSlot.id.in_(tsids_to_delete))
                 aq.execute()
                 tq.execute()
                 log.info("Done!")
         else:
-            log.error(f"Some of these appointments are already booked, {'will' if for_real else 'would'} not delete!")
+            log.error(
+                f"Some of these appointments are already booked, {'will' if for_real else 'would'} not delete!")
 
 
 def _add_one_user(db: directives.PeeweeSession, username: hug.types.text, password: hug.types.text = None,
@@ -104,7 +110,8 @@ def _add_one_user(db: directives.PeeweeSession, username: hug.types.text, passwo
         salt = get_random_string(2)
         secret_password = password or get_random_string(12)
         hashed_password = hash_pw(name, salt, secret_password)
-        user = User.create(user_name=name, role=role, salt=salt, password=hashed_password, coupons=coupons)
+        user = User.create(user_name=name, role=role, salt=salt,
+                           password=hashed_password, coupons=coupons)
         user.save()
         return {"name": user.user_name, "password": secret_password}
 
@@ -126,7 +133,8 @@ def add_users(db: directives.PeeweeSession, filename: hug.types.text,
 @hug.cli()
 def change_user_pw(db: directives.PeeweeSession, username: hug.types.text, password: hug.types.text, for_real: hug.types.smart_boolean = False):
     if not for_real:
-        print(f"this would change {username}'s pw to {password}. Run with --for_real if you're sure.")
+        print(
+            f"this would change {username}'s pw to {password}. Run with --for_real if you're sure.")
         sys.exit(1)
     with db.atomic():
         name = username.lower()
@@ -219,7 +227,8 @@ def cancel_booking(db: directives.PeeweeSession, secret: hug.types.text, start_d
                   f"--for_real if you are sure.")
             sys.exit(1)
         else:
-            print(f"Deleting the booking with id '{booking.id}' and secret '{booking.secret}'.")
+            print(
+                f"Deleting the booking with id '{booking.id}' and secret '{booking.secret}'.")
             booking.appointment.booked = False
             booking.appointment.save()
             q = Booking.delete().where(Booking.id == booking.id)
@@ -252,7 +261,8 @@ def set_frontend_config(db: directives.PeeweeSession, instance_name: hug.types.t
                   f"are sure.")
             sys.exit(1)
         else:
-            print(f"Updating the config with '{json.dumps(template, indent=2)}'.")
+            print(
+                f"Updating the config with '{json.dumps(template, indent=2)}'.")
             try:
                 config = FrontendConfig.get()
                 config.config = template
@@ -273,7 +283,8 @@ def load_frontend_config(db: directives.PeeweeSession, frontend_config_file: hug
                 if 'instanceName' not in new_config or 'longInstanceName' not in new_config or \
                         'contactInfoCoupons' not in new_config \
                         or 'contactInfoAppointment' not in new_config or 'formFields' not in new_config:
-                    print(f"Given file '{json.dumps(new_config, indent=2)}' missing required fields!")
+                    print(
+                        f"Given file '{json.dumps(new_config, indent=2)}' missing required fields!")
                     sys.exit(1)
                 elif type(new_config['formFields']) != list:
                     print("field formFields is not a list!")
@@ -288,7 +299,8 @@ def load_frontend_config(db: directives.PeeweeSession, frontend_config_file: hug
                     f"Run with --for_real if you are sure.")
                 sys.exit(1)
             else:
-                print(f"Updating the config with '{json.dumps(new_config, indent=2)}'.")
+                print(
+                    f"Updating the config with '{json.dumps(new_config, indent=2)}'.")
                 try:
                     config = FrontendConfig.get()
                     config.config = new_config

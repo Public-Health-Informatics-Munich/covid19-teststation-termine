@@ -1,0 +1,11 @@
+{
+  "Username": {
+    "origin": [["src/Views/LoginView.jsx", 17]]
+  },
+  "Password": {
+    "origin": [["src/Views/LoginView.jsx", 20]]
+  },
+  "Wrong username or password": {
+    "origin": [["src/Views/LoginView.jsx", 25]]
+  }
+}
