@@ -392,12 +392,12 @@ def book_followup(db: directives.PeeweeSession, booking: hug.types.json):
     """
     args: BOOKING_JSON
     """
-    #if has_booked_by(db, booking["booked_by"]):
-    #    print(f"User {booking['booked_by']} already booked at least one appointment.")
-    #    return None
-    if has_booking(db, booking):
-        print(f"A booking for person from {booking} already exists.")
+    if has_booked_by(db, booking["booked_by"]):
+        print(f"User {booking['booked_by']} already booked at least one appointment.")
         return None
+    #if has_booking(db, booking):
+    #    print(f"A booking for person from {booking} already exists.")
+    #    return None
 
     start_date = datetime.fromisoformat(booking["start_date_time"]).replace(tzinfo=None)
     followup_date = start_date + timedelta(days=21)
