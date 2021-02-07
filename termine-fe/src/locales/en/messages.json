@@ -28,13 +28,14 @@
   "Given Name": "Given Name",
   "Home Address": "Home Address",
   "In order to book more appointments, contact": "In order to book more appointments, contact",
-  "Please contact": "Please contact",
   "Logout": "Logout",
   "Mobile No.": "Mobile No.",
   "My appointments": "My appointments",
   "New password": "New password",
   "Notify the patient of their access code:": "Notify the patient of their access code:",
   "Office": "Facility (Hospital/Station/Department)",
+  "Password": "Password: ",
+  "Please contact": "Please contact",
   "PostCode": "Post Code",
   "Print": "Print",
   "Reason": "Test Reason",
@@ -53,5 +54,7 @@
   "This input is required.": "This input is required.",
   "Timeslot": "Timeslot",
   "To": "To",
+  "Username": "Username: ",
+  "Wrong username or password": "Wrong username or password",
   "{coupons, plural, =0 {You can book} =1 {You can still book} other {You can still book}}<0><1>{coupons, plural, =0 {no appointment} =1 {one appointment} other {# appointments}}</1></0>{coupons, plural, =0 {anymore} =1 {} other {}}": "{coupons, plural, =0 {You can book} =1 {You can still book} other {You can still book}} <0><1>{coupons, plural, =0 {no appointment} =1 {one appointment} other {# appointments}}</1></0> {coupons, plural, =0 {anymore} =1 {} other {}}"
 }

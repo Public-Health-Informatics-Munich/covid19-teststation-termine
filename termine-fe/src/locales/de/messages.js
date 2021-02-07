@@ -46,7 +46,6 @@
     "Home Address": "Privatanschrift",
     "In order to book more appointments, contact":
       "Um mehr Termine vergeben zu k\xF6nnen wenden Sie sich an",
-    "Please contact": "Kontaktieren Sie",
     Logout: "Logout",
     "Mobile No.": "Handynummer",
     "My appointments": "Meine Buchungen",
@@ -54,6 +53,8 @@
     "Notify the patient of their access code:":
       "Teilen Sie dem Patienten jetzt den Berechtigungscode mit:",
     Office: "Einrichtung (Klinik/Station/Abteilung)",
+    Password: "Passwort: ",
+    "Please contact": "Kontaktieren Sie",
     PostCode: "Postleitzahl",
     Print: "Drucken",
     Reason: "Grund des Tests",
@@ -75,6 +76,8 @@
     "This input is required.": "Dies ist ein Pflichtfeld.",
     Timeslot: "Terminslot",
     To: "Bis",
+    Username: "Benutzername: ",
+    "Wrong username or password": "Falscher Benutzername oder Passwort",
     "{coupons, plural, =0 {You can book} =1 {You can still book} other {You can still book}}<0><1>{coupons, plural, =0 {no appointment} =1 {one appointment} other {# appointments}}</1></0>{coupons, plural, =0 {anymore} =1 {} other {}}": function (
       a
     ) {
