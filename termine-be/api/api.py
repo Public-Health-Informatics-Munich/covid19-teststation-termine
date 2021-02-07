@@ -6,7 +6,7 @@ import hug
 import xlsxwriter
 from peewee import fn, DoesNotExist, IntegrityError
 
-from access_control.access_control import UserRoles, token_key_authentication
+from access_control.access_control import UserRoles, token_key_authentication, switchable_authentication
 from config import config
 from db.directives import PeeweeSession
 from db.model import TimeSlot, Appointment, Booking, SlotCode, User
