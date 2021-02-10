@@ -72,6 +72,10 @@ fieldset.noBorder {
   display: flex;
 }
 
+.displayInline {
+  display: inline;
+}
+
 .vertical {
   flex-direction: column;
 }

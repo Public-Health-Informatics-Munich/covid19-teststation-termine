@@ -62,12 +62,15 @@ const reducer = (state, action) => {
       return { ...state, endDate: action.value };
     case ACTION_TYPES.setBookingHistoryErrorMessage:
       return { ...state, bookingHistoryErrorMessage: action.value };
+    case ACTION_TYPES.setLoggedInUserName:
+      return { ...state, loggedInUserName: action.value };
     default:
       console.error(`unknown action: ${action}`);
   }
 };
 
 const initialState = {
+  loggedInUserName: undefined,
   loggedIn: false,
   triggerRefresh: true,
   selectedAppointment: {
@@ -112,6 +115,7 @@ function App({ i18n }) {
     startDate,
     endDate,
     bookingHistoryErrorMessage,
+    loggedInUserName,
   } = state;
 
   const setSelectedAppointment = (appointment) => {
@@ -368,6 +372,7 @@ function App({ i18n }) {
           console.log(`JWT TOKEN: ${response.data}`);
           window.localStorage.setItem(Api.API_TOKEN, response.data.token);
           dispatch({ type: ACTION_TYPES.setLoggedIn });
+          dispatch({ type: ACTION_TYPES.setLoggedInUserName, value: username });
           history.push("/");
         }
       })
@@ -406,6 +411,11 @@ function App({ i18n }) {
                 <Trans>Settings</Trans>
               </Link>
               <div className="flexAlignRight">
+                {loggedInUserName && (
+                  <div className="displayInline">
+                    <Trans>Logged in as user: </Trans> <b>{loggedInUserName}</b>{" "}
+                  </div>
+                )}
                 <input
                   type="button"
                   value={i18n._(t`Logout`)}

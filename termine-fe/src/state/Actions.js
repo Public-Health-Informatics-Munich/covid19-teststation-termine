@@ -20,4 +20,5 @@ export const ACTION_TYPES = {
   setStartDate: "SET_START_DATE",
   setEndDate: "SET_END_DATE",
   setBookingHistoryErrorMessage: "SET_BOOKING_HISTORY_ERROR_MESSAGE",
+  setLoggedInUserName: "SET_LOGGED_IN_USERNAME",
 };
