@@ -310,6 +310,7 @@ def load_frontend_config(db: directives.PeeweeSession, frontend_config_file: hug
                 config.save()
                 print("Done.")
 
+
 @hug.cli(output=hug.output_format.pretty_json)
 def get_bookings_created_at(db: directives.PeeweeSession, booked_at: hug.types.text):
     """
@@ -326,7 +327,8 @@ def get_bookings_created_at(db: directives.PeeweeSession, booked_at: hug.types.t
         if str(booked_start.date()) == booked_at:
             # booked_at is yyyy-mm-dd
             booked_end = booked_start.date() + timedelta(days=1)
-            bookings = query.where(Booking.booked_at.between(booked_start, booked_end))
+            bookings = query.where(
+                Booking.booked_at.between(booked_start, booked_end))
         else:
             # booked_at is yyyy-mm-ddThh:mm:ss.mmmmmm
             bookings = query.where(Booking.booked_at == booked_start)
@@ -401,17 +403,16 @@ def has_booking(db: directives.PeeweeSession, booking: hug.types.json):
         print(f"Key {e} is missing in booking.")
         return None
 
+
 @hug.cli(output=hug.output_format.pretty_json)
 def book_followup(db: directives.PeeweeSession, booking: hug.types.json, delta_days: hug.types.number = 21):
     """
     args: BOOKING_JSON
     """
     if has_booked_by(db, booking["booked_by"]):
-        print(f"User {booking['booked_by']} already booked at least one appointment.")
+        print(
+            f"User {booking['booked_by']} already booked at least one appointment.")
         return None
-    #if has_booking(db, booking):
-    #    print(f"A booking for person from {booking} already exists.")
-    #    return None
 
     start_date = datetime.fromisoformat(
         booking["start_date_time"]).replace(tzinfo=None)
@@ -421,17 +422,20 @@ def book_followup(db: directives.PeeweeSession, booking: hug.types.json, delta_d
 
     slot_count = len(slots)
     if slot_count == 0:
-        print(f"No free slots available for booking: {booking} at '{followup_date}'")
+        print(
+            f"No free slots available for booking: {booking} at '{followup_date}'")
         return None
 
     tries = -1
     claim_token = None
     while claim_token is None and tries < slot_count:
-      tries += 1
-      claim_token = claim_appointment(db, slots[tries]["startDateTime"], booking["booked_by"])
+        tries += 1
+        claim_token = claim_appointment(
+            db, slots[tries]["startDateTime"], booking["booked_by"])
 
     if claim_token is None:
-        print(f"Failed to claim slot for booking: {booking} at '{followup_date}'")
+        print(
+            f"Failed to claim slot for booking: {booking} at '{followup_date}'")
         return None
 
     booking["name"] = booking["surname"]
