@@ -9,7 +9,7 @@ import hug
 from peewee import DatabaseError
 
 from api import api
-from access_control.access_control import UserRoles
+from access_control.access_control import UserRoles, get_or_create_auto_user
 from db import directives
 from db.migration import migrate_db, init_database
 from db.model import TimeSlot, Appointment, User, Booking, Migration, FrontendConfig
@@ -344,7 +344,8 @@ def free_slots_at(db: directives.PeeweeSession, user: hug.types.text, at_datetim
     """
     args: USER_NAME [--at_datetime ISO_DATETIME]
     """
-    free_slots = api.next_free_slots(db, User.get(User.user_name == user), at_datetime)
+    free_slots = api.next_free_slots(
+        db, get_or_create_auto_user(db, UserRoles.USER, user), at_datetime)
     start_date = datetime.fromisoformat(at_datetime).replace(tzinfo=None)
 
     slots = []
@@ -363,7 +364,8 @@ def claim_appointment(db: directives.PeeweeSession, start_date_time: hug.types.t
     """
     try:
         api_claim_appointment = api.claim_appointment(
-            db, start_date_time, User.get(User.user_name == user)
+            db, start_date_time, get_or_create_auto_user(
+                db, UserRoles.USER, user)
         )
     except hug.HTTPGone as e:
         return None
