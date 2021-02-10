@@ -1,29 +1,32 @@
 {
   "The appointment is no longer available, please select another free appointment.": {
     "origin": [
-      ["src/App.jsx", 266],
-      ["src/App.jsx", 316]
+      ["src/App.jsx", 270],
+      ["src/App.jsx", 320]
     ]
   },
   "An unknown error occurred, please reload the page.": {
     "origin": [
-      ["src/App.jsx", 268],
-      ["src/App.jsx", 318]
+      ["src/App.jsx", 272],
+      ["src/App.jsx", 322]
     ]
   },
   "Deleting the appointment did not work. Please contact your administrator.": {
-    "origin": [["src/App.jsx", 358]]
+    "origin": [["src/App.jsx", 362]]
   },
   "Book appointments": {
-    "origin": [["src/App.jsx", 400]]
+    "origin": [["src/App.jsx", 405]]
   },
   "My appointments": {
-    "origin": [["src/App.jsx", 403]]
+    "origin": [["src/App.jsx", 408]]
   },
   "Settings": {
-    "origin": [["src/App.jsx", 406]]
+    "origin": [["src/App.jsx", 411]]
+  },
+  "Logged in as user:": {
+    "origin": [["src/App.jsx", 414]]
   },
   "Logout": {
-    "origin": [["src/App.jsx", 411]]
+    "origin": [["src/App.jsx", 417]]
   }
 }

@@ -31,8 +31,8 @@
     "Book Appointment": "Book Appointment",
     "Book appointments": "Book appointments",
     "Booked at": "Booked at",
-    BookingInfos: "Booking Infos",
     Booking: "Booking",
+    BookingInfos: "Booking Infos",
     Cancel: "Cancel",
     "Change password:": "Change password:",
     "Choose an appointment": "Choose an appointment",
@@ -57,6 +57,7 @@
     "Home Address": "Home Address",
     "In order to book more appointments, contact":
       "In order to book more appointments, contact",
+    "Logged in as user:": "Logged in as user:",
     Logout: "Logout",
     "Mobile No.": "Mobile No.",
     "My appointments": "My appointments",

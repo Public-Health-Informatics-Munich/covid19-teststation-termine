@@ -21,8 +21,8 @@
     "Book Appointment": "Termin Buchen",
     "Book appointments": "Termine Buchen",
     "Booked at": "Gebucht am",
-    BookingInfos: "Buchungsdaten",
     Booking: "Terminbuchung",
+    BookingInfos: "Buchungsdaten",
     Cancel: "Abbrechen",
     "Change password:": "Passwort \xE4ndern:",
     "Choose an appointment": "W\xE4hlen Sie einen Termin aus",
@@ -47,6 +47,7 @@
     "Home Address": "Privatanschrift",
     "In order to book more appointments, contact":
       "Um mehr Termine vergeben zu k\xF6nnen wenden Sie sich an",
+    "Logged in as user:": "Eingeloggt als: ",
     Logout: "Logout",
     "Mobile No.": "Handynummer",
     "My appointments": "Meine Buchungen",
