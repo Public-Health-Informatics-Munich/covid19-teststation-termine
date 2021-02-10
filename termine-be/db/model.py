@@ -61,6 +61,7 @@ class User(Model):
     password = CharField()
     role = CharField()
     coupons = IntegerField()
+    type = CharField(null=False, default='internal')
 
     class Meta:
         database = db_proxy

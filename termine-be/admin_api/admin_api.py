@@ -1,7 +1,7 @@
 import hug
 from peewee import DoesNotExist, IntegrityError
 
-from access_control.access_control import admin_authentication, UserRoles
+from access_control.access_control import admin_authentication, UserRoles, UserTypes
 from db.directives import PeeweeSession
 from db.model import User, Booking
 from secret_token.secret_token import get_random_string, hash_pw
@@ -15,7 +15,9 @@ def get_users():
     JOIN booking b ON b.booked_by = u.user_name
     GROUP BY u.user_name, u.coupons
     """
-    users = User.select().where(User.role != UserRoles.ANON).order_by(User.role.desc(), User.user_name)
+    users = User.select()\
+        .where(User.role != UserRoles.ANON and User.type != UserTypes.EXTERNAL)\
+        .order_by(User.role.desc(), User.user_name)
     return [{
         "user_name": user.user_name,
         "is_admin": user.role == UserRoles.ADMIN,
@@ -57,7 +59,12 @@ def put_user(db: PeeweeSession, newUserName: hug.types.text, newUserPassword: hu
             salt = get_random_string(2)
             secret_password = newUserPassword
             hashed_password = hash_pw(name, salt, secret_password)
-            user = User.create(user_name=name, role=UserRoles.USER, salt=salt, password=hashed_password, coupons=10)
+            user = User.create(user_name=name,
+                               role=UserRoles.USER,
+                               salt=salt,
+                               password=hashed_password,
+                               coupons=10,
+                               type=UserTypes.INTERNAL)
             user.save()
             return {
                 "username": user.user_name

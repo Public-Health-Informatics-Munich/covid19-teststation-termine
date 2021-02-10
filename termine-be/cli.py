@@ -9,7 +9,7 @@ import hug
 from peewee import DatabaseError
 
 from api import api
-from access_control.access_control import UserRoles, get_or_create_auto_user
+from access_control.access_control import UserRoles, UserTypes, get_or_create_auto_user
 from db import directives
 from db.migration import migrate_db, init_database
 from db.model import TimeSlot, Appointment, User, Booking, Migration, FrontendConfig
@@ -111,7 +111,7 @@ def _add_one_user(db: directives.PeeweeSession, username: hug.types.text, passwo
         secret_password = password or get_random_string(12)
         hashed_password = hash_pw(name, salt, secret_password)
         user = User.create(user_name=name, role=role, salt=salt,
-                           password=hashed_password, coupons=coupons)
+                           password=hashed_password, coupons=coupons, type=UserTypes.INTERNAL)
         user.save()
         return {"name": user.user_name, "password": secret_password}
 

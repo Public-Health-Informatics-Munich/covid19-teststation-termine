@@ -43,6 +43,8 @@ def migrate_db(db: PeeweeSession):
                 level_4(db, migration, migrator)
             if migration.version < 5:
                 level_5(db, migration)
+            if migration.version < 6:
+                level_6(db, migration, migrator)
 
         except ProgrammingError:
             log.exception('Error - Migrations table not found, please run init_db first!')
@@ -132,3 +134,12 @@ def level_5(db, migration):
             migration.save()
         except IndexError:
             log.info("No frontendconfig stored. No row migration needed")
+
+
+def level_6(db, migration, migrator):
+    with db.atomic():
+        migrate(
+            migrator.add_column('user', 'type', CharField(null=False, default='internal'))
+        )
+        migration.version = 6
+        migration.save()

@@ -28,6 +28,15 @@ def token_verify(token, context: PeeweeContext):
 token_key_authentication = hug.authentication.token(token_verify)
 
 
+class UserTypes:
+    INTERNAL = 'internal'
+    EXTERNAL = 'external'
+
+    @staticmethod
+    def user_types():
+        return [UserTypes.INTERNAL, UserTypes.EXTERNAL]
+
+
 class UserRoles:
     ADMIN = 'admin'
     USER = 'doctor'
@@ -59,6 +68,8 @@ def verify_user(user_name, user_password, context: PeeweeContext):
     with context.db.atomic():
         try:
             user = User.get(User.user_name == name)
+            if user.type == UserTypes.EXTERNAL:
+                raise DoesNotExist
             if user.role == UserRoles.ANON:
                 return user
             salt = user.salt
@@ -137,7 +148,7 @@ def get_or_create_auto_user(db: PeeweeSession, role: str, name: str):
             return user
         except DoesNotExist:
             user = User.create(user_name=name, role=role,
-                               salt="", password="", coupons=coupons)
+                               salt="", password="", coupons=coupons, type=UserTypes.EXTERNAL)
             user.save()
             return user
 
