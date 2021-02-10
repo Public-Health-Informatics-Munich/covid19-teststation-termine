@@ -4,10 +4,10 @@ import hug
 import base64
 import binascii
 from ldap3 import SIMPLE, Server, Connection, ALL
-from peewee import Context, DoesNotExist, DatabaseError
+from peewee import DoesNotExist, DatabaseError
 from falcon import HTTPUnauthorized
 
-from db.directives import PeeweeContext
+from db.directives import PeeweeContext, PeeweeSession
 from db.model import User
 from config import config
 from secret_token.secret_token import hash_pw
@@ -118,20 +118,20 @@ def search_ldap_user(user_name: str, user_password: str, context: PeeweeContext)
             log.info(isValid)
             if isValid:
                 # creates a user if not existing yet, in order to track coupon numbers per ldap user
-                return get_or_create_auto_user(context, UserRoles.USER, f'ldap-{user_name}')
+                return get_or_create_auto_user(context.db, UserRoles.USER, f'ldap-{user_name}')
     log.warning(f"Didn't find an ldap user for uid {user_name}")
     return False
 
 
 def get_or_create_anon_user(context: PeeweeContext):
     name = "unregistered_user"
-    return get_or_create_auto_user(context, UserRoles.ANON, name)
+    return get_or_create_auto_user(context.db, UserRoles.ANON, name)
 
 
-def get_or_create_auto_user(context: PeeweeContext, role: str, name: str):
+def get_or_create_auto_user(db: PeeweeSession, role: str, name: str):
     coupons = 4 if (
         role == UserRoles.ANON) else config.Ldap.user_coupon_number if role == UserRoles.USER else 1
-    with context.db.atomic():
+    with db.atomic():
         try:
             user = User.get(User.user_name == name)
             return user
