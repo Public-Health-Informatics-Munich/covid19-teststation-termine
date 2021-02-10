@@ -402,7 +402,7 @@ def has_booking(db: directives.PeeweeSession, booking: hug.types.json):
         return None
 
 @hug.cli(output=hug.output_format.pretty_json)
-def book_followup(db: directives.PeeweeSession, booking: hug.types.json):
+def book_followup(db: directives.PeeweeSession, booking: hug.types.json, delta_days: hug.types.number = 21):
     """
     args: BOOKING_JSON
     """
@@ -413,8 +413,9 @@ def book_followup(db: directives.PeeweeSession, booking: hug.types.json):
     #    print(f"A booking for person from {booking} already exists.")
     #    return None
 
-    start_date = datetime.fromisoformat(booking["start_date_time"]).replace(tzinfo=None)
-    followup_date = start_date + timedelta(days=21)
+    start_date = datetime.fromisoformat(
+        booking["start_date_time"]).replace(tzinfo=None)
+    followup_date = start_date + timedelta(days=delta_days)
 
     slots = free_slots_at(db, booking["booked_by"], str(followup_date))
 
@@ -438,20 +439,21 @@ def book_followup(db: directives.PeeweeSession, booking: hug.types.json):
     booking["start_date_time"] = slots[tries]["startDateTime"]
 
     print(f"Book appointment with data {booking}")
-    booked = api.book_appointment(db, booking, User.get(User.user_name == booking["booked_by"]))
+    booked = api.book_appointment(db, booking, get_or_create_auto_user(
+        db, UserRoles.USER, booking["booked_by"]))
 
     return booked
 
 
 @hug.cli()
-def batch_book_followup(db: directives.PeeweeSession):
+def batch_book_followup(db: directives.PeeweeSession, delta_days: hug.types.number = 21):
     """
     Expects result from get_bookings_created_at piped into stdin
     """
     bookings = json.load(sys.stdin)
 
     for booking in bookings:
-        booked = book_followup(db, booking)
+        booked = book_followup(db, booking, delta_days)
         if booked is not None:
             booked["time_slot"] = str(booked["time_slot"])
         print(f"Booked appointment {booked}")
