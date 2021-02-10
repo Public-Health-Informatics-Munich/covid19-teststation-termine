@@ -20,7 +20,6 @@ hug_api.http.add_middleware(hug.middleware.LogMiddleware())
 @hug.post("/login")  # noqa
 def token_gen_call(db: PeeweeSession, body: hug.types.json):
     """Authenticate and return a token"""
-    log.info(body)
     secret_key = config.Settings.jwt_key
 
     user = verify_user(body['username'], body['password'],

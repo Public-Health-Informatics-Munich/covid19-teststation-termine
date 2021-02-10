@@ -92,30 +92,24 @@ def search_ldap_user(user_name: str, user_password: str, context: PeeweeContext)
 
     with_tls = config.Ldap.use_tls
     port = config.Ldap.tls_port if with_tls else config.Ldap.port
-    log.info("Authing ldap with {}".format(with_tls))
     server = Server(url, port=port, use_ssl=with_tls,
                     get_info=ALL)
 
-    log.info(server)
     # Connects the system user
     connection = Connection(
         server, sys_user, sys_pw)
     result = connection.bind()
     if with_tls:
         connection.start_tls()
-    log.info(connection)
     if result:
         # searches for the user about to log in in the ldap server
         connection.search(base, filter.format(
             user_name), attributes=[attribute])
-        log.info(connection.entries)
         # if exactly one was found, tries to log this one in
         if len(connection.entries) == 1:
             userConnection = Connection(
                 server, user=connection.entries[0].entry_dn, password=user_password, authentication=SIMPLE)
             isValid = userConnection.bind()
-            log.info(userConnection)
-            log.info(isValid)
             if isValid:
                 # creates a user if not existing yet, in order to track coupon numbers per ldap user
                 return get_or_create_auto_user(context.db, UserRoles.USER, f'ldap-{user_name}')
