@@ -7,6 +7,7 @@ import { ErrorBox } from "../Components/ErrorBox";
 import React from "react";
 import { Calendar } from "react-calendar";
 import { Trans, t } from "@lingui/macro";
+import axios from "axios";
 import config from "../config";
 import "react-calendar/dist/Calendar.css";
 import { ButtonWithConfirm } from "../Components/ButtonWithConfirm";
@@ -43,18 +44,34 @@ export default function BookingHistoryView({
         />
       </div>
       <div className="row">
-        <a
-          href={`${
-            config.API_BASE_URL
-          }/booking_list.xlsx?start_date=${ISOStringWithoutTimeZone(
-            startDate
-          )}&end_date=${ISOStringWithoutTimeZone(endDate)}`}
-          className="button"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Trans>Excel</Trans>
-        </a>
+        <input
+          type="button"
+          value={i18n._(t`Excel`)}
+          onClick={() => {
+            axios
+              .get(
+                `${
+                  config.API_BASE_URL
+                }/booking_list.xlsx?start_date=${ISOStringWithoutTimeZone(
+                  startDate
+                )}&end_date=${ISOStringWithoutTimeZone(endDate)}`,
+                {
+                  method: "GET",
+                  responseType: "blob",
+                }
+              )
+              .then((response) => {
+                const url = window.URL.createObjectURL(
+                  new Blob([response.data])
+                );
+                const link = document.createElement("a");
+                link.href = url;
+                link.setAttribute("download", "booking_list.xlsx"); //or any other extension
+                document.body.appendChild(link);
+                link.click();
+              });
+          }}
+        />
         <input
           type="button"
           value={i18n._(t`Print`)}
