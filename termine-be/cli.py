@@ -10,6 +10,7 @@ from peewee import DatabaseError
 
 from api import api
 from access_control.access_control import UserRoles, get_or_create_auto_user
+from config import config
 from db import directives
 from db.migration import migrate_db, init_database
 from db.model import TimeSlot, Appointment, User, Booking, Migration, FrontendConfig
@@ -342,21 +343,72 @@ def get_bookings_created_at(db: directives.PeeweeSession, booked_at: hug.types.t
 
 
 @hug.cli(output=hug.output_format.pretty_json)
-def free_slots_at(db: directives.PeeweeSession, user: hug.types.text, at_datetime: hug.types.text = None):
+def free_slots_at(db: directives.PeeweeSession, user: hug.types.text, at_datetime: hug.types.text = None, max_days_after: hug.types.number = 2):
     """
     args: USER_NAME [--at_datetime ISO_DATETIME]
     """
-    free_slots = api.next_free_slots(
-        db, get_or_create_auto_user(db, UserRoles.USER, user), at_datetime)
-    start_date = datetime.fromisoformat(at_datetime).replace(tzinfo=None)
+    with db.atomic():
+        # @formatter:off
+        now = datetime.now(tz=config.Settings.tz).replace(tzinfo=None)
+        if at_datetime is not None:
+            start = datetime.fromisoformat(at_datetime).replace(tzinfo=None)
+        else:
+            start = datetime.now(tz=config.Settings.tz).replace(tzinfo=None)
+        end = start + timedelta(days=max_days_after)
+        slots = TimeSlot \
+            .select(TimeSlot.start_date_time, TimeSlot.length_min,
+                    fn.count(Appointment.time_slot).alias("free_appointments")) \
+            .join(Appointment) \
+            .where(
+                (TimeSlot.start_date_time >= start) & (TimeSlot.start_date_time <= end) &
+                (Appointment.claim_token.is_null() | (Appointment.claimed_at +
+                                                      timedelta(
+                                                          minutes=config.Settings.claim_timeout_min) < now)) &
+                (Appointment.booked == False)
+            ) \
+            .group_by(TimeSlot.start_date_time, TimeSlot.length_min) \
+            .order_by(TimeSlot.start_date_time) \
+        # @formatter:on
+        return [{
+                "startDateTime": str(slot.start_date_time),
+            } for slot in slots
+            ],
 
-    slots = []
-    for slot in free_slots["slots"]:
-        if slot["startDateTime"].date() == start_date.date():
-            slot["startDateTime"] = str(slot["startDateTime"])
-            slots.append(slot)
 
-    return slots
+@hug.cli(output=hug.output_format.pretty_json)
+def free_slots_before(db: directives.PeeweeSession, user: hug.types.text, at_datetime: hug.types.text = None, max_days_before: hug.types.number = 2):
+    """
+    args: USER_NAME [--at_datetime ISO_DATETIME]
+    """
+    with db.atomic():
+        # @formatter:off
+
+        now = datetime.now(tz=config.Settings.tz).replace(tzinfo=None)
+        start = datetime.now(tz=config.Settings.tz).replace(tzinfo=None)
+        if at_datetime is not None:
+            end = datetime.fromisoformat(at_datetime).replace(tzinfo=None)
+            start = end - timedelta(days=max_days_before)
+        else:
+            end = datetime.now(tz=config.Settings.tz).replace(
+                tzinfo=None) + timedelta(days=1)
+        slots = TimeSlot \
+            .select(TimeSlot.start_date_time, TimeSlot.length_min,
+                    fn.count(Appointment.time_slot).alias("free_appointments")) \
+            .join(Appointment) \
+            .where(
+                (TimeSlot.start_date_time >= start) & (TimeSlot.start_date_time < end) &
+                (Appointment.claim_token.is_null() | (Appointment.claimed_at +
+                                                      timedelta(
+                                                          minutes=config.Settings.claim_timeout_min) < now)) &
+                (Appointment.booked == False)
+            ) \
+            .group_by(TimeSlot.start_date_time, TimeSlot.length_min) \
+            .order_by(TimeSlot.start_date_time.desc()) \
+        # @formatter:on
+        return [{
+                "startDateTime": str(slot.start_date_time),
+            } for slot in slots
+            ]
 
 
 @hug.cli(output=hug.output_format.pretty_json)
@@ -405,7 +457,7 @@ def has_booking(db: directives.PeeweeSession, booking: hug.types.json):
 
 
 @hug.cli(output=hug.output_format.pretty_json)
-def book_followup(db: directives.PeeweeSession, booking: hug.types.json, delta_days: hug.types.number = 21):
+def book_followup(db: directives.PeeweeSession, booking: hug.types.json, delta_days: hug.types.number = 21, day_range: hug.types.number = 2):
     """
     args: BOOKING_JSON
     """
@@ -418,29 +470,39 @@ def book_followup(db: directives.PeeweeSession, booking: hug.types.json, delta_d
         booking["start_date_time"]).replace(tzinfo=None)
     followup_date = start_date + timedelta(days=delta_days)
 
-    slots = free_slots_at(db, booking["booked_by"], str(followup_date))
+    slots_after = free_slots_at(db, booking["booked_by"], str(followup_date), day_range)
+    slots_before = free_slots_before(db, booking["booked_by"], str(followup_date), day_range)
 
-    slot_count = len(slots)
+    slot_count = len(slots_before) + len(slots_after)
     if slot_count == 0:
         print(
-            f"No free slots available for booking: {booking} at '{followup_date}'")
+            f"No free slots available for booking: {booking} at '{followup_date}' in range of {day_range} days")
         return None
 
+    found_time = None
     tries = -1
     claim_token = None
-    while claim_token is None and tries < slot_count:
+    while claim_token is None and tries < len(slots_after):
         tries += 1
+        found_time = slots_after[tries]["startDateTime"]
         claim_token = claim_appointment(
-            db, slots[tries]["startDateTime"], booking["booked_by"])
+            db, found_time, booking["booked_by"])
+
+    tries = -1
+    while claim_token is None and tries < len(slots_before):
+        tries += 1
+        found_time = slots_before[tries]["startDateTime"]
+        claim_token = claim_appointment(
+            db, found_time, booking["booked_by"])
 
     if claim_token is None:
         print(
-            f"Failed to claim slot for booking: {booking} at '{followup_date}'")
+            f"Failed to claim slot for booking: {booking} at '{followup_date}' in range of {day_range} days")
         return None
 
     booking["name"] = booking["surname"]
     booking["claim_token"] = claim_token
-    booking["start_date_time"] = slots[tries]["startDateTime"]
+    booking["start_date_time"] = found_time
 
     print(f"Book appointment with data {booking}")
     booked = api.book_appointment(db, booking, get_or_create_auto_user(
@@ -450,14 +512,16 @@ def book_followup(db: directives.PeeweeSession, booking: hug.types.json, delta_d
 
 
 @hug.cli()
-def batch_book_followup(db: directives.PeeweeSession, delta_days: hug.types.number = 21):
+def batch_book_followup(db: directives.PeeweeSession, delta_days: hug.types.number = 21, day_range: hug.types.number = 2):
     """
     Expects result from get_bookings_created_at piped into stdin
+    delta_days: days after the first appointment
+    day_range: will search appointments in that range (+ or -) of above date (nearest will be taken)
     """
     bookings = json.load(sys.stdin)
 
     for booking in bookings:
-        booked = book_followup(db, booking, delta_days)
+        booked = book_followup(db, booking, delta_days, day_range)
         if booked is not None:
             booked["time_slot"] = str(booked["time_slot"])
         print(f"Booked appointment {booked}")
