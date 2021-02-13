@@ -6,7 +6,7 @@ import sys
 from datetime import date, datetime, timedelta
 
 import hug
-from peewee import DatabaseError
+from peewee import fn, DatabaseError
 
 from api import api
 from access_control.access_control import UserRoles, get_or_create_auto_user
@@ -369,10 +369,7 @@ def free_slots_at(db: directives.PeeweeSession, user: hug.types.text, at_datetim
             .group_by(TimeSlot.start_date_time, TimeSlot.length_min) \
             .order_by(TimeSlot.start_date_time) \
         # @formatter:on
-        return [{
-                "startDateTime": str(slot.start_date_time),
-            } for slot in slots
-            ],
+        return [{"startDateTime": str(slot.start_date_time)} for slot in slots]
 
 
 @hug.cli(output=hug.output_format.pretty_json)
@@ -405,10 +402,7 @@ def free_slots_before(db: directives.PeeweeSession, user: hug.types.text, at_dat
             .group_by(TimeSlot.start_date_time, TimeSlot.length_min) \
             .order_by(TimeSlot.start_date_time.desc()) \
         # @formatter:on
-        return [{
-                "startDateTime": str(slot.start_date_time),
-            } for slot in slots
-            ]
+        return [{"startDateTime": str(slot.start_date_time)} for slot in slots]
 
 
 @hug.cli(output=hug.output_format.pretty_json)
