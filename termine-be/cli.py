@@ -342,19 +342,9 @@ def get_bookings_created_at(db: directives.PeeweeSession, booked_at: hug.types.t
         return result
 
 
-@hug.cli(output=hug.output_format.pretty_json)
-def free_slots_at(db: directives.PeeweeSession, user: hug.types.text, at_datetime: hug.types.text = None, max_days_after: hug.types.number = 2):
-    """
-    args: USER_NAME [--at_datetime ISO_DATETIME]
-    """
+def get_free_timeslots_between(db: directives.PeeweeSession, start: datetime, end: datetime):
     with db.atomic():
-        # @formatter:off
         now = datetime.now(tz=config.Settings.tz).replace(tzinfo=None)
-        if at_datetime is not None:
-            start = datetime.fromisoformat(at_datetime).replace(tzinfo=None)
-        else:
-            start = datetime.now(tz=config.Settings.tz).replace(tzinfo=None)
-        end = start + timedelta(days=max_days_after)
         slots = TimeSlot \
             .select(TimeSlot.start_date_time, TimeSlot.length_min,
                     fn.count(Appointment.time_slot).alias("free_appointments")) \
@@ -373,43 +363,27 @@ def free_slots_at(db: directives.PeeweeSession, user: hug.types.text, at_datetim
 
 
 @hug.cli(output=hug.output_format.pretty_json)
-def free_slots_before(db: directives.PeeweeSession, user: hug.types.text, at_datetime: hug.types.text = None, max_days_before: hug.types.number = 2):
-    """
-    args: USER_NAME [--at_datetime ISO_DATETIME]
-    """
-    with db.atomic():
-        # @formatter:off
+def free_slots_at(db: directives.PeeweeSession, at_datetime: hug.types.text = None, max_days_after: hug.types.number = 2):
+    if(help):
+        return ""
+    start = datetime.now(tz=config.Settings.tz).replace(tzinfo=None)
+    if at_datetime is not None:
+        start = datetime.fromisoformat(at_datetime).replace(tzinfo=None)
+    end = start + timedelta(days=max_days_after)
+    return get_free_timeslots_between(db, start, end)
 
-        now = datetime.now(tz=config.Settings.tz).replace(tzinfo=None)
-        start = datetime.now(tz=config.Settings.tz).replace(tzinfo=None)
+
+@hug.cli(output=hug.output_format.pretty_json)
+def free_slots_before(db: directives.PeeweeSession, at_datetime: hug.types.text = None, max_days_before: hug.types.number = 2):
+        end = datetime.now(tz=config.Settings.tz).replace(tzinfo=None)
         if at_datetime is not None:
             end = datetime.fromisoformat(at_datetime).replace(tzinfo=None)
-            start = end - timedelta(days=max_days_before)
-        else:
-            end = datetime.now(tz=config.Settings.tz).replace(
-                tzinfo=None) + timedelta(days=1)
-        slots = TimeSlot \
-            .select(TimeSlot.start_date_time, TimeSlot.length_min,
-                    fn.count(Appointment.time_slot).alias("free_appointments")) \
-            .join(Appointment) \
-            .where(
-                (TimeSlot.start_date_time >= start) & (TimeSlot.start_date_time < end) &
-                (Appointment.claim_token.is_null() | (Appointment.claimed_at +
-                                                      timedelta(
-                                                          minutes=config.Settings.claim_timeout_min) < now)) &
-                (Appointment.booked == False)
-            ) \
-            .group_by(TimeSlot.start_date_time, TimeSlot.length_min) \
-            .order_by(TimeSlot.start_date_time.desc()) \
-        # @formatter:on
-        return [{"startDateTime": str(slot.start_date_time)} for slot in slots]
+        start = end - timedelta(days=max_days_before)
+        return get_free_timeslots_between(db, start, end)
 
 
 @hug.cli(output=hug.output_format.pretty_json)
 def claim_appointment(db: directives.PeeweeSession, start_date_time: hug.types.text, user: hug.types.text):
-    """
-    args: (ISO_DATE | ISO_DATETIME) USER_NAME
-    """
     try:
         api_claim_appointment = api.claim_appointment(
             db, start_date_time, get_or_create_auto_user(
@@ -423,9 +397,6 @@ def claim_appointment(db: directives.PeeweeSession, start_date_time: hug.types.t
 
 @hug.cli(output=hug.output_format.pretty_json)
 def has_booked_by(db: directives.PeeweeSession, user: hug.types.text):
-    """
-    args: USER_NAME
-    """
     return Booking.select(Booking).where(Booking.booked_by == user).count() > 0
 
 
@@ -452,9 +423,6 @@ def has_booking(db: directives.PeeweeSession, booking: hug.types.json):
 
 @hug.cli(output=hug.output_format.pretty_json)
 def book_followup(db: directives.PeeweeSession, booking: hug.types.json, delta_days: hug.types.number = 21, day_range: hug.types.number = 2):
-    """
-    args: BOOKING_JSON
-    """
     if has_booked_by(db, booking["booked_by"]):
         print(
             f"User {booking['booked_by']} already booked at least one appointment.")
