@@ -11,7 +11,7 @@ import {
 import { Trans, t } from "@lingui/macro";
 import { useForm } from "react-hook-form";
 import { format } from "date-fns";
-import { INFOBOX_STATES, ISOStringWithoutTimeZone } from "./utils";
+import { INFOBOX_STATES, ISOStringWithoutTimeZone, parseJwt } from "./utils";
 import * as Api from "./Api";
 import BookView from "./Views/BookView";
 import BookingHistoryView from "./Views/BookingHistoryView";
@@ -189,6 +189,19 @@ function App({ i18n }) {
 
   const refreshList = () =>
     dispatch({ type: ACTION_TYPES.setTriggerRefresh, value: true });
+
+  useEffect(() => {
+    if (!loggedIn && Api.loggedIn()) {
+      const jwtPayload = parseJwt(Api.getLoginToken());
+      dispatch({ type: ACTION_TYPES.setLoggedIn });
+      dispatch({
+        type: ACTION_TYPES.setLoggedInUserName,
+        value: jwtPayload?.user ?? "",
+      });
+    } else if (!loggedIn) {
+      history.push(TAB.LOGIN);
+    }
+  }, [loggedIn]);
 
   // use focusOnList as switch between slots table and form
   useEffect(() => {
@@ -369,7 +382,6 @@ function App({ i18n }) {
     Api.login(username, password)
       .then((response) => {
         if (response.status === 200) {
-          console.log(`JWT TOKEN: ${response.data}`);
           window.localStorage.setItem(Api.API_TOKEN, response.data.token);
           dispatch({ type: ACTION_TYPES.setLoggedIn });
           dispatch({ type: ACTION_TYPES.setLoggedInUserName, value: username });
@@ -388,8 +400,6 @@ function App({ i18n }) {
   const logout = () => {
     Api.logout();
     dispatch({ type: ACTION_TYPES.setLoggedOut });
-    console.log("Log out");
-    history.push("/login");
   };
 
   return (
@@ -428,58 +438,46 @@ function App({ i18n }) {
       </header>
       <Switch>
         <Route exact path="/">
-          <Redirect to={loggedIn ? TAB.BOOK : TAB.LOGIN} />
+          <Redirect to={TAB.BOOK} />
         </Route>
         <Route path={TAB.LOGIN}>
           <LoginView login={login} error={state.logInError} />
         </Route>
         <Route path={TAB.BOOK}>
-          {loggedIn ? (
-            <BookView
-              i18n={i18n}
-              focusOnList={focusOnList}
-              freeSlotList={freeSlotList}
-              coupons={coupons}
-              claimAppointment={claimAppointment}
-              setSelectedAppointment={setSelectedAppointment}
-              selectedAppointment={selectedAppointment}
-              showSpinner={showSpinner}
-              refreshList={refreshList}
-              infoboxState={infoboxState}
-              bookedAppointment={bookedAppointment}
-              onBook={onBook}
-              onCancelBooking={onCancelBooking}
-              claimToken={claimToken}
-              startDateTime={startDateTime}
-              form={form}
-              inputRef={inputRef}
-            />
-          ) : (
-            <Redirect to={TAB.LOGIN} />
-          )}
+          <BookView
+            i18n={i18n}
+            focusOnList={focusOnList}
+            freeSlotList={freeSlotList}
+            coupons={coupons}
+            claimAppointment={claimAppointment}
+            setSelectedAppointment={setSelectedAppointment}
+            selectedAppointment={selectedAppointment}
+            showSpinner={showSpinner}
+            refreshList={refreshList}
+            infoboxState={infoboxState}
+            bookedAppointment={bookedAppointment}
+            onBook={onBook}
+            onCancelBooking={onCancelBooking}
+            claimToken={claimToken}
+            startDateTime={startDateTime}
+            form={form}
+            inputRef={inputRef}
+          />
         </Route>
         <Route path={TAB.BOOKED}>
-          {loggedIn ? (
-            <BookingHistoryView
-              i18n={i18n}
-              bookedList={bookedList}
-              startDate={startDate}
-              setStartDate={setStartDate}
-              endDate={endDate}
-              errorMessage={bookingHistoryErrorMessage}
-              setEndDate={setEndDate}
-              onDeleteBooking={onDeleteBooking}
-            />
-          ) : (
-            <Redirect to={TAB.LOGIN} />
-          )}
+          <BookingHistoryView
+            i18n={i18n}
+            bookedList={bookedList}
+            startDate={startDate}
+            setStartDate={setStartDate}
+            endDate={endDate}
+            errorMessage={bookingHistoryErrorMessage}
+            setEndDate={setEndDate}
+            onDeleteBooking={onDeleteBooking}
+          />
         </Route>
         <Route path={TAB.SETTINGS}>
-          {loggedIn ? (
-            <SettingsView onSuccess={logout} />
-          ) : (
-            <Redirect to={TAB.LOGIN} />
-          )}
+          <SettingsView onSuccess={logout} />
         </Route>
       </Switch>
     </div>

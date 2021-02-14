@@ -33,7 +33,11 @@ export const login = (username, password) => {
 };
 
 export const loggedIn = () => {
-  return window.localStorage[API_TOKEN] !== null;
+  return window.localStorage[API_TOKEN] !== undefined;
+};
+
+export const getLoginToken = () => {
+  return window.localStorage[API_TOKEN];
 };
 
 export const fetchSlots = () => {
