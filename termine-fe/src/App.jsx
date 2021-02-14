@@ -196,7 +196,7 @@ function App({ i18n }) {
       dispatch({ type: ACTION_TYPES.setLoggedIn });
       dispatch({
         type: ACTION_TYPES.setLoggedInUserName,
-        value: jwtPayload?.user ?? "",
+        value: jwtPayload.user,
       });
     } else if (!loggedIn) {
       history.push(TAB.LOGIN);

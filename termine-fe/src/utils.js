@@ -1,4 +1,5 @@
 import { add, format, parseISO } from "date-fns";
+import jwt_decode from "jwt-decode";
 import { de } from "date-fns/locale";
 
 export const formatDate = (ISOString) =>
@@ -32,19 +33,4 @@ export const INFOBOX_STATES = {
   ERROR: "error",
 };
 
-export const parseJwt = (token) => {
-  try {
-    const base64Url = token.split(".")[1];
-    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-    const jsonPayload = decodeURIComponent(
-      atob(base64)
-        .split("")
-        .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
-        .join("")
-    );
-
-    return JSON.parse(jsonPayload);
-  } catch (e) {
-    return {};
-  }
-};
+export const parseJwt = (token) => jwt_decode(token);
