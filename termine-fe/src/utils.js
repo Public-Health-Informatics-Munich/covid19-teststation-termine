@@ -1,4 +1,5 @@
 import { add, format, parseISO } from "date-fns";
+import jwt_decode from "jwt-decode";
 import { de } from "date-fns/locale";
 
 export const formatDate = (ISOString) =>
@@ -31,3 +32,5 @@ export const INFOBOX_STATES = {
   APPOINTMENT_SUCCESS: "success",
   ERROR: "error",
 };
+
+export const parseJwt = (token) => jwt_decode(token);
