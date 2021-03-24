@@ -30,7 +30,9 @@ replace _**DAY**_ with the two digit day of the month and _**MONTH**_ with the t
 Now browse the app with your browser at http://localhost:8000/
 
 (**_HINT_**)
-To persist the postgres database create a directory add follow lines to the postgres service:
+The included docker-compose config in this repository doesn't persist the database (meaning if you restart the server, all data will be lost). 
+
+To persist the postgres database create a directory add follow lines to the postgres service inside your `docker-compose.yml` file:
 ```
  volumes:
   - ./postgres-data:/var/lib/postgresql/data
