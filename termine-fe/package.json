@@ -24,7 +24,7 @@
     "react-promise-tracker": "^2.1.0",
     "react-router-dom": "^5.1.2",
     "react-scripts": "3.4.1",
-    "validator": "^13.1.17"
+    "validator": "^13.7.0"
   },
   "scripts": {
     "start": "react-scripts start",
